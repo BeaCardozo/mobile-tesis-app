@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
@@ -17,6 +18,34 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentNavIndex = 0;
   final TextEditingController _searchController = TextEditingController();
+  final PageController _promoPageController = PageController();
+  int _currentPromoPage = 0;
+  Timer? _promoTimer;
+
+  // Banners promocionales
+  final List<Map<String, dynamic>> _promoBanners = [
+    {
+      'title': 'Compara precios',
+      'subtitle': 'Encuentra las mejores ofertas',
+      'label': '¡Ahorra más!',
+      'icon': Icons.shopping_cart_rounded,
+      'gradient': [AppColors.primaryLight, AppColors.primary, AppColors.primaryDark],
+    },
+    {
+      'title': 'Ofertas del día',
+      'subtitle': 'Descuentos especiales en supermercados',
+      'label': 'Hoy',
+      'icon': Icons.local_offer_rounded,
+      'gradient': [AppColors.secondaryLight, AppColors.secondary, AppColors.primary],
+    },
+    {
+      'title': 'Ahorra inteligente',
+      'subtitle': 'Compara antes de comprar',
+      'label': 'Nuevo',
+      'icon': Icons.trending_down_rounded,
+      'gradient': [AppColors.primary, AppColors.accent, AppColors.accentLight],
+    },
+  ];
 
   // Datos de ejemplo - Estos vendrán del backend
   final List<Category> _categories = [
@@ -164,9 +193,36 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Iniciar el timer para el carousel automático
+    _startPromoTimer();
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    _promoPageController.dispose();
+    _promoTimer?.cancel();
     super.dispose();
+  }
+
+  void _startPromoTimer() {
+    _promoTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (_currentPromoPage < _promoBanners.length - 1) {
+        _currentPromoPage++;
+      } else {
+        _currentPromoPage = 0;
+      }
+
+      if (_promoPageController.hasClients) {
+        _promoPageController.animateToPage(
+          _currentPromoPage,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   void _toggleFavorite(String productId) {
@@ -183,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightGrey,
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -195,12 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Header
                     _buildHeader(),
 
-                    const SizedBox(height: 16),
-
-                    // Ubicación
-                    _buildLocationSection(),
-
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
 
                     // Barra de búsqueda
                     _buildSearchBar(),
@@ -253,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextSpan(
                   text: 'Caracas',
                   style: TextStyle(
-                    fontSize: 26,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
                   ),
@@ -261,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextSpan(
                   text: 'Ahorra',
                   style: TextStyle(
-                    fontSize: 26,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.accent,
                   ),
@@ -291,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(width: 4),
                     Icon(Icons.keyboard_arrow_down, size: 16),
-                  ],
+                  ], 
                 ),
               ),
               const SizedBox(width: 12),
@@ -326,70 +377,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildLocationSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.location_on_rounded,
-                color: AppColors.primary,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Caracas',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    'Venezuela',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right,
-              color: AppColors.grey,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -446,83 +433,121 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPromoBanner() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        height: 160,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primaryLight.withOpacity(0.8),
-              AppColors.secondaryLight.withOpacity(0.8),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.2),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -20,
-              bottom: -20,
-              child: Icon(
-                Icons.shopping_cart_rounded,
-                size: 150,
-                color: Colors.white.withOpacity(0.1),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 180,
+            child: PageView.builder(
+              controller: _promoPageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPromoPage = index;
+                });
+              },
+              itemCount: _promoBanners.length,
+              itemBuilder: (context, index) {
+                final banner = _promoBanners[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: (banner['gradient'] as List<Color>)
+                          .map((c) => c.withOpacity(0.9))
+                          .toList(),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      '¡Ahorra más!',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.25),
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Compara precios',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  child: Stack(
+                    children: [
+                      // Icono de fondo decorativo
+                      Positioned(
+                        right: -20,
+                        bottom: -20,
+                        child: Icon(
+                          banner['icon'] as IconData,
+                          size: 150,
+                          color: Colors.white.withOpacity(0.15),
+                        ),
+                      ),
+                      // Contenido
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                banner['label'] as String,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              banner['title'] as String,
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              banner['subtitle'] as String,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Encuentra las mejores ofertas',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+                );
+              },
+            ),
+          ),
+          // Indicadores de página (dots)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              _promoBanners.length,
+              (index) => Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: _currentPromoPage == index ? 24 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: _currentPromoPage == index
+                      ? AppColors.primary
+                      : AppColors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
