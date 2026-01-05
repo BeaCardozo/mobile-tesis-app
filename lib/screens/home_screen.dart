@@ -3,10 +3,12 @@ import 'dart:async';
 import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
+import '../models/cart_item.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'product_detail_screen.dart';
+import 'cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
   double _minPrice = 0;
   double _maxPrice = 100;
   String _sortBy = 'Relevancia';
+
+  // Carrito de compras
+  final List<CartItem> _cartItems = [];
 
   // Banners promocionales
   final List<Map<String, dynamic>> _promoBanners = [
@@ -232,15 +237,80 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _toggleFavorite(String productId) {
+  void _addToCart(Product product) {
+    // Usar el primer supermercado disponible por defecto
+    final defaultSupermarketId = product.prices.isNotEmpty
+        ? product.prices.first.supermarketId
+        : '';
+
     setState(() {
-      final index = _products.indexWhere((p) => p.id == productId);
-      if (index != -1) {
-        _products[index] = _products[index].copyWith(
-          isFavorite: !_products[index].isFavorite,
+      // Verificar si el producto ya está en el carrito
+      final existingIndex = _cartItems.indexWhere(
+        (item) => item.product.id == product.id,
+      );
+
+      if (existingIndex != -1) {
+        // Si ya existe, incrementar cantidad
+        _cartItems[existingIndex] = _cartItems[existingIndex].copyWith(
+          quantity: _cartItems[existingIndex].quantity + 1,
+        );
+      } else {
+        // Si no existe, añadir nuevo item
+        _cartItems.add(
+          CartItem(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            product: product,
+            quantity: 1,
+            selectedSupermarketId: defaultSupermarketId,
+            addedAt: DateTime.now(),
+          ),
         );
       }
     });
+
+    // Mostrar mensaje de confirmación
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${product.name} añadido al carrito'),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Ver carrito',
+          textColor: Colors.white,
+          onPressed: () {
+            _navigateToCart();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _removeFromCart(String itemId) {
+    setState(() {
+      _cartItems.removeWhere((item) => item.id == itemId);
+    });
+  }
+
+  void _updateCartItemQuantity(String itemId, int newQuantity) {
+    setState(() {
+      final index = _cartItems.indexWhere((item) => item.id == itemId);
+      if (index != -1) {
+        _cartItems[index] = _cartItems[index].copyWith(quantity: newQuantity);
+      }
+    });
+  }
+
+  void _navigateToCart() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartScreen(
+          cartItems: _cartItems,
+          onRemoveItem: _removeFromCart,
+          onUpdateQuantity: _updateCartItemQuantity,
+        ),
+      ),
+    );
   }
 
   void _showFiltersModal() {
@@ -705,6 +775,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+      floatingActionButton: CentralCartButton(
+        onTap: _navigateToCart,
+        isActive: _currentNavIndex == 2,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentNavIndex,
         onTap: (index) {
@@ -745,61 +820,28 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.lightGrey,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  children: [
-                    Text(
-                      'VE',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(width: 4),
-                    Icon(Icons.keyboard_arrow_down, size: 16),
-                  ], 
-                ),
-              ),
-              const SizedBox(width: 12),
-              Stack(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLight.withOpacity(0.3),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.notifications_rounded,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.lightGrey,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Row(
+              children: [
+                Text(
+                  'VE',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
-                  Positioned(
-                    right: 6,
-                    top: 6,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+                SizedBox(width: 4),
+                Icon(Icons.keyboard_arrow_down, size: 16),
+              ],
+            ),
           ),
         ],
       ),
@@ -1117,8 +1159,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                onFavoriteToggle: () {
-                  _toggleFavorite(_products[index].id);
+                onAddToCart: () {
+                  _addToCart(_products[index]);
                 },
               );
             },

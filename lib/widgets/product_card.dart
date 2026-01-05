@@ -5,13 +5,13 @@ import '../config/app_colors.dart';
 class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
-  final VoidCallback? onFavoriteToggle;
+  final VoidCallback? onAddToCart;
 
   const ProductCard({
     super.key,
     required this.product,
     required this.onTap,
-    this.onFavoriteToggle,
+    this.onAddToCart,
   });
 
   @override
@@ -71,33 +71,29 @@ class ProductCard extends StatelessWidget {
                           ),
                   ),
                 ),
-                // Botón de favorito
+                // Botón de añadir al carrito
                 Positioned(
                   top: 8,
                   right: 8,
                   child: GestureDetector(
-                    onTap: onFavoriteToggle,
+                    onTap: onAddToCart,
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        gradient: AppColors.primaryGradient,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
                         ],
                       ),
-                      child: Icon(
-                        product.isFavorite
-                            ? Icons.favorite
-                            : Icons.favorite_border,
+                      child: const Icon(
+                        Icons.add_rounded,
                         size: 20,
-                        color: product.isFavorite
-                            ? Colors.red
-                            : AppColors.grey,
+                        color: Colors.white,
                       ),
                     ),
                   ),

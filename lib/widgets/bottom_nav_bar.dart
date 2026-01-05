@@ -16,19 +16,25 @@ class BottomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(24),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        top: false,
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildNavItem(
                 icon: Icons.home_rounded,
@@ -40,10 +46,10 @@ class BottomNavBar extends StatelessWidget {
                 label: 'Categorías',
                 index: 1,
               ),
-              _buildCenterButton(context),
+              const SizedBox(width: 48), // Espacio para el botón central
               _buildNavItem(
-                icon: Icons.favorite_rounded,
-                label: 'Favoritos',
+                icon: Icons.notifications_rounded,
+                label: 'Notificaciones',
                 index: 3,
               ),
               _buildNavItem(
@@ -65,53 +71,81 @@ class BottomNavBar extends StatelessWidget {
   }) {
     final isActive = currentIndex == index;
 
-    return GestureDetector(
-      onTap: () => onTap(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onTap(index),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 26,
-              color: isActive ? AppColors.primary : AppColors.grey,
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? AppColors.primary.withOpacity(0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: isActive ? AppColors.primary : AppColors.grey,
+              ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 9.5,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                 color: isActive ? AppColors.primary : AppColors.grey,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildCenterButton(BuildContext context) {
+// Widget del botón central flotante (se debe usar como Floating Action Button)
+class CentralCartButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final bool isActive;
+
+  const CentralCartButton({
+    super.key,
+    required this.onTap,
+    this.isActive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTap(2),
+      onTap: onTap,
       child: Container(
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
           shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.white,
+            width: 4,
+          ),
+          gradient: AppColors.primaryGradient,
           boxShadow: [
             BoxShadow(
               color: AppColors.primary.withOpacity(0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: const Icon(
-          Icons.search_rounded,
-          size: 30,
+          Icons.shopping_cart_rounded,
+          size: 26,
           color: Colors.white,
         ),
       ),
