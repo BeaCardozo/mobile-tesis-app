@@ -7,8 +7,11 @@ import '../models/cart_item.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/cart_button.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
+import 'categories_screen.dart';
+import 'products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Carrito de compras
   final List<CartItem> _cartItems = [];
+
+  // Moneda seleccionada
+  String _selectedCurrency = 'Bs';
 
   // Banners promocionales
   final List<Map<String, dynamic>> _promoBanners = [
@@ -775,18 +781,58 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      floatingActionButton: CentralCartButton(
-        onTap: _navigateToCart,
-        isActive: _currentNavIndex == 2,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentNavIndex,
         onTap: (index) {
           setState(() {
             _currentNavIndex = index;
           });
-          // TODO: Implementar navegación a otras pantallas
+
+          // Navegación según el índice
+          switch (index) {
+            case 0:
+              // Ya estamos en Home
+              break;
+            case 1:
+              // Navegar a Categorías
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CategoriesScreen(),
+                ),
+              );
+              break;
+            case 2:
+              // TODO: Navegar a Ofertas
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Ofertas - Próximamente'),
+                  backgroundColor: AppColors.primary,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+              break;
+            case 3:
+              // TODO: Navegar a Notificaciones
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Notificaciones - Próximamente'),
+                  backgroundColor: AppColors.primary,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+              break;
+            case 4:
+              // TODO: Navegar a Perfil
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Perfil - Próximamente'),
+                  backgroundColor: AppColors.primary,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+              break;
+          }
         },
       ),
     );
@@ -798,6 +844,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Logo
           RichText(
             text: const TextSpan(
               children: [
@@ -820,28 +867,66 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.lightGrey,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Row(
-              children: [
-                Text(
-                  'VE',
-                  style: TextStyle(
+
+          // Controles de moneda y carrito
+          Row(
+            children: [
+              // Dropdown de moneda
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.lightGrey,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: DropdownButton<String>(
+                  value: _selectedCurrency,
+                  icon: const Icon(Icons.keyboard_arrow_down, size: 16),
+                  underline: const SizedBox(),
+                  isDense: true,
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
+                    color: AppColors.black,
                   ),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'Bs',
+                      child: Text('Bs'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'USD',
+                      child: Text('USD'),
+                    ),
+                  ],
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedCurrency = newValue;
+                      });
+                      // TODO: Implementar conversión de moneda en los productos
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Moneda cambiada a $newValue'),
+                          backgroundColor: AppColors.primary,
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  },
                 ),
-                SizedBox(width: 4),
-                Icon(Icons.keyboard_arrow_down, size: 16),
-              ],
-            ),
+              ),
+
+              const SizedBox(width: 12),
+
+              // Botón del carrito
+              CartButton(
+                onTap: _navigateToCart,
+                itemCount: _cartItems.length,
+              ),
+            ],
           ),
         ],
       ),
@@ -1047,7 +1132,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  // TODO: Ver todas las categorías
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CategoriesScreen(),
+                    ),
+                  );
                 },
                 child: const Row(
                   children: [
@@ -1110,7 +1200,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  // TODO: Ver todos los productos
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProductsScreen(),
+                    ),
+                  );
                 },
                 child: const Row(
                   children: [

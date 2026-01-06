@@ -46,7 +46,11 @@ class BottomNavBar extends StatelessWidget {
                 label: 'Categorías',
                 index: 1,
               ),
-              const SizedBox(width: 48), // Espacio para el botón central
+              _buildNavItem(
+                icon: Icons.local_offer_rounded,
+                label: 'Ofertas',
+                index: 2,
+              ),
               _buildNavItem(
                 icon: Icons.notifications_rounded,
                 label: 'Notificaciones',
@@ -104,49 +108,6 @@ class BottomNavBar extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// Widget del botón central flotante (se debe usar como Floating Action Button)
-class CentralCartButton extends StatelessWidget {
-  final VoidCallback onTap;
-  final bool isActive;
-
-  const CentralCartButton({
-    super.key,
-    required this.onTap,
-    this.isActive = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.white,
-            width: 4,
-          ),
-          gradient: AppColors.primaryGradient,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: const Icon(
-          Icons.shopping_cart_rounded,
-          size: 26,
-          color: Colors.white,
         ),
       ),
     );
