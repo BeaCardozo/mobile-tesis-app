@@ -1,35 +1,60 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import '../config/app_colors.dart';
-import '../models/product.dart';
 import '../models/category.dart';
+import '../models/product.dart';
 import '../models/cart_item.dart';
+import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 import '../widgets/cart_button.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
+import 'products_screen.dart';
 
-class ProductsScreen extends StatefulWidget {
-  const ProductsScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<ProductsScreen> createState() => _ProductsScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _ProductsScreenState extends State<ProductsScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  final List<CartItem> _cartItems = [];
+class _HomeScreenState extends State<HomeScreen> {
+  final PageController _promoPageController = PageController();
+  int _currentPromoPage = 0;
+  Timer? _promoTimer;
 
-  // Filtros
-  String? _selectedCategory;
-  String? _selectedSupermarket;
-  double _minPrice = 0;
-  double _maxPrice = 100;
-  String _sortBy = 'Relevancia';
+  // Carrito de compras
+  final List<CartItem> _cartItems = [];
 
   // Moneda seleccionada
   String _selectedCurrency = 'Bs';
 
-  // Categorías (para los filtros)
+  // Banners promocionales
+  final List<Map<String, dynamic>> _promoBanners = [
+    {
+      'title': 'Compara precios',
+      'subtitle': 'Encuentra las mejores ofertas',
+      'label': '¡Ahorra más!',
+      'icon': Icons.shopping_cart_rounded,
+      'gradient': [AppColors.primaryLight, AppColors.primary, AppColors.primaryDark],
+    },
+    {
+      'title': 'Ofertas del día',
+      'subtitle': 'Descuentos especiales en supermercados',
+      'label': 'Hoy',
+      'icon': Icons.local_offer_rounded,
+      'gradient': [AppColors.secondaryLight, AppColors.secondary, AppColors.primary],
+    },
+    {
+      'title': 'Ahorra inteligente',
+      'subtitle': 'Compara antes de comprar',
+      'label': 'Nuevo',
+      'icon': Icons.trending_down_rounded,
+      'gradient': [AppColors.primary, AppColors.accent, AppColors.accentLight],
+    },
+  ];
+
+  // Datos de ejemplo - Estos vendrán del backend
   final List<Category> _categories = [
     Category(
       id: '1',
@@ -63,8 +88,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
     ),
   ];
 
-  // Datos de ejemplo - Estos vendrán del backend
-  final List<Product> _products = [
+  // Productos de ejemplo - Estos vendrán del backend
+  List<Product> _products = [
     Product(
       id: '1',
       name: 'Arroz Diana 1kg',
@@ -175,26 +200,56 @@ class _ProductsScreenState extends State<ProductsScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Iniciar el timer para el carousel automático
+    _startPromoTimer();
+  }
+
+  @override
   void dispose() {
-    _searchController.dispose();
+    _promoPageController.dispose();
+    _promoTimer?.cancel();
     super.dispose();
   }
 
+  void _startPromoTimer() {
+    _promoTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (_currentPromoPage < _promoBanners.length - 1) {
+        _currentPromoPage++;
+      } else {
+        _currentPromoPage = 0;
+      }
+
+      if (_promoPageController.hasClients) {
+        _promoPageController.animateToPage(
+          _currentPromoPage,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
   void _addToCart(Product product) {
+    // Usar el primer supermercado disponible por defecto
     final defaultSupermarketId = product.prices.isNotEmpty
         ? product.prices.first.supermarketId
         : '';
 
     setState(() {
+      // Verificar si el producto ya está en el carrito
       final existingIndex = _cartItems.indexWhere(
         (item) => item.product.id == product.id,
       );
 
       if (existingIndex != -1) {
+        // Si ya existe, incrementar cantidad
         _cartItems[existingIndex] = _cartItems[existingIndex].copyWith(
           quantity: _cartItems[existingIndex].quantity + 1,
         );
       } else {
+        // Si no existe, añadir nuevo item
         _cartItems.add(
           CartItem(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -207,6 +262,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       }
     });
 
+    // Mostrar mensaje de confirmación
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${product.name} añadido al carrito'),
@@ -671,82 +727,37 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.lightGrey,
-      child: SafeArea(
+    return Scaffold(
+      backgroundColor: AppColors.lightGrey,
+      body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Header fijo
             _buildHeader(),
 
-            const SizedBox(height: 8),
-
-            // Barra de búsqueda
-            _buildSearchBar(),
-
-            const SizedBox(height: 20),
-
-            // Grid de productos
+            // Contenido con scroll
             Expanded(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Título
-                      const Text(
-                        'Todos los Productos',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${_products.length} productos encontrados',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.grey.withOpacity(0.8),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
 
-                      // Grid de productos
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.7,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                        ),
-                        itemCount: _products.length,
-                        itemBuilder: (context, index) {
-                          return ProductCard(
-                            product: _products[index],
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductDetailScreen(
-                                    product: _products[index],
-                                  ),
-                                ),
-                              );
-                            },
-                            onAddToCart: () {
-                              _addToCart(_products[index]);
-                            },
-                          );
-                        },
-                      ),
+                    // Banner promocional
+                    _buildPromoBanner(),
 
-                      const SizedBox(height: 20),
-                    ],
-                  ),
+                    const SizedBox(height: 24),
+
+                    // Categorías
+                    _buildCategoriesSection(),
+
+                    const SizedBox(height: 24),
+
+                    // Productos destacados
+                    _buildFeaturedProducts(),
+
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
             ),
@@ -824,6 +835,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       setState(() {
                         _selectedCurrency = newValue;
                       });
+                      // TODO: Implementar conversión de moneda en los productos
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Moneda cambiada a $newValue'),
+                          backgroundColor: AppColors.primary,
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -895,6 +914,278 @@ class _ProductsScreenState extends State<ProductsScreen> {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildPromoBanner() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 180,
+          child: PageView.builder(
+            controller: _promoPageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPromoPage = index;
+              });
+            },
+            itemCount: _promoBanners.length,
+            itemBuilder: (context, index) {
+              final banner = _promoBanners[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: (banner['gradient'] as List<Color>)
+                          .map((c) => c.withOpacity(0.9))
+                          .toList(),
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.25),
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Stack(
+                      children: [
+                        // Icono de fondo decorativo
+                        Positioned(
+                          right: -20,
+                          bottom: -20,
+                          child: Icon(
+                            banner['icon'] as IconData,
+                            size: 150,
+                            color: Colors.white.withOpacity(0.15),
+                          ),
+                        ),
+                        // Contenido
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  banner['label'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                banner['title'] as String,
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                banner['subtitle'] as String,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        // Indicadores de página (dots)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            _promoBanners.length,
+            (index) => Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: _currentPromoPage == index ? 24 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: _currentPromoPage == index
+                    ? AppColors.primary
+                    : AppColors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoriesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Categorías',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Las categorías están disponibles en la pestaña de navegación
+                },
+                child: const Row(
+                  children: [
+                    Text(
+                      'Ver todas',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 6),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: AppColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 110,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            scrollDirection: Axis.horizontal,
+            itemCount: _categories.length,
+            itemBuilder: (context, index) {
+              return CategoryCard(
+                category: _categories[index],
+                onTap: () {
+                  // TODO: Navegar a productos por categoría
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeaturedProducts() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Productos Destacados',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProductsScreen(),
+                    ),
+                  );
+                },
+                child: const Row(
+                  children: [
+                    Text(
+                      'Ver todos',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 6),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: AppColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.7,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: _products.length,
+            itemBuilder: (context, index) {
+              return ProductCard(
+                product: _products[index],
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailScreen(
+                        product: _products[index],
+                      ),
+                    ),
+                  );
+                },
+                onAddToCart: () {
+                  _addToCart(_products[index]);
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

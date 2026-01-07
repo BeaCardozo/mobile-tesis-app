@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
+import '../services/auth_service.dart';
+import 'main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -54,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     super.dispose();
   }
 
-  void _handleRegister() {
+  Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -66,16 +68,30 @@ class _RegisterScreenState extends State<RegisterScreen>
         return;
       }
 
-      // TODO: Implementar lógica de registro cuando esté el backend
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registro exitoso'),
-          backgroundColor: AppColors.success,
-        ),
+      // TODO: Implementar lógica de registro con backend cuando esté disponible
+      // Por ahora, guardamos la sesión localmente
+      await AuthService.login(
+        email: _emailController.text,
+        name: _nameController.text,
       );
 
-      // Volver a login después de registro exitoso
-      Navigator.pop(context);
+      if (mounted) {
+        // Navegar al MainScreen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MainScreen(),
+          ),
+        );
+
+        // Mostrar mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registro exitoso - Bienvenido a CaracasAhorra'),
+            backgroundColor: AppColors.success,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 

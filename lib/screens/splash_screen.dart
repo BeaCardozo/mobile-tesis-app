@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../config/app_colors.dart';
-import 'home_screen.dart';
+import '../services/auth_service.dart';
+import 'main_screen.dart';
+import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -63,19 +65,24 @@ class _SplashScreenState extends State<SplashScreen>
     _startAnimationSequence();
 
     // Navegar a la pantalla principal después de las animaciones
-    Timer(const Duration(milliseconds: 3500), () {
+    Timer(const Duration(milliseconds: 3500), () async {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const HomeScreen(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
+        // Verificar si el usuario está autenticado
+        final isLoggedIn = await AuthService.isLoggedIn();
+
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  isLoggedIn ? const MainScreen() : const LoginScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 800),
+            ),
+          );
+        }
       }
     });
   }

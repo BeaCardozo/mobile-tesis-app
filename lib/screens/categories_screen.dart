@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/category.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../widgets/cart_button.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -12,7 +11,6 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  int _currentNavIndex = 1; // Índice 1 = Categorías
 
   // Datos de ejemplo - Estos vendrán del backend
   // TODO: Conectar con el backend para obtener las categorías reales
@@ -103,60 +101,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  void _onNavBarTap(int index) {
-    if (index == _currentNavIndex) return;
-
-    setState(() {
-      _currentNavIndex = index;
-    });
-
-    // Navegación según el índice
-    switch (index) {
-      case 0:
-        // Volver a Home
-        Navigator.pop(context);
-        break;
-      case 1:
-        // Ya estamos en Categorías
-        break;
-      case 2:
-        // TODO: Navegar a Ofertas
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Ofertas - Próximamente'),
-            backgroundColor: AppColors.primary,
-            duration: Duration(seconds: 1),
-          ),
-        );
-        break;
-      case 3:
-        // TODO: Navegar a Notificaciones
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Notificaciones - Próximamente'),
-            backgroundColor: AppColors.primary,
-            duration: Duration(seconds: 1),
-          ),
-        );
-        break;
-      case 4:
-        // TODO: Navegar a Perfil
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Perfil - Próximamente'),
-            backgroundColor: AppColors.primary,
-            duration: Duration(seconds: 1),
-          ),
-        );
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightGrey,
-      body: SafeArea(
+    return Container(
+      color: AppColors.lightGrey,
+      child: SafeArea(
         child: Column(
           children: [
             // Header fijo
@@ -186,10 +135,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentNavIndex,
-        onTap: _onNavBarTap,
-      ),
     );
   }
 
@@ -199,30 +144,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Botón de volver
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                size: 20,
-                color: AppColors.black,
-              ),
-            ),
-          ),
-
           // Logo
           RichText(
             text: const TextSpan(

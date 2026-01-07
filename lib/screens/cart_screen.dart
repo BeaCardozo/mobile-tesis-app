@@ -600,29 +600,6 @@ class _CartScreenState extends State<CartScreen> {
 
             const SizedBox(height: 20),
 
-            // Botón de checkout
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Proceder al checkout
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Función de checkout próximamente'),
-                      backgroundColor: AppColors.primary,
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Proceder al Pago',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

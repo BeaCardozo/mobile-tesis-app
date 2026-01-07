@@ -42,8 +42,8 @@ class BottomNavBar extends StatelessWidget {
                 index: 0,
               ),
               _buildNavItem(
-                icon: Icons.grid_view_rounded,
-                label: 'Categorías',
+                icon: Icons.shopping_bag_rounded,
+                label: 'Productos',
                 index: 1,
               ),
               _buildNavItem(
