@@ -107,65 +107,56 @@ class _LoginScreenState extends State<LoginScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.4),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
+                      // Título
+                      RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Caracas',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Ahorra',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.accent,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.shopping_cart_rounded,
-                          size: 60,
-                          color: AppColors.white,
-                        ),
                       ),
 
-                      const SizedBox(height: 30),
-
-                      // Título
-                      const Text(
-                        'CaracasAhorra',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryDark,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
 
                       const Text(
                         'Bienvenido de nuevo',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF757575),
-                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                          color: AppColors.grey,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 50),
 
                       // Formulario
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           color: AppColors.white,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black.withOpacity(0.1),
-                              blurRadius: 20,
-                              offset: const Offset(0, 5),
+                              color: AppColors.black.withOpacity(0.06),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -262,51 +253,34 @@ class _LoginScreenState extends State<LoginScreen>
 
                               const SizedBox(height: 16),
 
-                              // Recordarme y olvidé contraseña
+                              // Recordarme
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 24,
-                                        height: 24,
-                                        child: Checkbox(
-                                          value: _rememberMe,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _rememberMe = value ?? false;
-                                            });
-                                          },
-                                          activeColor: AppColors.primary,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                        ),
+                                  SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: Checkbox(
+                                      value: _rememberMe,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _rememberMe = value ?? false;
+                                        });
+                                      },
+                                      activeColor: AppColors.primary,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(4),
                                       ),
-                                      const SizedBox(width: 8),
-                                      const Text(
-                                        'Recordarme',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.black,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // TODO: Implementar recuperar contraseña
-                                    },
-                                    child: const Text(
-                                      '¿Olvidaste tu contraseña?',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Recordarme',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.black,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
@@ -317,22 +291,24 @@ class _LoginScreenState extends State<LoginScreen>
                               // Botón de login
                               SizedBox(
                                 width: double.infinity,
-                                height: 56,
+                                height: 54,
                                 child: ElevatedButton(
                                   onPressed: _handleLogin,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
-                                    elevation: 4,
+                                    elevation: 2,
+                                    shadowColor: AppColors.primary.withOpacity(0.3),
                                   ),
                                   child: const Text(
                                     'Iniciar Sesión',
                                     style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
                                       color: AppColors.white,
+                                      letterSpacing: 0.5,
                                     ),
                                   ),
                                 ),
@@ -342,37 +318,26 @@ class _LoginScreenState extends State<LoginScreen>
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
 
-                      // Divider con texto
-                      const Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Color(0xFFE0E0E0),
-                              thickness: 1,
+                      // Olvidé contraseña
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            // TODO: Implementar recuperar contraseña
+                          },
+                          child: const Text(
+                            '¿Olvidaste tu contraseña?',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              'O',
-                              style: TextStyle(
-                                color: Color(0xFF757575),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Color(0xFFE0E0E0),
-                              thickness: 1,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
 
                       // Botón de registro
                       Row(
@@ -382,11 +347,12 @@ class _LoginScreenState extends State<LoginScreen>
                             '¿No tienes cuenta? ',
                             style: TextStyle(
                               fontSize: 15,
-                              color: Color(0xFF616161),
+                              color: AppColors.grey,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
+                          GestureDetector(
+                            onTap: () {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
@@ -410,7 +376,7 @@ class _LoginScreenState extends State<LoginScreen>
                               style: TextStyle(
                                 fontSize: 15,
                                 color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),

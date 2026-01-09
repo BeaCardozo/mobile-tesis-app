@@ -10,6 +10,7 @@ import '../widgets/cart_button.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 import 'categories_screen.dart';
+import 'featured_products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -588,8 +589,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: AppColors.black,
                 ),
               ),
-              TextButton(
-                onPressed: () {
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -656,9 +657,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: AppColors.black,
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  // Los productos están en la pestaña "Productos" de la barra de navegación
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FeaturedProductsScreen(
+                        products: _products,
+                      ),
+                    ),
+                  );
                 },
                 child: const Row(
                   children: [

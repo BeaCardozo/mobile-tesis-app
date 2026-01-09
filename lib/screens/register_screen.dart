@@ -149,65 +149,56 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                       const SizedBox(height: 20),
 
-                      // Logo
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.4),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
+                      // Título
+                      RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Caracas',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Ahorra',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.accent,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.person_add_alt_1_rounded,
-                          size: 50,
-                          color: AppColors.white,
-                        ),
                       ),
 
-                      const SizedBox(height: 24),
-
-                      // Título
-                      const Text(
-                        'Crear Cuenta',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryDark,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
 
                       const Text(
-                        'Únete a CaracasAhorra',
+                        'Crear cuenta nueva',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF757575),
-                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                          color: AppColors.grey,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 40),
 
                       // Formulario
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           color: AppColors.white,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black.withOpacity(0.1),
-                              blurRadius: 20,
-                              offset: const Offset(0, 5),
+                              color: AppColors.black.withOpacity(0.06),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -396,6 +387,7 @@ class _RegisterScreenState extends State<RegisterScreen>
 
                               // Términos y condiciones
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(
                                     width: 24,
@@ -414,14 +406,16 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Expanded(
+                                  Flexible(
                                     child: Wrap(
+                                      alignment: WrapAlignment.center,
                                       children: [
                                         const Text(
                                           'Acepto los ',
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: AppColors.black,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                         GestureDetector(
@@ -433,9 +427,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: AppColors.primary,
-                                              fontWeight: FontWeight.bold,
-                                              decoration:
-                                                  TextDecoration.underline,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                         ),
@@ -450,22 +442,24 @@ class _RegisterScreenState extends State<RegisterScreen>
                               // Botón de registro
                               SizedBox(
                                 width: double.infinity,
-                                height: 56,
+                                height: 54,
                                 child: ElevatedButton(
                                   onPressed: _handleRegister,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
-                                    elevation: 4,
+                                    elevation: 2,
+                                    shadowColor: AppColors.primary.withOpacity(0.3),
                                   ),
                                   child: const Text(
                                     'Registrarse',
                                     style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
                                       color: AppColors.white,
+                                      letterSpacing: 0.5,
                                     ),
                                   ),
                                 ),
@@ -475,7 +469,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
 
                       // Ya tienes cuenta
                       Row(
@@ -485,17 +479,18 @@ class _RegisterScreenState extends State<RegisterScreen>
                             '¿Ya tienes cuenta? ',
                             style: TextStyle(
                               fontSize: 15,
-                              color: Color(0xFF616161),
+                              color: AppColors.grey,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
                             child: const Text(
                               'Inicia sesión',
                               style: TextStyle(
                                 fontSize: 15,
                                 color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),

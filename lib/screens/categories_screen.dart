@@ -103,77 +103,64 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.lightGrey,
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Header fijo
-            _buildHeader(),
-
-            // Contenido con scroll
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 8),
-
-                    // Título y contador
-                    _buildTitleSection(),
-
-                    const SizedBox(height: 20),
-
-                    // Grid de categorías
-                    _buildCategoriesGrid(),
-
-                    const SizedBox(height: 20),
-                  ],
+    return Scaffold(
+      backgroundColor: AppColors.lightGrey,
+      appBar: AppBar(
+        backgroundColor: AppColors.lightGrey,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: RichText(
+          text: const TextSpan(
+            children: [
+              TextSpan(
+                text: 'Caracas',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Logo
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Caracas',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
+              TextSpan(
+                text: 'Ahorra',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.accent,
                 ),
-                TextSpan(
-                  text: 'Ahorra',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.accent,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-
-          // Botón del carrito
-          CartButton(
-            onTap: _navigateToCart,
-            itemCount: 0, // TODO: Conectar con el carrito real
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: CartButton(
+              onTap: _navigateToCart,
+              itemCount: 0, // TODO: Conectar con el carrito real
+            ),
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+
+            // Título y contador
+            _buildTitleSection(),
+
+            const SizedBox(height: 20),
+
+            // Grid de categorías
+            _buildCategoriesGrid(),
+
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

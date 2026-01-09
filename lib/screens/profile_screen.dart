@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
@@ -105,9 +106,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    return Container(
-      color: AppColors.lightGrey,
-      child: SafeArea(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Container(
+        color: AppColors.lightGrey,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -121,69 +126,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     bottomRight: Radius.circular(30),
                   ),
                 ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
 
-                    // Título
-                    const Text(
-                      'Mi Perfil',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.white,
+                      // Título
+                      const Text(
+                        'Mi Perfil',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
-                    // Avatar
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
+                      // Avatar
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.person_rounded,
+                          size: 50,
+                          color: AppColors.primary,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.person_rounded,
-                        size: 50,
-                        color: AppColors.primary,
+
+                      const SizedBox(height: 16),
+
+                      // Nombre del usuario
+                      Text(
+                        _userName,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 4),
 
-                    // Nombre del usuario
-                    Text(
-                      _userName,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.white,
+                      // Email del usuario
+                      Text(
+                        _userEmail,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.white.withOpacity(0.9),
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 4),
-
-                    // Email del usuario
-                    Text(
-                      _userEmail,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.white.withOpacity(0.9),
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-                  ],
+                      const SizedBox(height: 30),
+                    ],
+                  ),
                 ),
               ),
 
