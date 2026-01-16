@@ -21,12 +21,13 @@ class ProductCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 20,
               offset: const Offset(0, 4),
+              spreadRadius: 0,
             ),
           ],
         ),
@@ -41,14 +42,14 @@ class ProductCard extends StatelessWidget {
                   decoration: const BoxDecoration(
                     color: AppColors.lightGrey,
                     borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(16),
+                      top: Radius.circular(20),
                     ),
                   ),
                   child: Center(
                     child: product.imageUrl.isNotEmpty
                         ? ClipRRect(
                             borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(16),
+                              top: Radius.circular(20),
                             ),
                             child: Image.network(
                               product.imageUrl,
@@ -73,26 +74,27 @@ class ProductCard extends StatelessWidget {
                 ),
                 // Botón de añadir al carrito
                 Positioned(
-                  top: 8,
-                  right: 8,
+                  top: 10,
+                  right: 10,
                   child: GestureDetector(
                     onTap: onAddToCart,
                     child: Container(
-                      padding: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            color: AppColors.primary.withOpacity(0.15),
+                            blurRadius: 12,
+                            offset: const Offset(0, 3),
+                            spreadRadius: 0,
                           ),
                         ],
                       ),
                       child: const Icon(
                         Icons.add_rounded,
-                        size: 20,
+                        size: 18,
                         color: Colors.white,
                       ),
                     ),
@@ -104,7 +106,7 @@ class ProductCard extends StatelessWidget {
             // Información del producto
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -117,14 +119,15 @@ class ProductCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                           color: AppColors.black,
+                          height: 1.3,
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
 
                     // Precio
                     Column(
@@ -136,7 +139,8 @@ class ProductCard extends StatelessWidget {
                             'Desde',
                             style: TextStyle(
                               fontSize: 10,
-                              color: AppColors.grey.withOpacity(0.8),
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.grey.withOpacity(0.7),
                             ),
                           ),
                         Row(
@@ -144,27 +148,32 @@ class ProductCard extends StatelessWidget {
                             Text(
                               'Bs. ${product.lowestPrice.toStringAsFixed(2)}',
                               style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.primary,
                               ),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: 3),
                             Text(
                               '/${product.unit}',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: AppColors.grey.withOpacity(0.8),
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.grey.withOpacity(0.7),
                               ),
                             ),
                           ],
                         ),
                         if (product.prices.length > 1)
-                          Text(
-                            '${product.prices.length} supermercados',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: AppColors.grey.withOpacity(0.8),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Text(
+                              '${product.prices.length} supermercados',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.grey.withOpacity(0.7),
+                              ),
                             ),
                           ),
                       ],

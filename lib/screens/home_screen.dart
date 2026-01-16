@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -365,16 +365,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   text: 'Caracas',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.primary,
+                    letterSpacing: -0.3,
                   ),
                 ),
                 TextSpan(
                   text: 'Ahorra',
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.accent,
+                    letterSpacing: -0.3,
                   ),
                 ),
               ],
@@ -387,22 +389,23 @@ class _HomeScreenState extends State<HomeScreen> {
               // Dropdown de moneda
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
+                  horizontal: 14,
+                  vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.lightGrey,
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.lightGrey.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: DropdownButton<String>(
                   value: _selectedCurrency,
-                  icon: const Icon(Icons.keyboard_arrow_down, size: 16),
+                  icon: Icon(Icons.keyboard_arrow_down, size: 16, color: AppColors.grey.withOpacity(0.7)),
                   underline: const SizedBox(),
                   isDense: true,
                   style: const TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.black,
+                    letterSpacing: 0.2,
                   ),
                   items: const [
                     DropdownMenuItem(
@@ -471,20 +474,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: (banner['gradient'] as List<Color>)
-                          .map((c) => c.withOpacity(0.9))
+                          .map((c) => c.withOpacity(0.85))
                           .toList(),
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.25),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
+                        color: AppColors.primary.withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
+                        spreadRadius: 0,
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                     child: Stack(
                       children: [
                         // Icono de fondo decorativo
@@ -493,8 +497,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           bottom: -20,
                           child: Icon(
                             banner['icon'] as IconData,
-                            size: 150,
-                            color: Colors.white.withOpacity(0.15),
+                            size: 140,
+                            color: Colors.white.withOpacity(0.12),
                           ),
                         ),
                         // Contenido
@@ -510,15 +514,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
                                   banner['label'] as String,
                                   style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
                                     color: Colors.white,
+                                    letterSpacing: 0.3,
                                   ),
                                 ),
                               ),
@@ -526,17 +531,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 banner['title'] as String,
                                 style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w600,
                                   color: Colors.white,
+                                  letterSpacing: -0.5,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
                               Text(
                                 banner['subtitle'] as String,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white.withOpacity(0.9),
                                 ),
                               ),
                             ],
@@ -555,15 +562,16 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
             _promoBanners.length,
-            (index) => Container(
+            (index) => AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: _currentPromoPage == index ? 24 : 8,
-              height: 8,
+              width: _currentPromoPage == index ? 20 : 6,
+              height: 6,
               decoration: BoxDecoration(
                 color: _currentPromoPage == index
-                    ? AppColors.primary
-                    : AppColors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(4),
+                    ? AppColors.primary.withOpacity(0.8)
+                    : AppColors.grey.withOpacity(0.25),
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
           ),
@@ -584,9 +592,10 @@ class _HomeScreenState extends State<HomeScreen> {
               const Text(
                 'Categorías',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.black,
+                  letterSpacing: -0.2,
                 ),
               ),
               GestureDetector(
@@ -598,20 +607,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
                       'Ver todas',
                       style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: AppColors.primary.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Icon(
                       Icons.arrow_forward_ios,
-                      size: 14,
-                      color: AppColors.primary,
+                      size: 12,
+                      color: AppColors.primary.withOpacity(0.9),
                     ),
                   ],
                 ),
@@ -619,7 +629,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         SizedBox(
           height: 110,
           child: ListView.builder(
@@ -652,9 +662,10 @@ class _HomeScreenState extends State<HomeScreen> {
               const Text(
                 'Productos Destacados',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.black,
+                  letterSpacing: -0.2,
                 ),
               ),
               GestureDetector(
@@ -668,20 +679,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
                       'Ver todos',
                       style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: AppColors.primary.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Icon(
                       Icons.arrow_forward_ios,
-                      size: 14,
-                      color: AppColors.primary,
+                      size: 12,
+                      color: AppColors.primary.withOpacity(0.9),
                     ),
                   ],
                 ),
@@ -689,7 +701,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: GridView.builder(

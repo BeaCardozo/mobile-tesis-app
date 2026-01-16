@@ -134,7 +134,7 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.lightGrey,
               shape: BoxShape.circle,
             ),
