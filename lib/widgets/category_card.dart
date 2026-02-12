@@ -16,27 +16,29 @@ class CategoryCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100,
-        margin: const EdgeInsets.only(right: 14),
+        width: 96,
+        margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: category.color,
+          color: category.color.withOpacity(0.15),
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: category.color.withOpacity(0.2),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
-              spreadRadius: 0,
-            ),
-          ],
+          border: Border.all(
+            color: category.color.withOpacity(0.25),
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              category.icon,
-              size: 32,
-              color: Colors.white.withOpacity(0.95),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: category.color.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                category.icon,
+                size: 24,
+                color: category.color,
+              ),
             ),
             const SizedBox(height: 10),
             Padding(
@@ -44,11 +46,14 @@ class CategoryCard extends StatelessWidget {
               child: Text(
                 category.name,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                  letterSpacing: 0.2,
+                  fontWeight: FontWeight.w600,
+                  color: category.color.withOpacity(0.9),
+                  letterSpacing: 0.1,
+                  height: 1.2,
                 ),
               ),
             ),

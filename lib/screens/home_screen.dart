@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   // Productos de ejemplo - Estos vendrán del backend
-  List<Product> _products = [
+  final List<Product> _products = [
     Product(
       id: '1',
       name: 'Arroz Diana 1kg',
@@ -371,8 +371,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       children: [
         SizedBox(
-          height: 180,
+          height: 170,
           child: PageView.builder(
+            clipBehavior: Clip.none,
             controller: _promoPageController,
             onPageChanged: (index) {
               setState(() {
@@ -382,6 +383,8 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: _promoBanners.length,
             itemBuilder: (context, index) {
               final banner = _promoBanners[index];
+              final gradientColors = banner['gradient'] as List<Color>;
+
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -390,17 +393,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: (banner['gradient'] as List<Color>)
-                          .map((c) => c.withOpacity(0.85))
-                          .toList(),
+                      colors: gradientColors,
                     ),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.15),
-                        blurRadius: 20,
+                        color: gradientColors[1].withOpacity(0.3),
+                        blurRadius: 16,
                         offset: const Offset(0, 6),
-                        spreadRadius: 0,
                       ),
                     ],
                   ),
@@ -408,59 +408,112 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(24),
                     child: Stack(
                       children: [
-                        // Icono de fondo decorativo
+                        // Círculos decorativos de fondo
                         Positioned(
-                          right: -20,
-                          bottom: -20,
-                          child: Icon(
-                            banner['icon'] as IconData,
-                            size: 140,
-                            color: Colors.white.withOpacity(0.12),
+                          right: -40,
+                          top: -40,
+                          child: Container(
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.08),
+                            ),
                           ),
                         ),
+                        Positioned(
+                          right: 20,
+                          bottom: -50,
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.06),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: -20,
+                          bottom: -30,
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.05),
+                            ),
+                          ),
+                        ),
+
                         // Contenido
                         Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          padding: const EdgeInsets.all(22),
+                          child: Row(
                             children: [
+                              // Texto
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        banner['label'] as String,
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          letterSpacing: 0.2,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      banner['title'] as String,
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: -0.5,
+                                        height: 1.1,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      banner['subtitle'] as String,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white.withOpacity(0.85),
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(width: 16),
+
+                              // Icono
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
+                                padding: const EdgeInsets.all(18),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white.withOpacity(0.15),
+                                  shape: BoxShape.circle,
                                 ),
-                                child: Text(
-                                  banner['label'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                banner['title'] as String,
-                                style: const TextStyle(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w600,
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 28,
                                   color: Colors.white,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                banner['subtitle'] as String,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white.withOpacity(0.9),
                                 ),
                               ),
                             ],
@@ -474,20 +527,22 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+
         // Indicadores de página (dots)
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
             _promoBanners.length,
             (index) => AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
               margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: _currentPromoPage == index ? 20 : 6,
+              width: _currentPromoPage == index ? 22 : 6,
               height: 6,
               decoration: BoxDecoration(
                 color: _currentPromoPage == index
-                    ? AppColors.primary.withOpacity(0.8)
-                    : AppColors.grey.withOpacity(0.25),
+                    ? AppColors.primary
+                    : AppColors.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(3),
               ),
             ),

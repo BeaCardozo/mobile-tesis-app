@@ -19,63 +19,82 @@ class AppHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Logo
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Caracas',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                    letterSpacing: -0.3,
-                  ),
+          // Nombre de la app + tagline
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RichText(
+                text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Caracas',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Ahorra',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.accent,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ],
                 ),
-                TextSpan(
-                  text: 'Ahorra',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.accent,
-                    letterSpacing: -0.3,
-                  ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Compara y ahorra',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.grey.withOpacity(0.7),
+                  letterSpacing: 0.1,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
 
-          // Controles de moneda y carrito
+          // Controles
           Row(
             children: [
-              // Dropdown de moneda
+              // Selector de moneda
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.lightGrey.withOpacity(0.7),
+                  color: AppColors.primary.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.15),
+                  ),
                 ),
                 child: DropdownButton<String>(
                   value: selectedCurrency,
                   icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 16,
-                    color: AppColors.grey.withOpacity(0.7),
+                    Icons.unfold_more_rounded,
+                    size: 14,
+                    color: AppColors.primary.withOpacity(0.7),
                   ),
                   underline: const SizedBox(),
                   isDense: true,
                   style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.black,
-                    letterSpacing: 0.2,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
                   ),
                   items: const [
                     DropdownMenuItem(
@@ -95,7 +114,7 @@ class AppHeader extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
 
               // Botón del carrito
               CartButton(
