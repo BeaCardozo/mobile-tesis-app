@@ -3,7 +3,6 @@ import '../widgets/bottom_nav_bar.dart';
 import 'home_screen.dart';
 import 'products_screen.dart';
 import 'offers_screen.dart';
-import 'notifications_screen.dart';
 import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -21,7 +20,6 @@ class _MainScreenState extends State<MainScreen> {
     HomeScreen(),
     ProductsScreen(),
     OffersScreen(),
-    NotificationsScreen(),
     ProfileScreen(),
   ];
 

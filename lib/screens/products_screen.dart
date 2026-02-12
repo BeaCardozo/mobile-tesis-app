@@ -4,7 +4,7 @@ import '../models/product.dart';
 import '../models/category.dart';
 import '../models/cart_item.dart';
 import '../widgets/product_card.dart';
-import '../widgets/cart_button.dart';
+import '../widgets/app_header.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 
@@ -677,7 +677,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
         child: Column(
           children: [
             // Header
-            _buildHeader(),
+            AppHeader(
+              selectedCurrency: _selectedCurrency,
+              onCurrencyChanged: (newValue) {
+                setState(() {
+                  _selectedCurrency = newValue;
+                });
+              },
+              onCartTap: _navigateToCart,
+              cartItemCount: _cartItems.length,
+            ),
 
             const SizedBox(height: 8),
 
@@ -752,93 +761,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Logo
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Caracas',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Ahorra',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.accent,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Controles de moneda y carrito
-          Row(
-            children: [
-              // Dropdown de moneda
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.lightGrey,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: DropdownButton<String>(
-                  value: _selectedCurrency,
-                  icon: const Icon(Icons.keyboard_arrow_down, size: 16),
-                  underline: const SizedBox(),
-                  isDense: true,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'Bs',
-                      child: Text('Bs'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'USD',
-                      child: Text('USD'),
-                    ),
-                  ],
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedCurrency = newValue;
-                      });
-                    }
-                  },
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Botón del carrito
-              CartButton(
-                onTap: _navigateToCart,
-                itemCount: _cartItems.length,
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

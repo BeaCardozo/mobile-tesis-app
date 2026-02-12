@@ -6,7 +6,7 @@ import '../models/product.dart';
 import '../models/cart_item.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
-import '../widgets/cart_button.dart';
+import '../widgets/app_header.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 import 'categories_screen.dart';
@@ -317,7 +317,23 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             // Header fijo
-            _buildHeader(),
+            AppHeader(
+              selectedCurrency: _selectedCurrency,
+              onCurrencyChanged: (newValue) {
+                setState(() {
+                  _selectedCurrency = newValue;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Moneda cambiada a $newValue'),
+                    backgroundColor: AppColors.primary,
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+              onCartTap: _navigateToCart,
+              cartItemCount: _cartItems.length,
+            ),
 
             // Contenido con scroll
             Expanded(
@@ -350,105 +366,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Logo
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Caracas',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Ahorra',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.accent,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Controles de moneda y carrito
-          Row(
-            children: [
-              // Dropdown de moneda
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.lightGrey.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: DropdownButton<String>(
-                  value: _selectedCurrency,
-                  icon: Icon(Icons.keyboard_arrow_down, size: 16, color: AppColors.grey.withOpacity(0.7)),
-                  underline: const SizedBox(),
-                  isDense: true,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.black,
-                    letterSpacing: 0.2,
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'Bs',
-                      child: Text('Bs'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'USD',
-                      child: Text('USD'),
-                    ),
-                  ],
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedCurrency = newValue;
-                      });
-                      // TODO: Implementar conversión de moneda en los productos
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Moneda cambiada a $newValue'),
-                          backgroundColor: AppColors.primary,
-                          duration: const Duration(seconds: 1),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Botón del carrito
-              CartButton(
-                onTap: _navigateToCart,
-                itemCount: _cartItems.length,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
 
   Widget _buildPromoBanner() {
     return Column(
