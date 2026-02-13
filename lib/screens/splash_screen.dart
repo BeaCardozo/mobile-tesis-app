@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import '../config/app_colors.dart';
 import '../services/auth_service.dart';
 import 'main_screen.dart';
@@ -13,213 +12,245 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _caracasController;
-  late AnimationController _ahorraController;
-  late Animation<Offset> _caracasSlideAnimation;
-  late Animation<Offset> _ahorraSlideAnimation;
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
 
-  bool _showGreenBackground = false;
-  bool _showWhiteText = false;
-  bool _showLoadingIndicator = false;
+  // Animaciones orquestadas con intervalos
+  late Animation<double> _logoScale;
+  late Animation<double> _logoOpacity;
+  late Animation<double> _brandOpacity;
+  late Animation<Offset> _brandSlide;
+  late Animation<double> _taglineOpacity;
+  late Animation<double> _loaderOpacity;
+  late Animation<double> _fadeOut;
 
   @override
   void initState() {
     super.initState();
 
-    // Controlador para la palabra "Caracas" (desde arriba)
-    _caracasController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 3200),
     );
 
-    // Controlador para la palabra "Ahorra" (desde abajo)
-    _ahorraController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
-    // Animación de slide para "Caracas" (desde la izquierda)
-    _caracasSlideAnimation = Tween<Offset>(
-      begin: const Offset(-1.5, 0),
-      end: Offset.zero,
-    ).animate(
+    // Logo: aparece con scale y fade (0% - 25%)
+    _logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _caracasController,
-        curve: Curves.easeOutCubic,
+        parent: _controller,
+        curve: const Interval(0.0, 0.25, curve: Curves.easeOutBack),
+      ),
+    );
+    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.18, curve: Curves.easeOut),
       ),
     );
 
-    // Animación de slide para "Ahorra" (desde la derecha)
-    _ahorraSlideAnimation = Tween<Offset>(
-      begin: const Offset(1.5, 0),
+    // Brand name: fade + slide up (15% - 40%)
+    _brandOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.15, 0.40, curve: Curves.easeOut),
+      ),
+    );
+    _brandSlide = Tween<Offset>(
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
-        parent: _ahorraController,
-        curve: Curves.easeOutCubic,
+        parent: _controller,
+        curve: const Interval(0.15, 0.40, curve: Curves.easeOutCubic),
       ),
     );
 
-    // Secuencia de animaciones
-    _startAnimationSequence();
+    // Tagline: fade in (32% - 52%)
+    _taglineOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.32, 0.52, curve: Curves.easeOut),
+      ),
+    );
 
-    // Navegar a la pantalla principal después de las animaciones
-    Timer(const Duration(milliseconds: 3500), () async {
-      if (mounted) {
-        // Verificar si el usuario está autenticado
-        final isLoggedIn = await AuthService.isLoggedIn();
+    // Loader: fade in (45% - 60%)
+    _loaderOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.45, 0.60, curve: Curves.easeOut),
+      ),
+    );
 
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  isLoggedIn ? const MainScreen() : const LoginScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 800),
-            ),
-          );
-        }
+    // Fade out: todo se desvanece al final (82% - 100%)
+    _fadeOut = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.82, 1.0, curve: Curves.easeInCubic),
+      ),
+    );
+
+    _controller.forward();
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _navigateToNextScreen();
       }
     });
   }
 
-  void _startAnimationSequence() async {
-    // Iniciar animación de "Caracas" inmediatamente
-    _caracasController.forward();
+  Future<void> _navigateToNextScreen() async {
+    if (!mounted) return;
 
-    // Iniciar animación de "Ahorra" con un pequeño delay
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (mounted) {
-      _ahorraController.forward();
-    }
+    final isLoggedIn = await AuthService.isLoggedIn();
 
-    // Después de que ambas palabras estén en posición, cambiar fondo, texto y mostrar loading
-    await Future.delayed(const Duration(milliseconds: 1000));
-    if (mounted) {
-      setState(() {
-        _showGreenBackground = true;
-        _showWhiteText = true;
-        _showLoadingIndicator = true;
-      });
-    }
+    if (!mounted) return;
+
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            isLoggedIn ? const MainScreen() : const LoginScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 600),
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _caracasController.dispose();
-    _ahorraController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 1000),
-        curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          gradient: _showGreenBackground
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryLight,
-                    AppColors.primary,
-                    AppColors.primaryDark,
-                  ],
-                )
-              : const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.white,
-                    AppColors.white,
-                  ],
-                ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Palabra "Caracas" entrando desde la izquierda
-              SlideTransition(
-                position: _caracasSlideAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 40),
-                  child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeInOut,
-                    style: TextStyle(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w600,
-                      color: _showWhiteText ? AppColors.white : AppColors.primary,
-                      letterSpacing: 1.5,
-                      height: 1.0,
-                      shadows: _showWhiteText
-                          ? [
-                              const Shadow(
-                                color: Colors.black12,
-                                offset: Offset(0, 2),
-                                blurRadius: 8,
-                              ),
-                            ]
-                          : [],
-                    ),
-                    child: const Text('Caracas'),
-                  ),
-                ),
-              ),
-
-              // Palabra "Ahorra" entrando desde la derecha
-              SlideTransition(
-                position: _ahorraSlideAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 40),
-                  child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeInOut,
-                    style: TextStyle(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w600,
-                      color: _showWhiteText ? AppColors.white : AppColors.primaryDark,
-                      letterSpacing: 1.5,
-                      height: 1.0,
-                      shadows: _showWhiteText
-                          ? [
-                              const Shadow(
-                                color: Colors.black12,
-                                offset: Offset(0, 2),
-                                blurRadius: 8,
-                              ),
-                            ]
-                          : [],
-                    ),
-                    child: const Text('Ahorra'),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 50),
-
-              // Indicador de carga que aparece cuando el fondo se pone verde
-              AnimatedOpacity(
-                opacity: _showLoadingIndicator ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 600),
-                child: const SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                    strokeWidth: 2.5,
-                  ),
-                ),
-              ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white,
+              Color(0xFFF0F5EC), // verde muy muy sutil
             ],
           ),
+        ),
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return FadeTransition(
+              opacity: _fadeOut,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Spacer(flex: 3),
+
+                  // Logo
+                  FadeTransition(
+                    opacity: _logoOpacity,
+                    child: ScaleTransition(
+                      scale: _logoScale,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [AppColors.primary, AppColors.accent],
+                          ),
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.3),
+                              blurRadius: 24,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.savings_rounded,
+                          color: Colors.white,
+                          size: 52,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Nombre de la app
+                  SlideTransition(
+                    position: _brandSlide,
+                    child: FadeTransition(
+                      opacity: _brandOpacity,
+                      child: RichText(
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Caracas',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Ahorra',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.accent,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // Tagline
+                  FadeTransition(
+                    opacity: _taglineOpacity,
+                    child: Text(
+                      'Compara precios, ahorra más',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.grey.withOpacity(0.7),
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ),
+
+                  const Spacer(flex: 2),
+
+                  // Loader sutil
+                  FadeTransition(
+                    opacity: _loaderOpacity,
+                    child: SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.primary.withOpacity(0.4),
+                        ),
+                        strokeWidth: 2.5,
+                      ),
+                    ),
+                  ),
+
+                  const Spacer(flex: 1),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

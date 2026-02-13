@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/product.dart';
 import '../models/cart_item.dart';
+import '../widgets/app_snack_bar.dart';
 import '../widgets/product_card.dart';
 import '../widgets/cart_button.dart';
 import 'product_detail_screen.dart';
@@ -55,24 +56,19 @@ class _FeaturedProductsScreenState extends State<FeaturedProductsScreen> {
     });
 
     // Mostrar feedback al usuario
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} agregado al carrito'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
+    AppSnackBar.success(
+      context,
+      message: '${product.name} agregado al carrito',
+      duration: const Duration(seconds: 1),
     );
   }
 
   void _navigateToCart() {
     // TODO: Implementar navegación al carrito
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Navegando al carrito...'),
-        backgroundColor: AppColors.primary,
-        duration: Duration(seconds: 1),
-      ),
+    AppSnackBar.info(
+      context,
+      message: 'Navegando al carrito...',
+      duration: const Duration(seconds: 1),
     );
   }
 

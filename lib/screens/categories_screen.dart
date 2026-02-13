@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/category.dart';
+import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
+import '../widgets/category_card.dart';
+import 'category_detail_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -91,13 +94,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   void _navigateToCart() {
     // TODO: Implementar navegación al carrito
-    // Por ahora solo mostramos un mensaje
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Navegando al carrito...'),
-        backgroundColor: AppColors.primary,
-        duration: Duration(seconds: 1),
-      ),
+    AppSnackBar.info(
+      context,
+      message: 'Navegando al carrito...',
+      duration: const Duration(seconds: 1),
     );
   }
 
@@ -207,17 +207,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         ),
         itemCount: _categories.length,
         itemBuilder: (context, index) {
-          return _buildCategoryGridCard(
+          return CategoryCard(
             category: _categories[index],
+            iconSize: 32,
+            fontSize: 13,
             onTap: () {
-              // TODO: Navegar a productos por categoría
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Navegando a ${_categories[index].name}...',
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CategoryDetailScreen(
+                    category: _categories[index],
                   ),
-                  backgroundColor: AppColors.primary,
-                  duration: const Duration(seconds: 1),
                 ),
               );
             },
@@ -227,51 +227,4 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  Widget _buildCategoryGridCard({
-    required Category category,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: category.color,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: category.color.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              category.icon,
-              size: 42,
-              color: Colors.white,
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                category.name,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  height: 1.2,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

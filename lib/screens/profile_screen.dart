@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
 import '../services/auth_service.dart';
+import '../widgets/app_snack_bar.dart';
 import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         title: const Text(
           'Cerrar Sesión',
@@ -67,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             child: const Text(
@@ -107,93 +108,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light.copyWith(
+      value: SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
       ),
       child: Container(
         color: AppColors.lightGrey,
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Header con gradiente
-              Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                ),
-                child: SafeArea(
-                  bottom: false,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-
-                      // Título
-                      const Text(
-                        'Mi Perfil',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
-                      ),
-
-                      const SizedBox(height: 30),
-
-                      // Avatar
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 15,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.person_rounded,
-                          size: 50,
-                          color: AppColors.primary,
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Nombre del usuario
-                      Text(
-                        _userName,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                        ),
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      // Email del usuario
-                      Text(
-                        _userEmail,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.white.withOpacity(0.9),
-                        ),
-                      ),
-
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
-              ),
+              // Header del perfil
+              _buildProfileHeader(),
 
               const SizedBox(height: 24),
 
@@ -205,8 +130,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.person_outline_rounded,
                     title: 'Editar Perfil',
                     subtitle: 'Actualiza tu información personal',
+                    iconColor: AppColors.primary,
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Editar Perfil');
                     },
                   ),
@@ -214,8 +139,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.location_on_outlined,
                     title: 'Direcciones',
                     subtitle: 'Gestiona tus direcciones de entrega',
+                    iconColor: const Color(0xFF5B9BD5),
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Direcciones');
                     },
                   ),
@@ -223,15 +148,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.payment_rounded,
                     title: 'Métodos de Pago',
                     subtitle: 'Administra tus métodos de pago',
+                    iconColor: AppColors.accent,
+                    isLast: true,
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Métodos de Pago');
                     },
                   ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               // Sección: Preferencias
               _buildSection(
@@ -241,8 +167,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.notifications_outlined,
                     title: 'Notificaciones',
                     subtitle: 'Configura tus notificaciones',
+                    iconColor: const Color(0xFFFF9F66),
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Notificaciones');
                     },
                   ),
@@ -250,8 +176,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.language_rounded,
                     title: 'Idioma',
                     subtitle: 'Español',
+                    iconColor: const Color(0xFFB97FB9),
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Idioma');
                     },
                   ),
@@ -259,15 +185,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.attach_money_rounded,
                     title: 'Moneda Preferida',
                     subtitle: 'Bolívares (Bs)',
+                    iconColor: AppColors.primary,
+                    isLast: true,
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Moneda Preferida');
                     },
                   ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               // Sección: Soporte
               _buildSection(
@@ -277,8 +204,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.help_outline_rounded,
                     title: 'Centro de Ayuda',
                     subtitle: 'Encuentra respuestas a tus preguntas',
+                    iconColor: const Color(0xFF5B9BD5),
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Centro de Ayuda');
                     },
                   ),
@@ -286,6 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.info_outline_rounded,
                     title: 'Acerca de',
                     subtitle: 'Información sobre CaracasAhorra',
+                    iconColor: AppColors.accent,
                     onTap: () {
                       _showAboutDialog();
                     },
@@ -294,45 +222,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.privacy_tip_outlined,
                     title: 'Privacidad y Términos',
                     subtitle: 'Lee nuestras políticas',
+                    iconColor: const Color(0xFFED7D95),
+                    isLast: true,
                     onTap: () {
-                      // TODO: Implementar cuando esté el backend
                       _showComingSoonSnackBar('Privacidad y Términos');
                     },
                   ),
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // Botón de Cerrar Sesión
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _handleLogout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.error,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                child: GestureDetector(
+                  onTap: _handleLogout,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: AppColors.error.withOpacity(0.12),
                       ),
-                      elevation: 2,
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.logout_rounded,
-                          color: AppColors.white,
+                          color: AppColors.error.withOpacity(0.8),
+                          size: 20,
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Text(
                           'Cerrar Sesión',
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.error.withOpacity(0.8),
                           ),
                         ),
                       ],
@@ -341,18 +271,123 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Versión de la app
               Text(
-                'Versión 1.0.0',
+                'CaracasAhorra v1.0.0',
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.grey.withOpacity(0.6),
+                  color: AppColors.grey.withOpacity(0.5),
+                  fontWeight: FontWeight.w400,
                 ),
               ),
 
+              const SizedBox(height: 28),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.secondary, AppColors.secondaryLight],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(32),
+          bottomRight: Radius.circular(32),
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          child: Column(
+            children: [
+              // Título
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Mi Perfil',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                ],
+              ),
+
               const SizedBox(height: 24),
+
+              // Avatar
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.5),
+                    width: 2,
+                  ),
+                ),
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person_rounded,
+                    size: 40,
+                    color: AppColors.secondary,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Nombre del usuario
+              Text(
+                _userName,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: -0.3,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              // Email del usuario
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  _userEmail,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.9),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -374,21 +409,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               title,
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.grey,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: AppColors.black,
+                letterSpacing: -0.2,
               ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: AppColors.grey.withOpacity(0.08),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -402,12 +441,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showComingSoonSnackBar(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$feature estará disponible próximamente'),
-        backgroundColor: AppColors.primary,
-        duration: const Duration(seconds: 2),
-      ),
+    AppSnackBar.info(
+      context,
+      message: '$feature estará disponible próximamente',
     );
   }
 
@@ -416,7 +452,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         title: Row(
           children: [
@@ -425,12 +461,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 40,
               decoration: BoxDecoration(
                 gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
                 Icons.shopping_cart_rounded,
                 color: AppColors.white,
-                size: 24,
+                size: 22,
               ),
             ),
             const SizedBox(width: 12),
@@ -495,6 +531,8 @@ class _ProfileMenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final Color iconColor;
+  final bool isLast;
   final VoidCallback onTap;
 
   const _ProfileMenuItem({
@@ -502,6 +540,8 @@ class _ProfileMenuItem extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.iconColor = AppColors.primary,
+    this.isLast = false,
   });
 
   @override
@@ -510,60 +550,74 @@ class _ProfileMenuItem extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: AppColors.primary,
-                  size: 24,
-                ),
+        borderRadius: isLast
+            ? const BorderRadius.vertical(bottom: Radius.circular(22))
+            : BorderRadius.zero,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.black,
-                      ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: iconColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: AppColors.grey.withOpacity(0.8),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    child: Icon(
+                      icon,
+                      color: iconColor,
+                      size: 22,
                     ),
-                  ],
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.grey.withOpacity(0.7),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.grey.withOpacity(0.3),
+                    size: 22,
+                  ),
+                ],
+              ),
+            ),
+            if (!isLast)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Divider(
+                  height: 1,
+                  color: AppColors.grey.withOpacity(0.08),
                 ),
               ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.grey,
-                size: 24,
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

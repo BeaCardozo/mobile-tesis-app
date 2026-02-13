@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/auth_service.dart';
+import '../widgets/app_snack_bar.dart';
 import 'main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -59,11 +60,9 @@ class _RegisterScreenState extends State<RegisterScreen>
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Debes aceptar los términos y condiciones'),
-            backgroundColor: AppColors.error,
-          ),
+        AppSnackBar.error(
+          context,
+          message: 'Debes aceptar los términos y condiciones',
         );
         return;
       }
@@ -84,12 +83,9 @@ class _RegisterScreenState extends State<RegisterScreen>
         );
 
         // Mostrar mensaje de éxito
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registro exitoso - Bienvenido a CaracasAhorra'),
-            backgroundColor: AppColors.success,
-            duration: Duration(seconds: 2),
-          ),
+        AppSnackBar.success(
+          context,
+          message: 'Registro exitoso - Bienvenido a CaracasAhorra',
         );
       }
     }

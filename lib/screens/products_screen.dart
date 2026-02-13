@@ -5,6 +5,7 @@ import '../models/category.dart';
 import '../models/cart_item.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_header.dart';
+import '../widgets/app_snack_bar.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 
@@ -207,19 +208,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
       }
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} añadido al carrito'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'Ver carrito',
-          textColor: Colors.white,
-          onPressed: () {
-            _navigateToCart();
-          },
-        ),
-      ),
+    AppSnackBar.success(
+      context,
+      message: '${product.name} añadido al carrito',
+      actionLabel: 'Ver carrito',
+      onAction: _navigateToCart,
     );
   }
 
@@ -612,12 +605,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               // TODO: Filtrar productos según los criterios seleccionados
                             });
                             Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Filtros aplicados'),
-                                backgroundColor: AppColors.success,
-                                duration: Duration(seconds: 2),
-                              ),
+                            AppSnackBar.success(
+                              context,
+                              message: 'Filtros aplicados',
                             );
                           },
                           style: ElevatedButton.styleFrom(

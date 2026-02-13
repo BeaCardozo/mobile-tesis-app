@@ -4,20 +4,25 @@ import '../models/category.dart';
 class CategoryCard extends StatelessWidget {
   final Category category;
   final VoidCallback onTap;
+  final double? iconSize;
+  final double? fontSize;
 
   const CategoryCard({
     super.key,
     required this.category,
     required this.onTap,
+    this.iconSize,
+    this.fontSize,
   });
 
   @override
   Widget build(BuildContext context) {
+    final double resolvedIconSize = iconSize ?? 24;
+    final double resolvedFontSize = fontSize ?? 11;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 96,
-        margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           color: category.color.withOpacity(0.15),
           borderRadius: BorderRadius.circular(20),
@@ -36,7 +41,7 @@ class CategoryCard extends StatelessWidget {
               ),
               child: Icon(
                 category.icon,
-                size: 24,
+                size: resolvedIconSize,
                 color: category.color,
               ),
             ),
@@ -49,7 +54,7 @@ class CategoryCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: resolvedFontSize,
                   fontWeight: FontWeight.w600,
                   color: category.color.withOpacity(0.9),
                   letterSpacing: 0.1,

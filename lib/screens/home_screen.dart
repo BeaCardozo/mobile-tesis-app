@@ -7,9 +7,11 @@ import '../models/cart_item.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_header.dart';
+import '../widgets/app_snack_bar.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 import 'categories_screen.dart';
+import 'category_detail_screen.dart';
 import 'featured_products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -264,19 +266,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     // Mostrar mensaje de confirmación
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} añadido al carrito'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'Ver carrito',
-          textColor: Colors.white,
-          onPressed: () {
-            _navigateToCart();
-          },
-        ),
-      ),
+    AppSnackBar.success(
+      context,
+      message: '${product.name} añadido al carrito',
+      actionLabel: 'Ver carrito',
+      onAction: _navigateToCart,
     );
   }
 
@@ -323,12 +317,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   _selectedCurrency = newValue;
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Moneda cambiada a $newValue'),
-                    backgroundColor: AppColors.primary,
-                    duration: const Duration(seconds: 1),
-                  ),
+                AppSnackBar.info(
+                  context,
+                  message: 'Moneda cambiada a $newValue',
+                  duration: const Duration(seconds: 1),
                 );
               },
               onCartTap: _navigateToCart,
@@ -609,11 +601,24 @@ class _HomeScreenState extends State<HomeScreen> {
             scrollDirection: Axis.horizontal,
             itemCount: _categories.length,
             itemBuilder: (context, index) {
-              return CategoryCard(
-                category: _categories[index],
-                onTap: () {
-                  // TODO: Navegar a productos por categoría
-                },
+              return SizedBox(
+                width: 96,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: CategoryCard(
+                    category: _categories[index],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CategoryDetailScreen(
+                            category: _categories[index],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               );
             },
           ),

@@ -85,31 +85,74 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightGrey,
-      appBar: AppBar(
-        title: const Text('Mi Carrito'),
-        actions: [
-          if (widget.cartItems.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: IconButton(
-                onPressed: () {
-                  // TODO: Limpiar carrito
-                },
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.secondary, AppColors.secondaryLight],
+            ),
+          ),
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.shopping_cart_rounded,
+                    size: 20,
+                    color: Colors.white,
                   ),
                 ),
-                icon: const Icon(
-                  Icons.delete_outline_rounded,
-                  color: Colors.white,
-                  size: 22,
+                const SizedBox(width: 10),
+                const Text(
+                  'Mi Carrito',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-                tooltip: 'Vaciar carrito',
-              ),
+              ],
             ),
-        ],
+            actions: [
+              if (widget.cartItems.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      // TODO: Limpiar carrito
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
       body: widget.cartItems.isEmpty
           ? _buildEmptyCart()
@@ -135,51 +178,88 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildEmptyCart() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: AppColors.lightGrey.withOpacity(0.6),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.shopping_cart_outlined,
-              size: 64,
-              color: AppColors.grey.withOpacity(0.4),
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Tu carrito está vacío',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: AppColors.black,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Agrega productos para comenzar a comprar',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.grey.withOpacity(0.6),
-            ),
-          ),
-          const SizedBox(height: 28),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.shopping_basket_rounded, size: 18),
-            label: const Text('Ir a comprar'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 48,
+                  color: AppColors.primary.withOpacity(0.4),
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 32),
+            const Text(
+              'Tu carrito está vacío',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Explora productos y compara precios\npara comenzar a ahorrar',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.grey.withOpacity(0.7),
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.shopping_basket_rounded,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      'Explorar productos',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

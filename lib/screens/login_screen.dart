@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/auth_service.dart';
+import '../widgets/app_snack_bar.dart';
 import 'register_screen.dart';
 import 'main_screen.dart';
 
@@ -70,12 +71,9 @@ class _LoginScreenState extends State<LoginScreen>
         );
 
         // Mostrar mensaje de éxito
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Inicio de sesión exitoso'),
-            backgroundColor: AppColors.success,
-            duration: Duration(seconds: 2),
-          ),
+        AppSnackBar.success(
+          context,
+          message: 'Inicio de sesión exitoso',
         );
       }
     }
