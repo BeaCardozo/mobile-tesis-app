@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/auth_service.dart';
@@ -15,14 +16,27 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  // Animaciones orquestadas con intervalos
+  // Animaciones del logo
   late Animation<double> _logoScale;
   late Animation<double> _logoOpacity;
+  late Animation<double> _glowOpacity;
+
+  // Animaciones de monedas (4 monedas escalonadas)
+  late List<Animation<double>> _coinFalls;
+  late List<Animation<double>> _coinOpacities;
+  late List<Animation<double>> _coinScales;
+
+  // Animaciones de texto
   late Animation<double> _brandOpacity;
   late Animation<Offset> _brandSlide;
   late Animation<double> _taglineOpacity;
   late Animation<double> _loaderOpacity;
   late Animation<double> _fadeOut;
+
+  // Posiciones horizontales de cada moneda (relativas al centro)
+  final List<double> _coinOffsets = [-18, 12, -6, 20];
+  // Posiciones iniciales Y de cada moneda (desde arriba)
+  final List<double> _coinStartY = [-65, -75, -55, -70];
 
   @override
   void initState() {
@@ -30,28 +44,78 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3200),
+      duration: const Duration(milliseconds: 3600),
     );
 
-    // Logo: aparece con scale y fade (0% - 25%)
+    // Logo: scale + fade (0% - 22%)
     _logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.25, curve: Curves.easeOutBack),
+        curve: const Interval(0.0, 0.22, curve: Curves.easeOutBack),
       ),
     );
     _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.18, curve: Curves.easeOut),
+        curve: const Interval(0.0, 0.15, curve: Curves.easeOut),
       ),
     );
 
-    // Brand name: fade + slide up (15% - 40%)
+    // Glow: aparece suave (10% - 30%)
+    _glowOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.10, 0.30, curve: Curves.easeOut),
+      ),
+    );
+
+    // Monedas: cada una cae escalonada después de que aparece el logo
+    _coinFalls = [];
+    _coinOpacities = [];
+    _coinScales = [];
+    for (int i = 0; i < 4; i++) {
+      final start = 0.18 + (i * 0.07); // 18%, 25%, 32%, 39%
+      final end = start + 0.14; // cada una dura 14% del timeline
+
+      _coinFalls.add(
+        Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Interval(start, end, curve: Curves.easeIn),
+          ),
+        ),
+      );
+      _coinOpacities.add(
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 25),
+          TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 45),
+          TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 30),
+        ]).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Interval(start, end),
+          ),
+        ),
+      );
+      _coinScales.add(
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 0.5, end: 1.0), weight: 30),
+          TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 40),
+          TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.3), weight: 30),
+        ]).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Interval(start, end),
+          ),
+        ),
+      );
+    }
+
+    // Brand name: fade + slide up (38% - 56%)
     _brandOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.15, 0.40, curve: Curves.easeOut),
+        curve: const Interval(0.38, 0.56, curve: Curves.easeOut),
       ),
     );
     _brandSlide = Tween<Offset>(
@@ -60,31 +124,31 @@ class _SplashScreenState extends State<SplashScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.15, 0.40, curve: Curves.easeOutCubic),
+        curve: const Interval(0.38, 0.56, curve: Curves.easeOutCubic),
       ),
     );
 
-    // Tagline: fade in (32% - 52%)
+    // Tagline: fade in (50% - 65%)
     _taglineOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.32, 0.52, curve: Curves.easeOut),
+        curve: const Interval(0.50, 0.65, curve: Curves.easeOut),
       ),
     );
 
-    // Loader: fade in (45% - 60%)
+    // Loader: fade in (58% - 70%)
     _loaderOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.45, 0.60, curve: Curves.easeOut),
+        curve: const Interval(0.58, 0.70, curve: Curves.easeOut),
       ),
     );
 
-    // Fade out: todo se desvanece al final (82% - 100%)
+    // Fade out al final (84% - 100%)
     _fadeOut = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.82, 1.0, curve: Curves.easeInCubic),
+        curve: const Interval(0.84, 1.0, curve: Curves.easeInCubic),
       ),
     );
 
@@ -122,6 +186,70 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
+  Widget _buildCoin(int index) {
+    final dx = _coinOffsets[index];
+    final startY = _coinStartY[index];
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final fall = _coinFalls[index].value;
+        final opacity = _coinOpacities[index].value;
+        final scale = _coinScales[index].value;
+
+        // La moneda cae desde startY hasta ~+5 (entra en la alcancía)
+        final currentY = startY + ((-startY + 5) * fall);
+        // Leve movimiento horizontal sinusoidal mientras cae
+        final sway = sin(fall * pi) * 4;
+
+        return Positioned(
+          top: 70 + currentY, // 70 = centro aproximado del icon area
+          left: 75 + dx + sway, // 75 = centro horizontal del area
+          child: Opacity(
+            opacity: opacity,
+            child: Transform.scale(
+              scale: scale,
+              child: Container(
+                width: 14,
+                height: 14,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFFFD54F), Color(0xFFFFA726)],
+                  ),
+                  border: Border.all(
+                    color: const Color(0xFFFF8F00),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFFFA726).withOpacity(0.4),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    '\$',
+                    style: TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFE65100),
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,7 +262,7 @@ class _SplashScreenState extends State<SplashScreen>
             end: Alignment.bottomCenter,
             colors: [
               Colors.white,
-              Color(0xFFF0F5EC), // verde muy muy sutil
+              Color(0xFFF0F5EC),
             ],
           ),
         ),
@@ -148,38 +276,68 @@ class _SplashScreenState extends State<SplashScreen>
                 children: [
                   const Spacer(flex: 3),
 
-                  // Logo
+                  // Logo con monedas
                   FadeTransition(
                     opacity: _logoOpacity,
                     child: ScaleTransition(
                       scale: _logoScale,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [AppColors.primary, AppColors.accent],
-                          ),
-                          borderRadius: BorderRadius.circular(28),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 24,
-                              offset: const Offset(0, 8),
+                      child: SizedBox(
+                        width: 160,
+                        height: 160,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          alignment: Alignment.center,
+                          children: [
+                            // Glow suave detrás
+                            FadeTransition(
+                              opacity: _glowOpacity,
+                              child: Container(
+                                width: 130,
+                                height: 130,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          AppColors.primary.withOpacity(0.12),
+                                      blurRadius: 50,
+                                      spreadRadius: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
+
+                            // Icono de la alcancía con gradiente
+                            ShaderMask(
+                              shaderCallback: (bounds) =>
+                                  const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppColors.primary,
+                                  AppColors.accent,
+                                ],
+                              ).createShader(bounds),
+                              child: const Icon(
+                                Icons.savings_rounded,
+                                color: Colors.white,
+                                size: 88,
+                              ),
+                            ),
+
+                            // Monedas cayendo
+                            _buildCoin(0),
+                            _buildCoin(1),
+                            _buildCoin(2),
+                            _buildCoin(3),
                           ],
-                        ),
-                        child: const Icon(
-                          Icons.savings_rounded,
-                          color: Colors.white,
-                          size: 52,
                         ),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 36),
 
                   // Nombre de la app
                   SlideTransition(
