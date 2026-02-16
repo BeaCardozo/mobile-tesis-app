@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
+import '../services/api_service.dart';
 import '../services/auth_service.dart';
-import '../widgets/app_snack_bar.dart';
+import 'edit_profile_screen.dart';
+import 'help_center_screen.dart';
 import 'login_screen.dart';
+import 'privacy_terms_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -84,6 +87,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (confirmed == true) {
+      // Intentar logout en el servidor
+      try {
+        final token = await AuthService.getAccessToken();
+        if (token != null) {
+          await ApiService.logout(token);
+        }
+      } catch (_) {
+        // Si falla el logout remoto, continuar con el logout local
+      }
+
       await AuthService.logout();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
@@ -131,68 +144,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'Editar Perfil',
                     subtitle: 'Actualiza tu información personal',
                     iconColor: AppColors.primary,
-                    onTap: () {
-                      _showComingSoonSnackBar('Editar Perfil');
-                    },
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.location_on_outlined,
-                    title: 'Direcciones',
-                    subtitle: 'Gestiona tus direcciones de entrega',
-                    iconColor: const Color(0xFF5B9BD5),
-                    onTap: () {
-                      _showComingSoonSnackBar('Direcciones');
-                    },
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.payment_rounded,
-                    title: 'Métodos de Pago',
-                    subtitle: 'Administra tus métodos de pago',
-                    iconColor: AppColors.accent,
-                    isLast: true,
-                    onTap: () {
-                      _showComingSoonSnackBar('Métodos de Pago');
+                    onTap: () async {
+                      final updated = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute(
+                          builder: (context) => const EditProfileScreen(),
+                        ),
+                      );
+                      if (updated == true) {
+                        _loadUserData();
+                      }
                     },
                   ),
                 ],
               ),
 
               const SizedBox(height: 20),
-
-              // Sección: Preferencias
-              _buildSection(
-                title: 'Preferencias',
-                items: [
-                  _ProfileMenuItem(
-                    icon: Icons.notifications_outlined,
-                    title: 'Notificaciones',
-                    subtitle: 'Configura tus notificaciones',
-                    iconColor: const Color(0xFFFF9F66),
-                    onTap: () {
-                      _showComingSoonSnackBar('Notificaciones');
-                    },
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.language_rounded,
-                    title: 'Idioma',
-                    subtitle: 'Español',
-                    iconColor: const Color(0xFFB97FB9),
-                    onTap: () {
-                      _showComingSoonSnackBar('Idioma');
-                    },
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.attach_money_rounded,
-                    title: 'Moneda Preferida',
-                    subtitle: 'Bolívares (Bs)',
-                    iconColor: AppColors.primary,
-                    isLast: true,
-                    onTap: () {
-                      _showComingSoonSnackBar('Moneda Preferida');
-                    },
-                  ),
-                ],
-              ),
 
               const SizedBox(height: 20),
 
@@ -206,7 +172,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     subtitle: 'Encuentra respuestas a tus preguntas',
                     iconColor: const Color(0xFF5B9BD5),
                     onTap: () {
-                      _showComingSoonSnackBar('Centro de Ayuda');
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const HelpCenterScreen(),
+                        ),
+                      );
                     },
                   ),
                   _ProfileMenuItem(
@@ -225,7 +195,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     iconColor: const Color(0xFFED7D95),
                     isLast: true,
                     onTap: () {
-                      _showComingSoonSnackBar('Privacidad y Términos');
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const PrivacyTermsScreen(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -440,13 +414,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showComingSoonSnackBar(String feature) {
-    AppSnackBar.info(
-      context,
-      message: '$feature estará disponible próximamente',
-    );
-  }
-
   void _showAboutDialog() {
     showDialog(
       context: context,
@@ -454,58 +421,104 @@ class _ProfileScreenState extends State<ProfileScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: Row(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: 8),
+            // Logo con gradiente
             Container(
-              width: 40,
-              height: 40,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
                 gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: const Icon(
-                Icons.shopping_cart_rounded,
+                Icons.savings_rounded,
                 color: AppColors.white,
-                size: 22,
+                size: 34,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(height: 16),
             const Text(
               'CaracasAhorra',
               style: TextStyle(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.black,
               ),
             ),
-          ],
-        ),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Versión 1.0.0',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.grey,
-                fontWeight: FontWeight.w600,
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'Versión 1.0.0',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
-              'CaracasAhorra es tu aplicación de confianza para comparar precios de productos en supermercados de Caracas y encontrar las mejores ofertas.',
+              'Tu aplicación de confianza para comparar precios de productos en supermercados de Caracas y encontrar las mejores ofertas.',
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
-                color: AppColors.black,
+                fontSize: 13,
+                color: AppColors.black.withOpacity(0.7),
                 height: 1.5,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 20),
+            Divider(
+              height: 1,
+              color: AppColors.grey.withOpacity(0.15),
+            ),
+            const SizedBox(height: 16),
             Text(
-              '© 2025 CaracasAhorra. Todos los derechos reservados.',
+              'Desarrollado por',
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.grey.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Beatriz Cardozo',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.black,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'Universidad Metropolitana',
               style: TextStyle(
                 fontSize: 12,
-                color: AppColors.grey,
+                color: AppColors.grey.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '\u00a9 2026 CaracasAhorra. Todos los derechos reservados.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.grey.withOpacity(0.6),
               ),
             ),
           ],

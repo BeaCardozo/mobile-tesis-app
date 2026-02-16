@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
+import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/app_snack_bar.dart';
 import 'main_screen.dart';
@@ -21,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
+  bool _isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -58,35 +61,82 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   Future<void> _handleRegister() async {
-    if (_formKey.currentState!.validate()) {
-      if (!_acceptTerms) {
-        AppSnackBar.error(
-          context,
-          message: 'Debes aceptar los términos y condiciones',
-        );
-        return;
-      }
+    if (!_formKey.currentState!.validate()) return;
 
-      // TODO: Implementar lógica de registro con backend cuando esté disponible
-      // Por ahora, guardamos la sesión localmente
+    if (!_acceptTerms) {
+      AppSnackBar.error(
+        context,
+        message: 'Debes aceptar los términos y condiciones',
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Registrar usuario en el backend
+      await ApiService.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Login automático tras registro exitoso
+      final tokens = await ApiService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Guardar sesión localmente
       await AuthService.login(
-        email: _emailController.text,
-        name: _nameController.text,
+        email: _emailController.text.trim(),
+        accessToken: tokens['accessToken'],
+        refreshToken: tokens['refreshToken'],
+        name: _nameController.text.trim(),
       );
 
       if (mounted) {
-        // Navegar al MainScreen
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const MainScreen(),
           ),
         );
 
-        // Mostrar mensaje de éxito
         AppSnackBar.success(
           context,
           message: 'Registro exitoso - Bienvenido a CaracasAhorra',
         );
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        String message;
+        if (e.statusCode == 409 || e.message.toLowerCase().contains('unique')) {
+          message = 'Este correo ya está registrado';
+        } else if (e.message.contains('password')) {
+          message =
+              'La contraseña debe tener mín. 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo';
+        } else {
+          message = e.message;
+        }
+        AppSnackBar.error(context, message: message);
+      }
+    } on SocketException {
+      if (mounted) {
+        AppSnackBar.error(
+          context,
+          message: 'Sin conexión al servidor. Verifica tu red.',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.error(
+          context,
+          message: 'Error inesperado. Intenta de nuevo.',
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -327,8 +377,21 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   if (value == null || value.isEmpty) {
                                     return 'Por favor ingrese su contraseña';
                                   }
-                                  if (value.length < 6) {
-                                    return 'La contraseña debe tener al menos 6 caracteres';
+                                  if (value.length < 8) {
+                                    return 'Mínimo 8 caracteres';
+                                  }
+                                  if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                                    return 'Debe contener al menos una mayúscula';
+                                  }
+                                  if (!RegExp(r'[a-z]').hasMatch(value)) {
+                                    return 'Debe contener al menos una minúscula';
+                                  }
+                                  if (!RegExp(r'[0-9]').hasMatch(value)) {
+                                    return 'Debe contener al menos un número';
+                                  }
+                                  if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                                      .hasMatch(value)) {
+                                    return 'Debe contener al menos un símbolo';
                                   }
                                   return null;
                                 },
@@ -449,24 +512,36 @@ class _RegisterScreenState extends State<RegisterScreen>
                                 width: double.infinity,
                                 height: 52,
                                 child: ElevatedButton(
-                                  onPressed: _handleRegister,
+                                  onPressed:
+                                      _isLoading ? null : _handleRegister,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
+                                    disabledBackgroundColor:
+                                        AppColors.primary.withOpacity(0.6),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
                                     elevation: 0,
                                     shadowColor: Colors.transparent,
                                   ),
-                                  child: const Text(
-                                    'Registrarse',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.white,
-                                      letterSpacing: 0.3,
-                                    ),
-                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.white,
+                                            strokeWidth: 2.5,
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Registrarse',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.white,
+                                            letterSpacing: 0.3,
+                                          ),
+                                        ),
                                 ),
                               ),
                             ],

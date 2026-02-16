@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
+import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/app_snack_bar.dart';
 import 'register_screen.dart';
@@ -19,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen>
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -54,27 +57,67 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Implementar validación con backend cuando esté disponible
-      // Por ahora, guardamos la sesión localmente
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Llamar al endpoint de login
+      final tokens = await ApiService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Obtener datos del usuario
+      final userData = await ApiService.getMe(tokens['accessToken']);
+
+      // Guardar sesión localmente
       await AuthService.login(
-        email: _emailController.text,
-        name: _emailController.text.split('@').first,
+        email: userData['email'] ?? _emailController.text.trim(),
+        accessToken: tokens['accessToken'],
+        refreshToken: tokens['refreshToken'],
+        name: userData['name'],
       );
 
       if (mounted) {
-        // Navegar al MainScreen
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const MainScreen(),
           ),
         );
 
-        // Mostrar mensaje de éxito
         AppSnackBar.success(
           context,
           message: 'Inicio de sesión exitoso',
         );
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        String message;
+        if (e.statusCode == 401) {
+          message = 'Correo o contraseña incorrectos';
+        } else {
+          message = e.message;
+        }
+        AppSnackBar.error(context, message: message);
+      }
+    } on SocketException {
+      if (mounted) {
+        AppSnackBar.error(
+          context,
+          message: 'Sin conexión al servidor. Verifica tu red.',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.error(
+          context,
+          message: 'Error inesperado. Intenta de nuevo.',
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -295,24 +338,35 @@ class _LoginScreenState extends State<LoginScreen>
                                 width: double.infinity,
                                 height: 52,
                                 child: ElevatedButton(
-                                  onPressed: _handleLogin,
+                                  onPressed: _isLoading ? null : _handleLogin,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
+                                    disabledBackgroundColor:
+                                        AppColors.primary.withOpacity(0.6),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
                                     elevation: 0,
                                     shadowColor: Colors.transparent,
                                   ),
-                                  child: const Text(
-                                    'Iniciar Sesión',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.white,
-                                      letterSpacing: 0.3,
-                                    ),
-                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.white,
+                                            strokeWidth: 2.5,
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Iniciar Sesión',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.white,
+                                            letterSpacing: 0.3,
+                                          ),
+                                        ),
                                 ),
                               ),
                             ],
