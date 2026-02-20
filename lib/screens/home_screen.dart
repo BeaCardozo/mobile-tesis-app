@@ -4,6 +4,7 @@ import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
 import '../models/cart_item.dart';
+import '../services/api_service.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_header.dart';
@@ -57,156 +58,42 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  // Datos de ejemplo - Estos vendrán del backend
-  final List<Category> _categories = [
-    Category(
-      id: '1',
-      name: 'Alimentos',
-      icon: Icons.restaurant,
-      color: AppColors.primary,
-    ),
-    Category(
-      id: '2',
-      name: 'Bebidas',
-      icon: Icons.local_drink,
-      color: const Color(0xFF5B9BD5),
-    ),
-    Category(
-      id: '3',
-      name: 'Limpieza',
-      icon: Icons.cleaning_services,
-      color: const Color(0xFFB97FB9),
-    ),
-    Category(
-      id: '4',
-      name: 'Cuidado Personal',
-      icon: Icons.self_improvement,
-      color: const Color(0xFFED7D95),
-    ),
-    Category(
-      id: '5',
-      name: 'Mascotas',
-      icon: Icons.pets,
-      color: AppColors.accent,
-    ),
-  ];
-
-  // Productos de ejemplo - Estos vendrán del backend
-  final List<Product> _products = [
-    Product(
-      id: '1',
-      name: 'Arroz Diana 1kg',
-      description: 'Arroz blanco de grano largo, calidad premium',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 3.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 3.20,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 3.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '3',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 3.80,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '2',
-      name: 'Aceite Mazeite 1L',
-      description: 'Aceite vegetal 100% puro',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'L',
-      averagePrice: 4.25,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 4.10,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 4.40,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '3',
-      name: 'Harina PAN 1kg',
-      description: 'Harina de maíz precocida',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 2.80,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 2.65,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 2.95,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '4',
-      name: 'Azúcar Blanca 1kg',
-      description: 'Azúcar refinada',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 1.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 1.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 1.55,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-  ];
+  List<Category> _categories = [];
+  List<Product> _products = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Iniciar el timer para el carousel automático
     _startPromoTimer();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final categoriesData = await ApiService.getCategories();
+      final productsData = await ApiService.getProducts();
+
+      if (mounted) {
+        setState(() {
+          _categories = categoriesData
+              .map((json) => Category.fromJson(json))
+              .toList();
+          _products = productsData
+              .map((json) => Product.fromJson(json))
+              .toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        AppSnackBar.error(
+          context,
+          message: 'Error al cargar datos: $e',
+        );
+      }
+    }
   }
 
   @override
@@ -329,7 +216,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Contenido con scroll
             Expanded(
-              child: SingleChildScrollView(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                  : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

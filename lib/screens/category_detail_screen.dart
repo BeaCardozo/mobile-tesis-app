@@ -3,6 +3,7 @@ import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
 import '../models/cart_item.dart';
+import '../services/api_service.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
@@ -22,251 +23,30 @@ class CategoryDetailScreen extends StatefulWidget {
 
 class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   final List<CartItem> _cartItems = [];
-
-  // Productos de ejemplo - Estos vendrán del backend
-  final List<Product> _allProducts = [
-    Product(
-      id: '1',
-      name: 'Arroz Diana 1kg',
-      description: 'Arroz blanco de grano largo, calidad premium',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 3.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 3.20,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 3.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '3',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 3.80,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '2',
-      name: 'Aceite Mazeite 1L',
-      description: 'Aceite vegetal 100% puro',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'L',
-      averagePrice: 4.25,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 4.10,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 4.40,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '3',
-      name: 'Harina PAN 1kg',
-      description: 'Harina de maíz precocida',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 2.80,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 2.65,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 2.95,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '4',
-      name: 'Azúcar Blanca 1kg',
-      description: 'Azúcar refinada',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 1.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 1.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 1.55,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '5',
-      name: 'Refresco Cola 2L',
-      description: 'Bebida gaseosa sabor cola',
-      imageUrl: '',
-      category: 'Bebidas',
-      unit: 'L',
-      averagePrice: 2.00,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 1.85,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 2.15,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '6',
-      name: 'Agua Mineral 1.5L',
-      description: 'Agua mineral natural sin gas',
-      imageUrl: '',
-      category: 'Bebidas',
-      unit: 'L',
-      averagePrice: 1.20,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 1.10,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '3',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 1.30,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '7',
-      name: 'Detergente Líquido 1L',
-      description: 'Detergente multiusos para ropa',
-      imageUrl: '',
-      category: 'Limpieza',
-      unit: 'L',
-      averagePrice: 3.75,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 3.50,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 4.00,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '8',
-      name: 'Shampoo Anticaspa 400ml',
-      description: 'Shampoo para cabello con caspa',
-      imageUrl: '',
-      category: 'Cuidado Personal',
-      unit: 'ml',
-      averagePrice: 5.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 5.20,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '3',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 5.80,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '9',
-      name: 'Alimento para Perros 2kg',
-      description: 'Alimento seco para perros adultos',
-      imageUrl: '',
-      category: 'Mascotas',
-      unit: 'kg',
-      averagePrice: 8.00,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 7.50,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 8.50,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-  ];
-
-  late List<Product> _filteredProducts;
+  List<Product> _filteredProducts = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _filteredProducts = _allProducts
-        .where((product) => product.category == widget.category.name)
-        .toList();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      final data = await ApiService.getCategoryProducts(widget.category.id);
+      if (mounted) {
+        setState(() {
+          _filteredProducts = data.map((json) => Product.fromJson(json)).toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        AppSnackBar.error(context, message: 'Error al cargar productos: $e');
+      }
+    }
   }
 
   void _addToCart(Product product) {
@@ -361,7 +141,9 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
           ),
         ],
       ),
-      body: _filteredProducts.isEmpty
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          : _filteredProducts.isEmpty
           ? _buildEmptyState()
           : SingleChildScrollView(
               child: Column(

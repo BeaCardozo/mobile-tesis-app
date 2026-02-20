@@ -140,6 +140,63 @@ class ApiService {
     );
   }
 
+  /// Obtiene todas las categorías
+  static Future<List<Map<String, dynamic>>> getCategories() async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/categories'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode == 200) {
+      return _extractList(body);
+    }
+
+    throw ApiException(
+      statusCode: response.statusCode,
+      message: _extractErrorMessage(body),
+    );
+  }
+
+  /// Obtiene todos los productos
+  static Future<List<Map<String, dynamic>>> getProducts() async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/products'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode == 200) {
+      return _extractList(body);
+    }
+
+    throw ApiException(
+      statusCode: response.statusCode,
+      message: _extractErrorMessage(body),
+    );
+  }
+
+  /// Obtiene los productos de una categoría por ID
+  static Future<List<Map<String, dynamic>>> getCategoryProducts(int categoryId) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/categories/$categoryId/products'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode == 200) {
+      return _extractList(body);
+    }
+
+    throw ApiException(
+      statusCode: response.statusCode,
+      message: _extractErrorMessage(body),
+    );
+  }
+
   static Future<void> logout(String accessToken) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/auth/logout'),
@@ -161,6 +218,17 @@ class ApiService {
       return body['data'] as Map<String, dynamic>;
     }
     return body;
+  }
+
+  /// Extrae el campo `data` cuando es una lista.
+  /// El backend retorna: { status, message, data: [ ... ] }
+  static List<Map<String, dynamic>> _extractList(Map<String, dynamic> body) {
+    if (body.containsKey('data') && body['data'] is List) {
+      return (body['data'] as List)
+          .map((item) => item as Map<String, dynamic>)
+          .toList();
+    }
+    return [];
   }
 
   static String _extractErrorMessage(Map<String, dynamic> body) {

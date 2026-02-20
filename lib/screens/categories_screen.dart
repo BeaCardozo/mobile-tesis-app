@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/category.dart';
+import '../services/api_service.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
 import '../widgets/category_card.dart';
@@ -15,82 +16,31 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
 
-  // Datos de ejemplo - Estos vendrán del backend
-  // TODO: Conectar con el backend para obtener las categorías reales
-  final List<Category> _categories = [
-    Category(
-      id: '1',
-      name: 'Alimentos',
-      icon: Icons.restaurant,
-      color: AppColors.primary,
-    ),
-    Category(
-      id: '2',
-      name: 'Bebidas',
-      icon: Icons.local_drink,
-      color: const Color(0xFF5B9BD5),
-    ),
-    Category(
-      id: '3',
-      name: 'Limpieza',
-      icon: Icons.cleaning_services,
-      color: const Color(0xFFB97FB9),
-    ),
-    Category(
-      id: '4',
-      name: 'Cuidado Personal',
-      icon: Icons.self_improvement,
-      color: const Color(0xFFED7D95),
-    ),
-    Category(
-      id: '5',
-      name: 'Mascotas',
-      icon: Icons.pets,
-      color: AppColors.accent,
-    ),
-    Category(
-      id: '6',
-      name: 'Snacks',
-      icon: Icons.cookie,
-      color: const Color(0xFFFF9F66),
-    ),
-    Category(
-      id: '7',
-      name: 'Panadería',
-      icon: Icons.bakery_dining,
-      color: const Color(0xFFD4A574),
-    ),
-    Category(
-      id: '8',
-      name: 'Lácteos',
-      icon: Icons.kitchen,
-      color: const Color(0xFF6CB4EE),
-    ),
-    Category(
-      id: '9',
-      name: 'Carnes',
-      icon: Icons.set_meal,
-      color: const Color(0xFFE57373),
-    ),
-    Category(
-      id: '10',
-      name: 'Frutas y Verduras',
-      icon: Icons.eco,
-      color: const Color(0xFF81C784),
-    ),
-    Category(
-      id: '11',
-      name: 'Congelados',
-      icon: Icons.ac_unit,
-      color: const Color(0xFF64B5F6),
-    ),
-    Category(
-      id: '12',
-      name: 'Bebé',
-      icon: Icons.child_care,
-      color: const Color(0xFFFFB6C1),
-    ),
-  ];
+  List<Category> _categories = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final data = await ApiService.getCategories();
+      if (mounted) {
+        setState(() {
+          _categories = data.map((json) => Category.fromJson(json)).toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        AppSnackBar.error(context, message: 'Error al cargar categorías: $e');
+      }
+    }
+  }
 
   void _navigateToCart() {
     // TODO: Implementar navegación al carrito
@@ -144,7 +94,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          : SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
