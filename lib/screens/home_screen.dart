@@ -4,7 +4,7 @@ import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
 import '../models/cart_item.dart';
-import '../services/api_service.dart';
+import '../services/api.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_header.dart';
@@ -71,16 +71,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadData() async {
     try {
-      final categoriesData = await ApiService.getCategories();
-      final productsData = await ApiService.getProducts();
+      final results = await Future.wait([
+        Api.instance.categories.listAll(),
+        Api.instance.products.featured(),
+      ]);
+
+      final apiCategories = results[0] as List;
+      final apiProducts = results[1] as List;
 
       if (mounted) {
         setState(() {
-          _categories = categoriesData
-              .map((json) => Category.fromJson(json))
+          _categories = apiCategories
+              .map((c) => Category.fromApi(c, productCount: c.productCount))
+              .where((c) => c.productCount > 0)
+              .take(8)
               .toList();
-          _products = productsData
-              .map((json) => Product.fromJson(json))
+          _products = apiProducts
+              .map((p) => Product.fromApiSummary(p))
               .toList();
           _isLoading = false;
         });
@@ -90,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() => _isLoading = false);
         AppSnackBar.error(
           context,
-          message: 'Error al cargar datos: $e',
+          message: 'Error al cargar datos. Verifica tu conexión.',
         );
       }
     }

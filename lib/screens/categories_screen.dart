@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/category.dart';
-import '../services/api_service.dart';
+import '../services/api.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
 import '../widgets/category_card.dart';
@@ -27,17 +27,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   Future<void> _loadCategories() async {
     try {
-      final data = await ApiService.getCategories();
+      final apiCategories = await Api.instance.categories.listAll();
       if (mounted) {
         setState(() {
-          _categories = data.map((json) => Category.fromJson(json)).toList();
+          _categories = apiCategories
+              .map((c) => Category.fromApi(c, productCount: c.productCount))
+              .where((c) => c.productCount > 0)
+              .toList();
           _isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        AppSnackBar.error(context, message: 'Error al cargar categorías: $e');
+        AppSnackBar.error(
+          context,
+          message: 'Error al cargar categorías',
+        );
       }
     }
   }

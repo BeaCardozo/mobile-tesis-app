@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
+import '../services/api.dart';
 import 'edit_profile_screen.dart';
 import 'help_center_screen.dart';
 import 'login_screen.dart';
@@ -27,14 +26,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final email = await AuthService.getUserEmail();
-    final name = await AuthService.getUserName();
-
-    setState(() {
-      _userEmail = email ?? 'usuario@ejemplo.com';
-      _userName = name ?? 'Usuario';
-      _isLoading = false;
-    });
+    try {
+      final user = await Api.instance.auth.getMe();
+      if (mounted) {
+        setState(() {
+          _userName = '${user.firstName} ${user.lastName}'.trim();
+          _userEmail = user.email;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _handleLogout() async {
@@ -87,17 +92,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (confirmed == true) {
-      // Intentar logout en el servidor
       try {
-        final token = await AuthService.getAccessToken();
-        if (token != null) {
-          await ApiService.logout(token);
-        }
+        await Api.instance.auth.logout();
       } catch (_) {
-        // Si falla el logout remoto, continuar con el logout local
+        // Si falla el logout remoto, continuar
       }
 
-      await AuthService.logout();
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginScreen()),

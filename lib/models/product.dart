@@ -1,3 +1,5 @@
+import 'api_models.dart';
+
 class Product {
   final String id;
   final String name;
@@ -5,7 +7,7 @@ class Product {
   final String description;
   final String imageUrl;
   final String category;
-  final int categoryId;
+  final String categoryId;
   final List<PriceInfo> prices;
   final double averagePrice;
   final String unit;
@@ -18,7 +20,7 @@ class Product {
     required this.description,
     required this.imageUrl,
     required this.category,
-    this.categoryId = 0,
+    this.categoryId = '',
     required this.prices,
     required this.averagePrice,
     required this.unit,
@@ -35,7 +37,7 @@ class Product {
       category: json['category'] is Map
           ? (json['category']['name'] as String? ?? '')
           : (json['category'] as String? ?? ''),
-      categoryId: json['categoryId'] as int? ?? 0,
+      categoryId: json['categoryId']?.toString() ?? '',
       prices: (json['prices'] as List<dynamic>?)
               ?.map((price) => PriceInfo.fromJson(price as Map<String, dynamic>))
               .toList() ??
@@ -43,6 +45,38 @@ class Product {
       averagePrice: (json['averagePrice'] as num?)?.toDouble() ?? 0.0,
       unit: json['baseUnit'] as String? ?? json['unit'] as String? ?? 'unidad',
       isFavorite: json['isFavorite'] as bool? ?? false,
+    );
+  }
+
+  /// Convierte un ApiProductSummary del backend en un Product para la UI.
+  factory Product.fromApiSummary(ApiProductSummary api) {
+    final prices = <PriceInfo>[];
+    final snap = api.priceSnapshot;
+    if (snap != null && snap.cheapestPriceBs != null) {
+      prices.add(PriceInfo(
+        supermarketId: '',
+        supermarketName: snap.cheapestSupermarket ?? '',
+        supermarketLogo: '',
+        price: snap.cheapestPriceBs!,
+        priceUsd: snap.cheapestPriceUsd,
+        lastUpdated: snap.cheapestScrapedAt != null
+            ? DateTime.tryParse(snap.cheapestScrapedAt!) ?? DateTime.now()
+            : DateTime.now(),
+      ));
+    }
+
+    return Product(
+      id: api.id,
+      name: api.name,
+      slug: api.slug ?? '',
+      description: api.description ?? '',
+      imageUrl: api.imageUrl ?? '',
+      category: api.category.name,
+      categoryId: api.category.id,
+      prices: prices,
+      averagePrice: snap?.cheapestPriceBs ?? 0.0,
+      unit: api.unitType,
+      isFavorite: false,
     );
   }
 
@@ -79,7 +113,7 @@ class Product {
     String? description,
     String? imageUrl,
     String? category,
-    int? categoryId,
+    String? categoryId,
     List<PriceInfo>? prices,
     double? averagePrice,
     String? unit,
@@ -106,6 +140,7 @@ class PriceInfo {
   final String supermarketName;
   final String supermarketLogo;
   final double price;
+  final double? priceUsd;
   final DateTime lastUpdated;
 
   PriceInfo({
@@ -113,6 +148,7 @@ class PriceInfo {
     required this.supermarketName,
     required this.supermarketLogo,
     required this.price,
+    this.priceUsd,
     required this.lastUpdated,
   });
 
@@ -122,6 +158,7 @@ class PriceInfo {
       supermarketName: json['supermarketName'] as String,
       supermarketLogo: json['supermarketLogo'] as String? ?? '',
       price: (json['price'] as num).toDouble(),
+      priceUsd: (json['priceUsd'] as num?)?.toDouble(),
       lastUpdated: DateTime.parse(json['lastUpdated'] as String),
     );
   }
@@ -132,6 +169,7 @@ class PriceInfo {
       'supermarketName': supermarketName,
       'supermarketLogo': supermarketLogo,
       'price': price,
+      'priceUsd': priceUsd,
       'lastUpdated': lastUpdated.toIso8601String(),
     };
   }

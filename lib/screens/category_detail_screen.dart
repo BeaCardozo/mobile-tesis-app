@@ -3,7 +3,7 @@ import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
 import '../models/cart_item.dart';
-import '../services/api_service.dart';
+import '../services/api.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
@@ -34,17 +34,25 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
 
   Future<void> _loadProducts() async {
     try {
-      final data = await ApiService.getCategoryProducts(widget.category.id);
+      final paginated = await Api.instance.products.list(
+        categoryId: widget.category.id,
+        limit: 50,
+      );
       if (mounted) {
         setState(() {
-          _filteredProducts = data.map((json) => Product.fromJson(json)).toList();
+          _filteredProducts = paginated.items
+              .map((p) => Product.fromApiSummary(p))
+              .toList();
           _isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        AppSnackBar.error(context, message: 'Error al cargar productos: $e');
+        AppSnackBar.error(
+          context,
+          message: 'Error al cargar productos',
+        );
       }
     }
   }

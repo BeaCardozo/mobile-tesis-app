@@ -1,9 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
+import '../services/api.dart';
+import '../services/api_client.dart';
 import '../widgets/app_snack_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -33,12 +32,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final name = await AuthService.getUserName();
-    final email = await AuthService.getUserEmail();
-    setState(() {
-      _nameController.text = name ?? '';
-      _emailController.text = email ?? '';
-    });
+    try {
+      final user = await Api.instance.auth.getMe();
+      if (mounted) {
+        setState(() {
+          _nameController.text = '${user.firstName} ${user.lastName}'.trim();
+          _emailController.text = user.email;
+        });
+      }
+    } catch (_) {
+      // Si falla, los campos quedan vacios
+    }
   }
 
   @override
@@ -68,24 +72,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final token = await AuthService.getAccessToken();
+      // Separar nombre
+      final fullName = _nameController.text.trim();
+      final parts = fullName.split(RegExp(r'\s+'));
+      final firstName = parts.first;
+      final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
 
-      if (token != null) {
-        // Llamar al backend
-        await ApiService.updateProfile(
-          accessToken: token,
-          name: _nameController.text.trim(),
-          email: _emailController.text.trim(),
-          currentPassword:
-              hasPasswordInput ? _currentPasswordController.text : null,
-          newPassword:
-              hasPasswordInput ? _newPasswordController.text : null,
+      // Actualizar perfil
+      await Api.instance.users.updateMe(
+        firstName: firstName,
+        lastName: lastName,
+      );
+
+      // Cambiar contrasena si se ingreso una nueva
+      if (hasPasswordInput) {
+        await Api.instance.users.changePassword(
+          currentPassword: _currentPasswordController.text,
+          newPassword: _newPasswordController.text,
         );
       }
-
-      // Actualizar datos locales
-      await AuthService.updateUserName(_nameController.text.trim());
-      await AuthService.updateUserEmail(_emailController.text.trim());
 
       if (mounted) {
         AppSnackBar.success(
@@ -108,7 +113,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
         AppSnackBar.error(context, message: message);
       }
-    } on SocketException {
+    } on NetworkException {
       if (mounted) {
         AppSnackBar.error(
           context,

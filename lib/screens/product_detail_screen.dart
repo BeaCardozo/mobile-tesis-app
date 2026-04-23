@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/product.dart';
+import '../models/api_models.dart';
+import '../services/api.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -16,16 +18,53 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isFavorite = false;
+  bool _isLoadingPrices = true;
+  List<PriceInfo> _allPrices = [];
 
   @override
   void initState() {
     super.initState();
     _isFavorite = widget.product.isFavorite;
+    _allPrices = List.from(widget.product.prices);
+    _loadFullDetail();
+  }
+
+  Future<void> _loadFullDetail() async {
+    try {
+      final detail = await Api.instance.products.getDetail(widget.product.id);
+      if (!mounted) return;
+
+      final prices = <PriceInfo>[];
+      for (final entry in detail.pricesBySupermarket.entries) {
+        final supermarketName = entry.key;
+        for (final offer in entry.value) {
+          prices.add(PriceInfo(
+            supermarketId: offer['store_dw_key']?.toString() ?? '',
+            supermarketName: supermarketName,
+            supermarketLogo: '',
+            price: (offer['price_bs'] as num?)?.toDouble() ?? 0.0,
+            priceUsd: (offer['price_usd'] as num?)?.toDouble(),
+            lastUpdated: offer['scraped_at'] != null
+                ? DateTime.tryParse(offer['scraped_at'].toString()) ?? DateTime.now()
+                : DateTime.now(),
+          ));
+        }
+      }
+
+      setState(() {
+        _allPrices = prices;
+        _isLoadingPrices = false;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoadingPrices = false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final sortedPrices = List<PriceInfo>.from(widget.product.prices)
+    final sortedPrices = List<PriceInfo>.from(_allPrices)
       ..sort((a, b) => a.price.compareTo(b.price));
 
     return Scaffold(
@@ -34,9 +73,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         slivers: [
           // App Bar con imagen
           SliverAppBar(
-            expandedHeight: 300,
+            expandedHeight: 320,
             pinned: true,
-            backgroundColor: AppColors.primary,
+            backgroundColor: Colors.white,
+            elevation: 0,
             leading: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -45,7 +85,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withOpacity(0.08),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -68,7 +108,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withOpacity(0.08),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -90,17 +130,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.primaryLight.withOpacity(0.3),
-                      Colors.white,
-                    ],
-                  ),
-                ),
-                child: Center(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(40, 60, 40, 20),
                   child: widget.product.imageUrl.isNotEmpty
                       ? Image.network(
                           widget.product.imageUrl,
@@ -178,7 +210,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const SizedBox(height: 24),
 
                   // Estadísticas de precio
-                  _buildPriceStats(),
+                  if (sortedPrices.isNotEmpty)
+                    _buildPriceStats(sortedPrices),
 
                   const SizedBox(height: 48),
 
@@ -200,7 +233,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${widget.product.prices.length} supermercados disponibles',
+                              _isLoadingPrices
+                                  ? 'Cargando precios...'
+                                  : '${sortedPrices.length} supermercados disponibles',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: AppColors.grey.withOpacity(0.7),
@@ -214,14 +249,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Lista de precios por supermercado
-                  ...sortedPrices.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final priceInfo = entry.value;
-                    final isLowest = index == 0;
+                  if (_isLoadingPrices)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: CircularProgressIndicator(color: AppColors.primary),
+                      ),
+                    )
+                  else
+                    // Lista de precios por supermercado
+                    ...sortedPrices.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final priceInfo = entry.value;
+                      final isLowest = index == 0;
 
-                    return _buildPriceCard(priceInfo, isLowest);
-                  }),
+                      return _buildPriceCard(priceInfo, isLowest);
+                    }),
 
                   const SizedBox(height: 20),
                 ],
@@ -233,7 +276,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildPriceStats() {
+  Widget _buildPriceStats(List<PriceInfo> prices) {
+    final lowest = prices.map((p) => p.price).reduce((a, b) => a < b ? a : b);
+    final highest = prices.map((p) => p.price).reduce((a, b) => a > b ? a : b);
+    final savings = highest - lowest;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -254,7 +301,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Expanded(
                 child: _buildStatItem(
                   'Precio Mínimo',
-                  'Bs. ${widget.product.lowestPrice.toStringAsFixed(2)}',
+                  'Bs. ${lowest.toStringAsFixed(2)}',
                   Icons.arrow_downward,
                 ),
               ),
@@ -266,51 +313,53 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Expanded(
                 child: _buildStatItem(
                   'Precio Máximo',
-                  'Bs. ${widget.product.highestPrice.toStringAsFixed(2)}',
+                  'Bs. ${highest.toStringAsFixed(2)}',
                   Icons.arrow_upward,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.savings_outlined,
-                  color: Colors.white,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Puedes ahorrar hasta',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
+          if (savings > 0) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.savings_outlined,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Puedes ahorrar hasta',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Bs. ${(widget.product.highestPrice - widget.product.lowestPrice).toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      Text(
+                        'Bs. ${savings.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -447,26 +496,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
 
               // Precio
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Bs. ${priceInfo.price.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: isLowest ? AppColors.primary : AppColors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '/${widget.product.unit}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.grey.withOpacity(0.6),
-                    ),
-                  ),
-                ],
+              Text(
+                'Bs. ${priceInfo.price.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isLowest ? AppColors.primary : AppColors.black,
+                ),
               ),
             ],
           ),

@@ -3,7 +3,7 @@ import '../config/app_colors.dart';
 import '../models/product.dart';
 import '../models/category.dart';
 import '../models/cart_item.dart';
-import '../services/api_service.dart';
+import '../services/api.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_header.dart';
 import '../widgets/app_snack_bar.dart';
@@ -41,18 +41,28 @@ class _ProductsScreenState extends State<ProductsScreen> {
     _loadData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> _loadData({String? search}) async {
+    setState(() => _isLoading = true);
     try {
-      final categoriesData = await ApiService.getCategories();
-      final productsData = await ApiService.getProducts();
+      final results = await Future.wait([
+        Api.instance.categories.listAll(),
+        Api.instance.products.list(
+          search: search,
+          limit: 50,
+        ),
+      ]);
+
+      final apiCategories = results[0] as List;
+      final paginatedProducts = results[1];
 
       if (mounted) {
         setState(() {
-          _categories = categoriesData
-              .map((json) => Category.fromJson(json))
+          _categories = apiCategories
+              .map((c) => Category.fromApi(c, productCount: c.productCount))
+              .where((c) => c.productCount > 0)
               .toList();
-          _products = productsData
-              .map((json) => Product.fromJson(json))
+          _products = (paginatedProducts as dynamic).items
+              .map<Product>((p) => Product.fromApiSummary(p))
               .toList();
           _isLoading = false;
         });
@@ -60,7 +70,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        AppSnackBar.error(context, message: 'Error al cargar productos: $e');
+        AppSnackBar.error(
+          context,
+          message: 'Error al cargar productos',
+        );
       }
     }
   }
@@ -695,7 +708,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
           ),
           onSubmitted: (value) {
-            // TODO: Implementar búsqueda
+            _loadData(search: value.trim().isEmpty ? null : value.trim());
           },
         ),
       ),

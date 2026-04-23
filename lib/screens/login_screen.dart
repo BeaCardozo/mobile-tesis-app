@@ -1,8 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
+import '../services/api.dart';
+import '../services/api_client.dart';
 import '../widgets/app_snack_bar.dart';
 import 'register_screen.dart';
 import 'main_screen.dart';
@@ -62,21 +61,9 @@ class _LoginScreenState extends State<LoginScreen>
     setState(() => _isLoading = true);
 
     try {
-      // Llamar al endpoint de login
-      final tokens = await ApiService.login(
+      await Api.instance.auth.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-      );
-
-      // Obtener datos del usuario
-      final userData = await ApiService.getMe(tokens['accessToken']);
-
-      // Guardar sesión localmente
-      await AuthService.login(
-        email: userData['email'] ?? _emailController.text.trim(),
-        accessToken: tokens['accessToken'],
-        refreshToken: tokens['refreshToken'],
-        name: userData['name'],
       );
 
       if (mounted) {
@@ -101,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen>
         }
         AppSnackBar.error(context, message: message);
       }
-    } on SocketException {
+    } on NetworkException {
       if (mounted) {
         AppSnackBar.error(
           context,

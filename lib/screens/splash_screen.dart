@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
+import '../services/api.dart';
 import 'main_screen.dart';
 import 'login_screen.dart';
 
@@ -165,34 +164,7 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _navigateToNextScreen() async {
     if (!mounted) return;
 
-    bool isAuthenticated = false;
-
-    final accessToken = await AuthService.getAccessToken();
-    if (accessToken != null && accessToken.isNotEmpty) {
-      try {
-        // Validar que el token sigue siendo válido
-        final userData = await ApiService.getMe(accessToken);
-        // Actualizar datos locales por si cambiaron
-        await AuthService.updateUserName(userData['name'] ?? '');
-        isAuthenticated = true;
-      } catch (_) {
-        // Token expirado, intentar refresh
-        try {
-          final refreshToken = await AuthService.getRefreshToken();
-          if (refreshToken != null && refreshToken.isNotEmpty) {
-            final tokens = await ApiService.refreshTokens(refreshToken);
-            await AuthService.saveTokens(
-              accessToken: tokens['accessToken'],
-              refreshToken: tokens['refreshToken'],
-            );
-            isAuthenticated = true;
-          }
-        } catch (_) {
-          // Refresh también falló, limpiar sesión
-          await AuthService.logout();
-        }
-      }
-    }
+    final isAuthenticated = await Api.instance.auth.hasSession();
 
     if (!mounted) return;
 

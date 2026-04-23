@@ -622,16 +622,6 @@ class _CartScreenState extends State<CartScreen> {
                       color: AppColors.primary,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 1, left: 2),
-                    child: Text(
-                      '/${item.product.unit}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.grey.withOpacity(0.5),
-                      ),
-                    ),
-                  ),
                 ],
               ),
 

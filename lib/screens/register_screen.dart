@@ -1,8 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
+import '../services/api.dart';
+import '../services/api_client.dart';
 import '../widgets/app_snack_bar.dart';
 import 'main_screen.dart';
 
@@ -74,25 +73,23 @@ class _RegisterScreenState extends State<RegisterScreen>
     setState(() => _isLoading = true);
 
     try {
-      // Registrar usuario en el backend
-      await ApiService.register(
-        name: _nameController.text.trim(),
+      // Separar nombre completo en firstName y lastName
+      final fullName = _nameController.text.trim();
+      final parts = fullName.split(RegExp(r'\s+'));
+      final firstName = parts.first;
+      final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+
+      await Api.instance.auth.register(
+        firstName: firstName,
+        lastName: lastName,
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      // Login automático tras registro exitoso
-      final tokens = await ApiService.login(
+      // Login automatico tras registro exitoso
+      await Api.instance.auth.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-      );
-
-      // Guardar sesión localmente
-      await AuthService.login(
-        email: _emailController.text.trim(),
-        accessToken: tokens['accessToken'],
-        refreshToken: tokens['refreshToken'],
-        name: _nameController.text.trim(),
       );
 
       if (mounted) {
@@ -120,7 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         }
         AppSnackBar.error(context, message: message);
       }
-    } on SocketException {
+    } on NetworkException {
       if (mounted) {
         AppSnackBar.error(
           context,
