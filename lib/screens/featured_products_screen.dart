@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/product.dart';
-import '../models/cart_item.dart';
+import '../services/cart_manager.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/product_card.dart';
 import '../widgets/cart_button.dart';
 import 'product_detail_screen.dart';
+import 'cart_screen.dart';
 
 class FeaturedProductsScreen extends StatefulWidget {
   final List<Product> products;
@@ -22,42 +23,24 @@ class FeaturedProductsScreen extends StatefulWidget {
 }
 
 class _FeaturedProductsScreenState extends State<FeaturedProductsScreen> {
-  final List<CartItem> _cartItems = [];
+  @override
+  void initState() {
+    super.initState();
+    CartManager.instance.addListener(_onCartChanged);
+  }
+
+  @override
+  void dispose() {
+    CartManager.instance.removeListener(_onCartChanged);
+    super.dispose();
+  }
+
+  void _onCartChanged() {
+    if (mounted) setState(() {});
+  }
 
   void _addToCart(Product product) {
-    setState(() {
-      // Buscar si el producto ya existe en el carrito
-      final existingItemIndex = _cartItems.indexWhere(
-        (item) => item.product.id == product.id,
-      );
-
-      if (existingItemIndex >= 0) {
-        // Si existe, incrementar cantidad usando copyWith
-        _cartItems[existingItemIndex] = _cartItems[existingItemIndex].copyWith(
-          quantity: _cartItems[existingItemIndex].quantity + 1,
-        );
-      } else {
-        // Si no existe, agregar nuevo item
-        // Seleccionar el supermercado con el precio más bajo por defecto
-        final selectedSupermarket = product.prices.isNotEmpty
-            ? product.prices.reduce((a, b) => a.price < b.price ? a : b)
-            : null;
-
-        if (selectedSupermarket != null) {
-          _cartItems.add(
-            CartItem(
-              id: '${product.id}_${DateTime.now().millisecondsSinceEpoch}',
-              product: product,
-              quantity: 1,
-              selectedSupermarketId: selectedSupermarket.supermarketId,
-              addedAt: DateTime.now(),
-            ),
-          );
-        }
-      }
-    });
-
-    // Mostrar feedback al usuario
+    CartManager.instance.addItem(product);
     AppSnackBar.success(
       context,
       message: '${product.name} agregado al carrito',
@@ -66,11 +49,11 @@ class _FeaturedProductsScreenState extends State<FeaturedProductsScreen> {
   }
 
   void _navigateToCart() {
-    // TODO: Implementar navegación al carrito
-    AppSnackBar.info(
+    Navigator.push(
       context,
-      message: 'Navegando al carrito...',
-      duration: const Duration(seconds: 1),
+      MaterialPageRoute(
+        builder: (context) => const CartScreen(),
+      ),
     );
   }
 
@@ -112,7 +95,7 @@ class _FeaturedProductsScreenState extends State<FeaturedProductsScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: CartButton(
               onTap: _navigateToCart,
-              itemCount: _cartItems.fold(0, (sum, item) => sum + item.quantity),
+              itemCount: CartManager.instance.itemCount,
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/cart_manager.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'home_screen.dart';
 import 'products_screen.dart';
@@ -22,6 +23,12 @@ class _MainScreenState extends State<MainScreen> {
     OffersScreen(),
     ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    CartManager.instance.init();
+  }
 
   @override
   Widget build(BuildContext context) {

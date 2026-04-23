@@ -17,6 +17,7 @@ class CartItem {
 
   // Precio del producto en el supermercado seleccionado
   double get price {
+    if (product.prices.isEmpty) return 0.0;
     final priceInfo = product.prices.firstWhere(
       (p) => p.supermarketId == selectedSupermarketId,
       orElse: () => product.prices.first,
@@ -29,6 +30,7 @@ class CartItem {
 
   // Nombre del supermercado seleccionado
   String get supermarketName {
+    if (product.prices.isEmpty) return '';
     final priceInfo = product.prices.firstWhere(
       (p) => p.supermarketId == selectedSupermarketId,
       orElse: () => product.prices.first,

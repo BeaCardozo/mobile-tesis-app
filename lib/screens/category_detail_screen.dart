@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
-import '../models/cart_item.dart';
 import '../services/api.dart';
+import '../services/cart_manager.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
 import 'product_detail_screen.dart';
+import 'cart_screen.dart';
 
 class CategoryDetailScreen extends StatefulWidget {
   final Category category;
@@ -24,7 +25,6 @@ class CategoryDetailScreen extends StatefulWidget {
 }
 
 class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
-  final List<CartItem> _cartItems = [];
   List<Product> _filteredProducts = [];
   bool _isLoading = true;
 
@@ -32,6 +32,17 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   void initState() {
     super.initState();
     _loadProducts();
+    CartManager.instance.addListener(_onCartChanged);
+  }
+
+  @override
+  void dispose() {
+    CartManager.instance.removeListener(_onCartChanged);
+    super.dispose();
+  }
+
+  void _onCartChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadProducts() async {
@@ -60,34 +71,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   }
 
   void _addToCart(Product product) {
-    setState(() {
-      final existingItemIndex = _cartItems.indexWhere(
-        (item) => item.product.id == product.id,
-      );
-
-      if (existingItemIndex >= 0) {
-        _cartItems[existingItemIndex] = _cartItems[existingItemIndex].copyWith(
-          quantity: _cartItems[existingItemIndex].quantity + 1,
-        );
-      } else {
-        final selectedSupermarket = product.prices.isNotEmpty
-            ? product.prices.reduce((a, b) => a.price < b.price ? a : b)
-            : null;
-
-        if (selectedSupermarket != null) {
-          _cartItems.add(
-            CartItem(
-              id: '${product.id}_${DateTime.now().millisecondsSinceEpoch}',
-              product: product,
-              quantity: 1,
-              selectedSupermarketId: selectedSupermarket.supermarketId,
-              addedAt: DateTime.now(),
-            ),
-          );
-        }
-      }
-    });
-
+    CartManager.instance.addItem(product);
     AppSnackBar.success(
       context,
       message: '${product.name} agregado al carrito',
@@ -96,11 +80,11 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   }
 
   void _navigateToCart() {
-    // TODO: Implementar navegación al carrito
-    AppSnackBar.info(
+    Navigator.push(
       context,
-      message: 'Navegando al carrito...',
-      duration: const Duration(seconds: 1),
+      MaterialPageRoute(
+        builder: (context) => const CartScreen(),
+      ),
     );
   }
 
@@ -146,7 +130,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: CartButton(
               onTap: _navigateToCart,
-              itemCount: _cartItems.fold(0, (sum, item) => sum + item.quantity),
+              itemCount: CartManager.instance.itemCount,
             ),
           ),
         ],

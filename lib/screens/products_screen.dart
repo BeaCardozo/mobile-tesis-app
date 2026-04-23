@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/product.dart';
 import '../models/category.dart';
-import '../models/cart_item.dart';
 import '../services/api.dart';
+import '../services/cart_manager.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_header.dart';
 import '../widgets/app_snack_bar.dart';
@@ -19,7 +19,6 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<CartItem> _cartItems = [];
 
   // Filtros
   String? _selectedCategory;
@@ -39,6 +38,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
   void initState() {
     super.initState();
     _loadData();
+    CartManager.instance.addListener(_onCartChanged);
+  }
+
+  void _onCartChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadData({String? search}) async {
@@ -80,37 +84,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   void dispose() {
+    CartManager.instance.removeListener(_onCartChanged);
     _searchController.dispose();
     super.dispose();
   }
 
   void _addToCart(Product product) {
-    final defaultSupermarketId = product.prices.isNotEmpty
-        ? product.prices.first.supermarketId
-        : '';
-
-    setState(() {
-      final existingIndex = _cartItems.indexWhere(
-        (item) => item.product.id == product.id,
-      );
-
-      if (existingIndex != -1) {
-        _cartItems[existingIndex] = _cartItems[existingIndex].copyWith(
-          quantity: _cartItems[existingIndex].quantity + 1,
-        );
-      } else {
-        _cartItems.add(
-          CartItem(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            product: product,
-            quantity: 1,
-            selectedSupermarketId: defaultSupermarketId,
-            addedAt: DateTime.now(),
-          ),
-        );
-      }
-    });
-
+    CartManager.instance.addItem(product);
     AppSnackBar.success(
       context,
       message: '${product.name} añadido al carrito',
@@ -119,30 +99,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  void _removeFromCart(String itemId) {
-    setState(() {
-      _cartItems.removeWhere((item) => item.id == itemId);
-    });
-  }
-
-  void _updateCartItemQuantity(String itemId, int newQuantity) {
-    setState(() {
-      final index = _cartItems.indexWhere((item) => item.id == itemId);
-      if (index != -1) {
-        _cartItems[index] = _cartItems[index].copyWith(quantity: newQuantity);
-      }
-    });
-  }
-
   void _navigateToCart() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CartScreen(
-          cartItems: _cartItems,
-          onRemoveItem: _removeFromCart,
-          onUpdateQuantity: _updateCartItemQuantity,
-        ),
+        builder: (context) => const CartScreen(),
       ),
     );
   }
@@ -578,7 +539,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 });
               },
               onCartTap: _navigateToCart,
-              cartItemCount: _cartItems.length,
+              cartItemCount: CartManager.instance.itemCount,
             ),
 
             const SizedBox(height: 8),

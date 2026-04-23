@@ -3,8 +3,8 @@ import 'dart:async';
 import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
-import '../models/cart_item.dart';
 import '../services/api.dart';
+import '../services/cart_manager.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 import '../widgets/app_header.dart';
@@ -26,9 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _promoPageController = PageController();
   int _currentPromoPage = 0;
   Timer? _promoTimer;
-
-  // Carrito de compras
-  final List<CartItem> _cartItems = [];
 
   // Moneda seleccionada
   String _selectedCurrency = 'Bs';
@@ -67,6 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _startPromoTimer();
     _loadData();
+    CartManager.instance.addListener(_onCartChanged);
+  }
+
+  void _onCartChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _loadData() async {
@@ -105,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    CartManager.instance.removeListener(_onCartChanged);
     _promoPageController.dispose();
     _promoTimer?.cancel();
     super.dispose();
@@ -129,37 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _addToCart(Product product) {
-    // Usar el primer supermercado disponible por defecto
-    final defaultSupermarketId = product.prices.isNotEmpty
-        ? product.prices.first.supermarketId
-        : '';
-
-    setState(() {
-      // Verificar si el producto ya está en el carrito
-      final existingIndex = _cartItems.indexWhere(
-        (item) => item.product.id == product.id,
-      );
-
-      if (existingIndex != -1) {
-        // Si ya existe, incrementar cantidad
-        _cartItems[existingIndex] = _cartItems[existingIndex].copyWith(
-          quantity: _cartItems[existingIndex].quantity + 1,
-        );
-      } else {
-        // Si no existe, añadir nuevo item
-        _cartItems.add(
-          CartItem(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            product: product,
-            quantity: 1,
-            selectedSupermarketId: defaultSupermarketId,
-            addedAt: DateTime.now(),
-          ),
-        );
-      }
-    });
-
-    // Mostrar mensaje de confirmación
+    CartManager.instance.addItem(product);
     AppSnackBar.success(
       context,
       message: '${product.name} añadido al carrito',
@@ -168,34 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _removeFromCart(String itemId) {
-    setState(() {
-      _cartItems.removeWhere((item) => item.id == itemId);
-    });
-  }
-
-  void _updateCartItemQuantity(String itemId, int newQuantity) {
-    setState(() {
-      final index = _cartItems.indexWhere((item) => item.id == itemId);
-      if (index != -1) {
-        _cartItems[index] = _cartItems[index].copyWith(quantity: newQuantity);
-      }
-    });
-  }
-
   void _navigateToCart() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CartScreen(
-          cartItems: _cartItems,
-          onRemoveItem: _removeFromCart,
-          onUpdateQuantity: _updateCartItemQuantity,
-        ),
+        builder: (context) => const CartScreen(),
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               onCartTap: _navigateToCart,
-              cartItemCount: _cartItems.length,
+              cartItemCount: CartManager.instance.itemCount,
             ),
 
             // Contenido con scroll

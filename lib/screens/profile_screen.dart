@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
+import '../services/cart_manager.dart';
 import 'edit_profile_screen.dart';
 import 'help_center_screen.dart';
 import 'login_screen.dart';
@@ -97,6 +98,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } catch (_) {
         // Si falla el logout remoto, continuar
       }
+
+      CartManager.instance.reset();
 
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
