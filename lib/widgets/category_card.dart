@@ -4,47 +4,62 @@ import '../models/category.dart';
 class CategoryCard extends StatelessWidget {
   final Category category;
   final VoidCallback onTap;
+  final double? iconSize;
+  final double? fontSize;
 
   const CategoryCard({
     super.key,
     required this.category,
     required this.onTap,
+    this.iconSize,
+    this.fontSize,
   });
 
   @override
   Widget build(BuildContext context) {
+    final double resolvedIconSize = iconSize ?? 24;
+    final double resolvedFontSize = fontSize ?? 11;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100,
-        margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: category.color,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: category.color.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: category.color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: category.color.withOpacity(0.25),
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              category.icon,
-              size: 36,
-              color: Colors.white,
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: category.color.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                category.icon,
+                size: resolvedIconSize,
+                color: category.color,
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              category.name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text(
+                category.name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: resolvedFontSize,
+                  fontWeight: FontWeight.w600,
+                  color: category.color.withOpacity(0.9),
+                  letterSpacing: 0.1,
+                  height: 1.2,
+                ),
               ),
             ),
           ],

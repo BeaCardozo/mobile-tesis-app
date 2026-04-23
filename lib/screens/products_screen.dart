@@ -3,8 +3,10 @@ import '../config/app_colors.dart';
 import '../models/product.dart';
 import '../models/category.dart';
 import '../models/cart_item.dart';
+import '../services/api_service.dart';
 import '../widgets/product_card.dart';
-import '../widgets/cart_button.dart';
+import '../widgets/app_header.dart';
+import '../widgets/app_snack_bar.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 
@@ -29,150 +31,39 @@ class _ProductsScreenState extends State<ProductsScreen> {
   // Moneda seleccionada
   String _selectedCurrency = 'Bs';
 
-  // Categorías (para los filtros)
-  final List<Category> _categories = [
-    Category(
-      id: '1',
-      name: 'Alimentos',
-      icon: Icons.restaurant,
-      color: AppColors.primary,
-    ),
-    Category(
-      id: '2',
-      name: 'Bebidas',
-      icon: Icons.local_drink,
-      color: const Color(0xFF5B9BD5),
-    ),
-    Category(
-      id: '3',
-      name: 'Limpieza',
-      icon: Icons.cleaning_services,
-      color: const Color(0xFFB97FB9),
-    ),
-    Category(
-      id: '4',
-      name: 'Cuidado Personal',
-      icon: Icons.self_improvement,
-      color: const Color(0xFFED7D95),
-    ),
-    Category(
-      id: '5',
-      name: 'Mascotas',
-      icon: Icons.pets,
-      color: AppColors.accent,
-    ),
-  ];
+  List<Category> _categories = [];
+  List<Product> _products = [];
+  bool _isLoading = true;
 
-  // Datos de ejemplo - Estos vendrán del backend
-  final List<Product> _products = [
-    Product(
-      id: '1',
-      name: 'Arroz Diana 1kg',
-      description: 'Arroz blanco de grano largo, calidad premium',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 3.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 3.20,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 3.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '3',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 3.80,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '2',
-      name: 'Aceite Mazeite 1L',
-      description: 'Aceite vegetal 100% puro',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'L',
-      averagePrice: 4.25,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 4.10,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 4.40,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '3',
-      name: 'Harina PAN 1kg',
-      description: 'Harina de maíz precocida',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 2.80,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 2.65,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 2.95,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '4',
-      name: 'Azúcar Blanca 1kg',
-      description: 'Azúcar refinada',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 1.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 1.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 1.55,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final categoriesData = await ApiService.getCategories();
+      final productsData = await ApiService.getProducts();
+
+      if (mounted) {
+        setState(() {
+          _categories = categoriesData
+              .map((json) => Category.fromJson(json))
+              .toList();
+          _products = productsData
+              .map((json) => Product.fromJson(json))
+              .toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        AppSnackBar.error(context, message: 'Error al cargar productos: $e');
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -207,19 +98,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
       }
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} añadido al carrito'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'Ver carrito',
-          textColor: Colors.white,
-          onPressed: () {
-            _navigateToCart();
-          },
-        ),
-      ),
+    AppSnackBar.success(
+      context,
+      message: '${product.name} añadido al carrito',
+      actionLabel: 'Ver carrito',
+      onAction: _navigateToCart,
     );
   }
 
@@ -612,12 +495,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               // TODO: Filtrar productos según los criterios seleccionados
                             });
                             Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Filtros aplicados'),
-                                backgroundColor: AppColors.success,
-                                duration: Duration(seconds: 2),
-                              ),
+                            AppSnackBar.success(
+                              context,
+                              message: 'Filtros aplicados',
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -677,7 +557,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
         child: Column(
           children: [
             // Header
-            _buildHeader(),
+            AppHeader(
+              selectedCurrency: _selectedCurrency,
+              onCurrencyChanged: (newValue) {
+                setState(() {
+                  _selectedCurrency = newValue;
+                });
+              },
+              onCartTap: _navigateToCart,
+              cartItemCount: _cartItems.length,
+            ),
 
             const SizedBox(height: 8),
 
@@ -688,7 +577,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
             // Grid de productos
             Expanded(
-              child: SingleChildScrollView(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                  : SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
@@ -752,93 +643,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Logo
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Caracas',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Ahorra',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.accent,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Controles de moneda y carrito
-          Row(
-            children: [
-              // Dropdown de moneda
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.lightGrey,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: DropdownButton<String>(
-                  value: _selectedCurrency,
-                  icon: const Icon(Icons.keyboard_arrow_down, size: 16),
-                  underline: const SizedBox(),
-                  isDense: true,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'Bs',
-                      child: Text('Bs'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'USD',
-                      child: Text('USD'),
-                    ),
-                  ],
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedCurrency = newValue;
-                      });
-                    }
-                  },
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Botón del carrito
-              CartButton(
-                onTap: _navigateToCart,
-                itemCount: _cartItems.length,
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

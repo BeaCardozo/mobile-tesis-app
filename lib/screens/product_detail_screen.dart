@@ -180,29 +180,39 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   // Estadísticas de precio
                   _buildPriceStats(),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 48),
 
                   // Título de comparación
-                  const Text(
-                    'Comparación de Precios',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Comparación de Precios',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${widget.product.prices.length} supermercados disponibles',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.grey.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: 8),
-
-                  Text(
-                    'Encuentra el mejor precio en ${widget.product.prices.length} supermercados',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey.withOpacity(0.8),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
                   // Lista de precios por supermercado
                   ...sortedPrices.asMap().entries.map((entry) {
@@ -337,137 +347,129 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _buildPriceCard(PriceInfo priceInfo, bool isLowest) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isLowest
-            ? AppColors.primaryLight.withOpacity(0.2)
-            : Colors.white,
+            ? AppColors.primaryLight.withOpacity(0.15)
+            : AppColors.lightGrey.withOpacity(0.5),
         border: Border.all(
           color: isLowest
               ? AppColors.primary
-              : AppColors.grey.withOpacity(0.2),
+              : AppColors.grey.withOpacity(0.15),
           width: isLowest ? 2 : 1,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          if (isLowest)
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
+          BoxShadow(
+            color: isLowest
+                ? AppColors.primary.withOpacity(0.12)
+                : Colors.black.withOpacity(0.03),
+            blurRadius: isLowest ? 12 : 6,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Row(
-        children: [
-          // Logo del supermercado
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.lightGrey,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: priceInfo.supermarketLogo.isNotEmpty
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      priceInfo.supermarketLogo,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.store,
-                          color: AppColors.primary,
-                          size: 30,
-                        );
-                      },
+            children: [
+              // Logo del supermercado
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
-                  )
-                : const Icon(
-                    Icons.store,
-                    color: AppColors.primary,
-                    size: 30,
-                  ),
-          ),
-
-          const SizedBox(width: 16),
-
-          // Información
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        priceInfo.supermarketName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
-                        ),
-                      ),
-                    ),
-                    if (isLowest)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          'Mejor precio',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Actualizado: ${_formatDate(priceInfo.lastUpdated)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.grey.withOpacity(0.8),
-                  ),
-                ),
-              ],
-            ),
-          ),
+                child: priceInfo.supermarketLogo.isNotEmpty
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Image.network(
+                          priceInfo.supermarketLogo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.store_rounded,
+                              color: AppColors.primary,
+                              size: 26,
+                            );
+                          },
+                        ),
+                      )
+                    : const Icon(
+                        Icons.store_rounded,
+                        color: AppColors.primary,
+                        size: 26,
+                      ),
+              ),
 
-          const SizedBox(width: 16),
+              const SizedBox(width: 14),
 
-          // Precio
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                'Bs. ${priceInfo.price.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: isLowest ? AppColors.primary : AppColors.black,
+              // Nombre y fecha
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      priceInfo.supermarketName,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: 13,
+                          color: AppColors.grey.withOpacity(0.6),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _formatDate(priceInfo.lastUpdated),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.grey.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              Text(
-                '/${widget.product.unit}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.grey.withOpacity(0.8),
-                ),
+
+              // Precio
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Bs. ${priceInfo.price.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: isLowest ? AppColors.primary : AppColors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '/${widget.product.unit}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.grey.withOpacity(0.6),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
     );
   }
 

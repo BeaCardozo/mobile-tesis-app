@@ -1,9 +1,11 @@
 class Product {
   final String id;
   final String name;
+  final String slug;
   final String description;
   final String imageUrl;
   final String category;
+  final int categoryId;
   final List<PriceInfo> prices;
   final double averagePrice;
   final String unit;
@@ -12,41 +14,47 @@ class Product {
   Product({
     required this.id,
     required this.name,
+    this.slug = '',
     required this.description,
     required this.imageUrl,
     required this.category,
+    this.categoryId = 0,
     required this.prices,
     required this.averagePrice,
     required this.unit,
     this.isFavorite = false,
   });
 
-  // Constructor para facilitar la conversión desde JSON cuando se implemente el backend
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       name: json['name'] as String,
+      slug: json['slug'] as String? ?? '',
       description: json['description'] as String? ?? '',
       imageUrl: json['imageUrl'] as String? ?? '',
-      category: json['category'] as String,
+      category: json['category'] is Map
+          ? (json['category']['name'] as String? ?? '')
+          : (json['category'] as String? ?? ''),
+      categoryId: json['categoryId'] as int? ?? 0,
       prices: (json['prices'] as List<dynamic>?)
               ?.map((price) => PriceInfo.fromJson(price as Map<String, dynamic>))
               .toList() ??
           [],
       averagePrice: (json['averagePrice'] as num?)?.toDouble() ?? 0.0,
-      unit: json['unit'] as String? ?? 'unidad',
+      unit: json['baseUnit'] as String? ?? json['unit'] as String? ?? 'unidad',
       isFavorite: json['isFavorite'] as bool? ?? false,
     );
   }
 
-  // Método para convertir a JSON para enviar al backend
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
+      'slug': slug,
       'description': description,
       'imageUrl': imageUrl,
       'category': category,
+      'categoryId': categoryId,
       'prices': prices.map((price) => price.toJson()).toList(),
       'averagePrice': averagePrice,
       'unit': unit,
@@ -54,25 +62,24 @@ class Product {
     };
   }
 
-  // Método para obtener el precio más bajo
   double get lowestPrice {
     if (prices.isEmpty) return 0.0;
     return prices.map((p) => p.price).reduce((a, b) => a < b ? a : b);
   }
 
-  // Método para obtener el precio más alto
   double get highestPrice {
     if (prices.isEmpty) return 0.0;
     return prices.map((p) => p.price).reduce((a, b) => a > b ? a : b);
   }
 
-  // Método para copiar el producto con algunos campos modificados
   Product copyWith({
     String? id,
     String? name,
+    String? slug,
     String? description,
     String? imageUrl,
     String? category,
+    int? categoryId,
     List<PriceInfo>? prices,
     double? averagePrice,
     String? unit,
@@ -81,9 +88,11 @@ class Product {
     return Product(
       id: id ?? this.id,
       name: name ?? this.name,
+      slug: slug ?? this.slug,
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
       category: category ?? this.category,
+      categoryId: categoryId ?? this.categoryId,
       prices: prices ?? this.prices,
       averagePrice: averagePrice ?? this.averagePrice,
       unit: unit ?? this.unit,
@@ -107,7 +116,6 @@ class PriceInfo {
     required this.lastUpdated,
   });
 
-  // Constructor para facilitar la conversión desde JSON
   factory PriceInfo.fromJson(Map<String, dynamic> json) {
     return PriceInfo(
       supermarketId: json['supermarketId'] as String,
@@ -118,7 +126,6 @@ class PriceInfo {
     );
   }
 
-  // Método para convertir a JSON
   Map<String, dynamic> toJson() {
     return {
       'supermarketId': supermarketId,

@@ -4,12 +4,15 @@ import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../models/product.dart';
 import '../models/cart_item.dart';
+import '../services/api_service.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
-import '../widgets/cart_button.dart';
+import '../widgets/app_header.dart';
+import '../widgets/app_snack_bar.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 import 'categories_screen.dart';
+import 'category_detail_screen.dart';
 import 'featured_products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -55,156 +58,42 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  // Datos de ejemplo - Estos vendrán del backend
-  final List<Category> _categories = [
-    Category(
-      id: '1',
-      name: 'Alimentos',
-      icon: Icons.restaurant,
-      color: AppColors.primary,
-    ),
-    Category(
-      id: '2',
-      name: 'Bebidas',
-      icon: Icons.local_drink,
-      color: const Color(0xFF5B9BD5),
-    ),
-    Category(
-      id: '3',
-      name: 'Limpieza',
-      icon: Icons.cleaning_services,
-      color: const Color(0xFFB97FB9),
-    ),
-    Category(
-      id: '4',
-      name: 'Cuidado Personal',
-      icon: Icons.self_improvement,
-      color: const Color(0xFFED7D95),
-    ),
-    Category(
-      id: '5',
-      name: 'Mascotas',
-      icon: Icons.pets,
-      color: AppColors.accent,
-    ),
-  ];
-
-  // Productos de ejemplo - Estos vendrán del backend
-  List<Product> _products = [
-    Product(
-      id: '1',
-      name: 'Arroz Diana 1kg',
-      description: 'Arroz blanco de grano largo, calidad premium',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 3.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 3.20,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 3.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '3',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 3.80,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '2',
-      name: 'Aceite Mazeite 1L',
-      description: 'Aceite vegetal 100% puro',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'L',
-      averagePrice: 4.25,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 4.10,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 4.40,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '3',
-      name: 'Harina PAN 1kg',
-      description: 'Harina de maíz precocida',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 2.80,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 2.65,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Automercado',
-          supermarketLogo: '',
-          price: 2.95,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-    Product(
-      id: '4',
-      name: 'Azúcar Blanca 1kg',
-      description: 'Azúcar refinada',
-      imageUrl: '',
-      category: 'Alimentos',
-      unit: 'kg',
-      averagePrice: 1.50,
-      prices: [
-        PriceInfo(
-          supermarketId: '1',
-          supermarketName: 'Excelsior Gama',
-          supermarketLogo: '',
-          price: 1.45,
-          lastUpdated: DateTime.now(),
-        ),
-        PriceInfo(
-          supermarketId: '2',
-          supermarketName: 'Central Madeirense',
-          supermarketLogo: '',
-          price: 1.55,
-          lastUpdated: DateTime.now(),
-        ),
-      ],
-    ),
-  ];
+  List<Category> _categories = [];
+  List<Product> _products = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Iniciar el timer para el carousel automático
     _startPromoTimer();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final categoriesData = await ApiService.getCategories();
+      final productsData = await ApiService.getProducts();
+
+      if (mounted) {
+        setState(() {
+          _categories = categoriesData
+              .map((json) => Category.fromJson(json))
+              .toList();
+          _products = productsData
+              .map((json) => Product.fromJson(json))
+              .toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        AppSnackBar.error(
+          context,
+          message: 'Error al cargar datos: $e',
+        );
+      }
+    }
   }
 
   @override
@@ -264,19 +153,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     // Mostrar mensaje de confirmación
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} añadido al carrito'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'Ver carrito',
-          textColor: Colors.white,
-          onPressed: () {
-            _navigateToCart();
-          },
-        ),
-      ),
+    AppSnackBar.success(
+      context,
+      message: '${product.name} añadido al carrito',
+      actionLabel: 'Ver carrito',
+      onAction: _navigateToCart,
     );
   }
 
@@ -317,11 +198,27 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             // Header fijo
-            _buildHeader(),
+            AppHeader(
+              selectedCurrency: _selectedCurrency,
+              onCurrencyChanged: (newValue) {
+                setState(() {
+                  _selectedCurrency = newValue;
+                });
+                AppSnackBar.info(
+                  context,
+                  message: 'Moneda cambiada a $newValue',
+                  duration: const Duration(seconds: 1),
+                );
+              },
+              onCartTap: _navigateToCart,
+              cartItemCount: _cartItems.length,
+            ),
 
             // Contenido con scroll
             Expanded(
-              child: SingleChildScrollView(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                  : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -351,108 +248,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Logo
-          RichText(
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Caracas',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Ahorra',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.accent,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Controles de moneda y carrito
-          Row(
-            children: [
-              // Dropdown de moneda
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.lightGrey,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: DropdownButton<String>(
-                  value: _selectedCurrency,
-                  icon: const Icon(Icons.keyboard_arrow_down, size: 16),
-                  underline: const SizedBox(),
-                  isDense: true,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'Bs',
-                      child: Text('Bs'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'USD',
-                      child: Text('USD'),
-                    ),
-                  ],
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedCurrency = newValue;
-                      });
-                      // TODO: Implementar conversión de moneda en los productos
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Moneda cambiada a $newValue'),
-                          backgroundColor: AppColors.primary,
-                          duration: const Duration(seconds: 1),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Botón del carrito
-              CartButton(
-                onTap: _navigateToCart,
-                itemCount: _cartItems.length,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-
   Widget _buildPromoBanner() {
     return Column(
       children: [
         SizedBox(
-          height: 180,
+          height: 170,
           child: PageView.builder(
+            clipBehavior: Clip.none,
             controller: _promoPageController,
             onPageChanged: (index) {
               setState(() {
@@ -462,6 +264,8 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: _promoBanners.length,
             itemBuilder: (context, index) {
               final banner = _promoBanners[index];
+              final gradientColors = banner['gradient'] as List<Color>;
+
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -470,72 +274,126 @@ class _HomeScreenState extends State<HomeScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: (banner['gradient'] as List<Color>)
-                          .map((c) => c.withOpacity(0.9))
-                          .toList(),
+                      colors: gradientColors,
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.25),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
+                        color: gradientColors[1].withOpacity(0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                     child: Stack(
                       children: [
-                        // Icono de fondo decorativo
+                        // Círculos decorativos de fondo
                         Positioned(
-                          right: -20,
-                          bottom: -20,
-                          child: Icon(
-                            banner['icon'] as IconData,
-                            size: 150,
-                            color: Colors.white.withOpacity(0.15),
+                          right: -40,
+                          top: -40,
+                          child: Container(
+                            width: 180,
+                            height: 180,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.08),
+                            ),
                           ),
                         ),
+                        Positioned(
+                          right: 20,
+                          bottom: -50,
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.06),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: -20,
+                          bottom: -30,
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.05),
+                            ),
+                          ),
+                        ),
+
                         // Contenido
                         Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          padding: const EdgeInsets.all(22),
+                          child: Row(
                             children: [
+                              // Texto
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        banner['label'] as String,
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          letterSpacing: 0.2,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      banner['title'] as String,
+                                      style: const TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: -0.5,
+                                        height: 1.1,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      banner['subtitle'] as String,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white.withOpacity(0.85),
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(width: 16),
+
+                              // Icono
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
+                                padding: const EdgeInsets.all(18),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.white.withOpacity(0.15),
+                                  shape: BoxShape.circle,
                                 ),
-                                child: Text(
-                                  banner['label'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                banner['title'] as String,
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                banner['subtitle'] as String,
-                                style: const TextStyle(
-                                  fontSize: 14,
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 28,
                                   color: Colors.white,
                                 ),
                               ),
@@ -550,20 +408,23 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+
         // Indicadores de página (dots)
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
             _promoBanners.length,
-            (index) => Container(
+            (index) => AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
               margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: _currentPromoPage == index ? 24 : 8,
-              height: 8,
+              width: _currentPromoPage == index ? 22 : 6,
+              height: 6,
               decoration: BoxDecoration(
                 color: _currentPromoPage == index
                     ? AppColors.primary
-                    : AppColors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(4),
+                    : AppColors.grey.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
           ),
@@ -584,9 +445,10 @@ class _HomeScreenState extends State<HomeScreen> {
               const Text(
                 'Categorías',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.black,
+                  letterSpacing: -0.2,
                 ),
               ),
               GestureDetector(
@@ -598,20 +460,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
                       'Ver todas',
                       style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: AppColors.primary.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Icon(
                       Icons.arrow_forward_ios,
-                      size: 14,
-                      color: AppColors.primary,
+                      size: 12,
+                      color: AppColors.primary.withOpacity(0.9),
                     ),
                   ],
                 ),
@@ -619,7 +482,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         SizedBox(
           height: 110,
           child: ListView.builder(
@@ -627,11 +490,24 @@ class _HomeScreenState extends State<HomeScreen> {
             scrollDirection: Axis.horizontal,
             itemCount: _categories.length,
             itemBuilder: (context, index) {
-              return CategoryCard(
-                category: _categories[index],
-                onTap: () {
-                  // TODO: Navegar a productos por categoría
-                },
+              return SizedBox(
+                width: 96,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: CategoryCard(
+                    category: _categories[index],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CategoryDetailScreen(
+                            category: _categories[index],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               );
             },
           ),
@@ -652,9 +528,10 @@ class _HomeScreenState extends State<HomeScreen> {
               const Text(
                 'Productos Destacados',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.black,
+                  letterSpacing: -0.2,
                 ),
               ),
               GestureDetector(
@@ -668,20 +545,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
                       'Ver todos',
                       style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: AppColors.primary.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Icon(
                       Icons.arrow_forward_ios,
-                      size: 14,
-                      color: AppColors.primary,
+                      size: 12,
+                      color: AppColors.primary.withOpacity(0.9),
                     ),
                   ],
                 ),
@@ -689,7 +567,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: GridView.builder(

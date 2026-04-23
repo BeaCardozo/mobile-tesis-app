@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/category.dart';
+import '../services/api_service.dart';
+import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
+import '../widgets/category_card.dart';
+import 'category_detail_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -12,92 +16,38 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
 
-  // Datos de ejemplo - Estos vendrán del backend
-  // TODO: Conectar con el backend para obtener las categorías reales
-  final List<Category> _categories = [
-    Category(
-      id: '1',
-      name: 'Alimentos',
-      icon: Icons.restaurant,
-      color: AppColors.primary,
-    ),
-    Category(
-      id: '2',
-      name: 'Bebidas',
-      icon: Icons.local_drink,
-      color: const Color(0xFF5B9BD5),
-    ),
-    Category(
-      id: '3',
-      name: 'Limpieza',
-      icon: Icons.cleaning_services,
-      color: const Color(0xFFB97FB9),
-    ),
-    Category(
-      id: '4',
-      name: 'Cuidado Personal',
-      icon: Icons.self_improvement,
-      color: const Color(0xFFED7D95),
-    ),
-    Category(
-      id: '5',
-      name: 'Mascotas',
-      icon: Icons.pets,
-      color: AppColors.accent,
-    ),
-    Category(
-      id: '6',
-      name: 'Snacks',
-      icon: Icons.cookie,
-      color: const Color(0xFFFF9F66),
-    ),
-    Category(
-      id: '7',
-      name: 'Panadería',
-      icon: Icons.bakery_dining,
-      color: const Color(0xFFD4A574),
-    ),
-    Category(
-      id: '8',
-      name: 'Lácteos',
-      icon: Icons.kitchen,
-      color: const Color(0xFF6CB4EE),
-    ),
-    Category(
-      id: '9',
-      name: 'Carnes',
-      icon: Icons.set_meal,
-      color: const Color(0xFFE57373),
-    ),
-    Category(
-      id: '10',
-      name: 'Frutas y Verduras',
-      icon: Icons.eco,
-      color: const Color(0xFF81C784),
-    ),
-    Category(
-      id: '11',
-      name: 'Congelados',
-      icon: Icons.ac_unit,
-      color: const Color(0xFF64B5F6),
-    ),
-    Category(
-      id: '12',
-      name: 'Bebé',
-      icon: Icons.child_care,
-      color: const Color(0xFFFFB6C1),
-    ),
-  ];
+  List<Category> _categories = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final data = await ApiService.getCategories();
+      if (mounted) {
+        setState(() {
+          _categories = data.map((json) => Category.fromJson(json)).toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        AppSnackBar.error(context, message: 'Error al cargar categorías: $e');
+      }
+    }
+  }
 
   void _navigateToCart() {
     // TODO: Implementar navegación al carrito
-    // Por ahora solo mostramos un mensaje
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Navegando al carrito...'),
-        backgroundColor: AppColors.primary,
-        duration: Duration(seconds: 1),
-      ),
+    AppSnackBar.info(
+      context,
+      message: 'Navegando al carrito...',
+      duration: const Duration(seconds: 1),
     );
   }
 
@@ -144,7 +94,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          : SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -207,17 +159,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         ),
         itemCount: _categories.length,
         itemBuilder: (context, index) {
-          return _buildCategoryGridCard(
+          return CategoryCard(
             category: _categories[index],
+            iconSize: 32,
+            fontSize: 13,
             onTap: () {
-              // TODO: Navegar a productos por categoría
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Navegando a ${_categories[index].name}...',
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CategoryDetailScreen(
+                    category: _categories[index],
                   ),
-                  backgroundColor: AppColors.primary,
-                  duration: const Duration(seconds: 1),
                 ),
               );
             },
@@ -227,51 +179,4 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  Widget _buildCategoryGridCard({
-    required Category category,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: category.color,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: category.color.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              category.icon,
-              size: 42,
-              color: Colors.white,
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                category.name,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  height: 1.2,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
