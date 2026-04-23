@@ -58,8 +58,12 @@ class UserProfile {
       lastName: json['lastName'] as String? ?? '',
       phoneNumber: json['phoneNumber'] as String?,
       role: json['role'] as String? ?? 'consumer',
-      currency: json['currency'] as String? ?? 'USD',
-      language: json['language'] as String? ?? 'es',
+      currency: json['preferenceCurrency'] as String? ??
+          json['currency'] as String? ??
+          'VES',
+      language: json['preferenceLanguage'] as String? ??
+          json['language'] as String? ??
+          'es',
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)

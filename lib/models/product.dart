@@ -101,6 +101,13 @@ class Product {
     return prices.map((p) => p.price).reduce((a, b) => a < b ? a : b);
   }
 
+  double get lowestPriceUsd {
+    if (prices.isEmpty) return 0.0;
+    final usdPrices = prices.where((p) => p.priceUsd != null).toList();
+    if (usdPrices.isEmpty) return 0.0;
+    return usdPrices.map((p) => p.priceUsd!).reduce((a, b) => a < b ? a : b);
+  }
+
   double get highestPrice {
     if (prices.isEmpty) return 0.0;
     return prices.map((p) => p.price).reduce((a, b) => a > b ? a : b);

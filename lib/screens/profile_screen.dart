@@ -27,10 +27,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     try {
-      final user = await Api.instance.auth.getMe();
+      final user = await Api.instance.users.getMe();
       if (mounted) {
         setState(() {
-          _userName = '${user.firstName} ${user.lastName}'.trim();
+          _userName = user.fullName.isNotEmpty ? user.fullName : 'Usuario';
           _userEmail = user.email;
           _isLoading = false;
         });

@@ -33,10 +33,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _loadUserData() async {
     try {
-      final user = await Api.instance.auth.getMe();
+      final user = await Api.instance.users.getMe();
       if (mounted) {
         setState(() {
-          _nameController.text = '${user.firstName} ${user.lastName}'.trim();
+          _nameController.text = user.fullName;
           _emailController.text = user.email;
         });
       }

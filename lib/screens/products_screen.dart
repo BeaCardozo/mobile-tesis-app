@@ -631,12 +631,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         itemBuilder: (context, index) {
                           return ProductCard(
                             product: _products[index],
+                            currency: _selectedCurrency,
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ProductDetailScreen(
                                     product: _products[index],
+                                    currency: _selectedCurrency,
                                   ),
                                 ),
                               );

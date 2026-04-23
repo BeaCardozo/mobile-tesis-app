@@ -6,12 +6,14 @@ class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
   final VoidCallback? onAddToCart;
+  final String currency;
 
   const ProductCard({
     super.key,
     required this.product,
     required this.onTap,
     this.onAddToCart,
+    this.currency = 'Bs',
   });
 
   @override
@@ -150,7 +152,9 @@ class ProductCard extends StatelessWidget {
                                   ),
                                 ),
                               Text(
-                                'Bs. ${product.lowestPrice.toStringAsFixed(2)}',
+                                currency == 'USD'
+                                    ? '\$ ${product.lowestPriceUsd.toStringAsFixed(2)}'
+                                    : 'Bs. ${product.lowestPrice.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

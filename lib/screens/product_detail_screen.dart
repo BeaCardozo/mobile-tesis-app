@@ -6,10 +6,12 @@ import '../services/api.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
+  final String currency;
 
   const ProductDetailScreen({
     super.key,
     required this.product,
+    this.currency = 'Bs',
   });
 
   @override
@@ -64,8 +66,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isUsd = widget.currency == 'USD';
     final sortedPrices = List<PriceInfo>.from(_allPrices)
-      ..sort((a, b) => a.price.compareTo(b.price));
+      ..sort((a, b) => isUsd
+          ? (a.priceUsd ?? 0).compareTo(b.priceUsd ?? 0)
+          : a.price.compareTo(b.price));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -276,9 +281,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
+  String _formatPrice(double value) {
+    final isUsd = widget.currency == 'USD';
+    return isUsd
+        ? '\$ ${value.toStringAsFixed(2)}'
+        : 'Bs. ${value.toStringAsFixed(2)}';
+  }
+
+  double _priceOf(PriceInfo p) {
+    return widget.currency == 'USD' ? (p.priceUsd ?? 0) : p.price;
+  }
+
   Widget _buildPriceStats(List<PriceInfo> prices) {
-    final lowest = prices.map((p) => p.price).reduce((a, b) => a < b ? a : b);
-    final highest = prices.map((p) => p.price).reduce((a, b) => a > b ? a : b);
+    final lowest = prices.map(_priceOf).reduce((a, b) => a < b ? a : b);
+    final highest = prices.map(_priceOf).reduce((a, b) => a > b ? a : b);
     final savings = highest - lowest;
 
     return Container(
@@ -301,7 +317,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Expanded(
                 child: _buildStatItem(
                   'Precio Mínimo',
-                  'Bs. ${lowest.toStringAsFixed(2)}',
+                  _formatPrice(lowest),
                   Icons.arrow_downward,
                 ),
               ),
@@ -313,7 +329,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Expanded(
                 child: _buildStatItem(
                   'Precio Máximo',
-                  'Bs. ${highest.toStringAsFixed(2)}',
+                  _formatPrice(highest),
                   Icons.arrow_upward,
                 ),
               ),
@@ -347,7 +363,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                       Text(
-                        'Bs. ${savings.toStringAsFixed(2)}',
+                        _formatPrice(savings),
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -497,7 +513,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
               // Precio
               Text(
-                'Bs. ${priceInfo.price.toStringAsFixed(2)}',
+                _formatPrice(_priceOf(priceInfo)),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

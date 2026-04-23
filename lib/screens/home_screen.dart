@@ -211,11 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() {
                   _selectedCurrency = newValue;
                 });
-                AppSnackBar.info(
-                  context,
-                  message: 'Moneda cambiada a $newValue',
-                  duration: const Duration(seconds: 1),
-                );
               },
               onCartTap: _navigateToCart,
               cartItemCount: _cartItems.length,
@@ -509,6 +504,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(
                           builder: (context) => CategoryDetailScreen(
                             category: _categories[index],
+                            currency: _selectedCurrency,
                           ),
                         ),
                       );
@@ -548,6 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                       builder: (context) => FeaturedProductsScreen(
                         products: _products,
+                        currency: _selectedCurrency,
                       ),
                     ),
                   );
@@ -590,12 +587,14 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               return ProductCard(
                 product: _products[index],
+                currency: _selectedCurrency,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailScreen(
                         product: _products[index],
+                        currency: _selectedCurrency,
                       ),
                     ),
                   );

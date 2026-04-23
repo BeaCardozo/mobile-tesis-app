@@ -11,10 +11,12 @@ import 'product_detail_screen.dart';
 
 class CategoryDetailScreen extends StatefulWidget {
   final Category category;
+  final String currency;
 
   const CategoryDetailScreen({
     super.key,
     required this.category,
+    this.currency = 'Bs',
   });
 
   @override
@@ -191,12 +193,14 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
                       itemBuilder: (context, index) {
                         return ProductCard(
                           product: _filteredProducts[index],
+                          currency: widget.currency,
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ProductDetailScreen(
                                   product: _filteredProducts[index],
+                                  currency: widget.currency,
                                 ),
                               ),
                             );

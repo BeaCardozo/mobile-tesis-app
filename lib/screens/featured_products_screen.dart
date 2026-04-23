@@ -9,10 +9,12 @@ import 'product_detail_screen.dart';
 
 class FeaturedProductsScreen extends StatefulWidget {
   final List<Product> products;
+  final String currency;
 
   const FeaturedProductsScreen({
     super.key,
     required this.products,
+    this.currency = 'Bs',
   });
 
   @override
@@ -166,12 +168,14 @@ class _FeaturedProductsScreenState extends State<FeaturedProductsScreen> {
                 itemBuilder: (context, index) {
                   return ProductCard(
                     product: widget.products[index],
+                    currency: widget.currency,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ProductDetailScreen(
                             product: widget.products[index],
+                            currency: widget.currency,
                           ),
                         ),
                       );
