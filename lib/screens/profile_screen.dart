@@ -148,14 +148,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     subtitle: 'Actualiza tu información personal',
                     iconColor: AppColors.primary,
                     onTap: () async {
-                      final updated = await Navigator.of(context).push<bool>(
+                      await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const EditProfileScreen(),
                         ),
                       );
-                      if (updated == true) {
-                        _loadUserData();
-                      }
+                      _loadUserData();
                     },
                   ),
                 ],
@@ -500,7 +498,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 4),
             const Text(
-              'Beatriz Cardozo',
+              'Beatriz Cardozo y David Dávila',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,

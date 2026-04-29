@@ -15,6 +15,7 @@ class ProductsApiService {
     String? categoryId,
     String? brandId,
     int? supermarket,
+    String? supermarketName,
     double? minPrice,
     double? maxPrice,
     String? sortBy,
@@ -29,6 +30,7 @@ class ProductsApiService {
     if (categoryId != null) queryParams['category'] = categoryId;
     if (brandId != null) queryParams['brand'] = brandId;
     if (supermarket != null) queryParams['supermarket'] = supermarket.toString();
+    if (supermarketName != null) queryParams['supermarketName'] = supermarketName;
     if (minPrice != null) queryParams['minPrice'] = minPrice.toString();
     if (maxPrice != null) queryParams['maxPrice'] = maxPrice.toString();
     if (sortBy != null) queryParams['sortBy'] = sortBy;

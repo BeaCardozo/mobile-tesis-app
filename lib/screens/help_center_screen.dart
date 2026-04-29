@@ -33,7 +33,7 @@ class HelpCenterScreen extends StatelessWidget {
                         _FaqItem(
                           question: '¿Cómo cambio mi contraseña?',
                           answer:
-                              'Puedes cambiar tu contraseña desde la sección "Editar Perfil" en tu perfil. Ingresa tu contraseña actual y luego la nueva contraseña. Esta funcionalidad estará completamente disponible próximamente.',
+                              'Puedes cambiar tu contraseña desde la sección "Editar Perfil" en tu perfil. Ingresa tu contraseña actual y luego la nueva contraseña.',
                         ),
                       ],
                     ),
@@ -89,36 +89,6 @@ class HelpCenterScreen extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 28),
-
-                    // Sección Contacto
-                    _buildSectionTitle('Contáctanos'),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(22),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.03),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          _buildContactItem(
-                            icon: Icons.email_outlined,
-                            title: 'Correo de soporte',
-                            subtitle: 'soporte@caracasahorra.com',
-                            color: AppColors.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

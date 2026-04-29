@@ -19,6 +19,18 @@ class SupermarketsApiService {
     return [];
   }
 
+  /// Listar supermercados del DWH (con claves numéricas para filtros).
+  /// GET /api/supermarkets/dwh
+  Future<List<DwhSupermarket>> listDwh() async {
+    final data = await _client.get('supermarkets/dwh');
+    if (data is List) {
+      return data
+          .map((e) => DwhSupermarket.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
+  }
+
   /// Obtener detalle de un supermercado.
   /// GET /api/supermarkets/:id
   Future<ApiSupermarket> getDetail(String id) async {

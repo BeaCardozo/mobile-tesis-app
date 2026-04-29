@@ -15,14 +15,13 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  String _selectedCurrency = 'Bs';
 
-  // Lista de pantallas
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    ProductsScreen(),
-    OffersScreen(),
-    ProfileScreen(),
-  ];
+  void _onCurrencyChanged(String newCurrency) {
+    setState(() {
+      _selectedCurrency = newCurrency;
+    });
+  }
 
   @override
   void initState() {
@@ -35,7 +34,18 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: [
+          HomeScreen(
+            selectedCurrency: _selectedCurrency,
+            onCurrencyChanged: _onCurrencyChanged,
+          ),
+          ProductsScreen(
+            selectedCurrency: _selectedCurrency,
+            onCurrencyChanged: _onCurrencyChanged,
+          ),
+          const OffersScreen(),
+          const ProfileScreen(),
+        ],
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,

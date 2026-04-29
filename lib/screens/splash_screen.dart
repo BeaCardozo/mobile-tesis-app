@@ -164,7 +164,15 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _navigateToNextScreen() async {
     if (!mounted) return;
 
-    final isAuthenticated = await Api.instance.auth.hasSession();
+    final hasSession = await Api.instance.auth.hasSession();
+    final rememberMe = await Api.instance.client.getRememberMe();
+
+    // Si hay sesion pero el usuario no marco "Recordarme", limpiar tokens.
+    if (hasSession && !rememberMe) {
+      await Api.instance.auth.logout();
+    }
+
+    final isAuthenticated = hasSession && rememberMe;
 
     if (!mounted) return;
 

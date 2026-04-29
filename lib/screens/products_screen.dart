@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/product.dart';
 import '../models/category.dart';
+import '../models/api_models.dart';
 import '../services/api.dart';
 import '../services/cart_manager.dart';
 import '../widgets/product_card.dart';
@@ -11,7 +12,14 @@ import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
-  const ProductsScreen({super.key});
+  final String selectedCurrency;
+  final ValueChanged<String> onCurrencyChanged;
+
+  const ProductsScreen({
+    super.key,
+    required this.selectedCurrency,
+    required this.onCurrencyChanged,
+  });
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
@@ -21,16 +29,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   // Filtros
-  String? _selectedCategory;
-  String? _selectedSupermarket;
+  String? _selectedCategoryId;
+  String? _selectedSupermarketName;
   double _minPrice = 0;
-  double _maxPrice = 100;
+  double _maxPrice = 50;
   String _sortBy = 'Relevancia';
 
-  // Moneda seleccionada
-  String _selectedCurrency = 'Bs';
-
   List<Category> _categories = [];
+  List<ApiSupermarket> _supermarkets = [];
   List<Product> _products = [];
   bool _isLoading = true;
 
@@ -45,13 +51,42 @@ class _ProductsScreenState extends State<ProductsScreen> {
     if (mounted) setState(() {});
   }
 
+  /// Mapea la etiqueta de orden de la UI al valor que espera el backend.
+  String? _mapSortBy(String sortLabel) {
+    switch (sortLabel) {
+      case 'Precio: Menor a Mayor':
+        return 'priceAsc';
+      case 'Precio: Mayor a Menor':
+        return 'priceDesc';
+      case 'Nombre A-Z':
+        return 'nameAsc';
+      default:
+        return null; // Relevancia → orden por defecto del backend
+    }
+  }
+
   Future<void> _loadData({String? search}) async {
     setState(() => _isLoading = true);
+
+    // Cargar supermercados por separado para que no bloquee productos
+    if (_supermarkets.isEmpty) {
+      Api.instance.supermarkets.listAll().then((list) {
+        if (mounted && list.isNotEmpty) setState(() => _supermarkets = list);
+      }).catchError((_) {});
+    }
+
     try {
+      final bool priceFilterActive = _minPrice > 0 || _maxPrice < 50;
+
       final results = await Future.wait([
         Api.instance.categories.listAll(),
         Api.instance.products.list(
           search: search,
+          categoryId: _selectedCategoryId,
+          supermarketName: _selectedSupermarketName,
+          minPrice: priceFilterActive ? _minPrice : null,
+          maxPrice: priceFilterActive ? _maxPrice : null,
+          sortBy: _mapSortBy(_sortBy),
           limit: 50,
         ),
       ]);
@@ -103,7 +138,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const CartScreen(),
+        builder: (context) => CartScreen(currency: widget.selectedCurrency),
       ),
     );
   }
@@ -153,10 +188,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       TextButton(
                         onPressed: () {
                           setModalState(() {
-                            _selectedCategory = null;
-                            _selectedSupermarket = null;
+                            _selectedCategoryId = null;
+                            _selectedSupermarketName = null;
                             _minPrice = 0;
-                            _maxPrice = 100;
+                            _maxPrice = 50;
                             _sortBy = 'Relevancia';
                           });
                         },
@@ -240,13 +275,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             runSpacing: 8,
                             children: _categories.map((category) {
                               final isSelected =
-                                  _selectedCategory == category.name;
+                                  _selectedCategoryId == category.id;
                               return GestureDetector(
                                 onTap: () {
                                   setModalState(() {
-                                    _selectedCategory = isSelected
+                                    _selectedCategoryId = isSelected
                                         ? null
-                                        : category.name;
+                                        : category.id;
                                   });
                                 },
                                 child: Container(
@@ -300,52 +335,59 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         // Supermercado
                         _buildFilterSection(
                           title: 'Supermercado',
-                          child: Column(
-                            children: [
-                              'Excelsior Gama',
-                              'Central Madeirense',
-                              'Automercado',
-                              'Unicasa',
-                            ].map((supermarket) {
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _supermarkets.map((sm) {
                               final isSelected =
-                                  _selectedSupermarket == supermarket;
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 8),
-                                child: ListTile(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                  _selectedSupermarketName == sm.name;
+                              return GestureDetector(
+                                onTap: () {
+                                  setModalState(() {
+                                    _selectedSupermarketName =
+                                        isSelected ? null : sm.name;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
                                   ),
-                                  tileColor: isSelected
-                                      ? AppColors.primary.withOpacity(0.1)
-                                      : AppColors.lightGrey,
-                                  leading: Icon(
-                                    Icons.store_rounded,
+                                  decoration: BoxDecoration(
                                     color: isSelected
                                         ? AppColors.primary
-                                        : AppColors.grey,
-                                  ),
-                                  title: Text(
-                                    supermarket,
-                                    style: TextStyle(
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                      color: AppColors.black,
+                                        : AppColors.lightGrey,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : Colors.transparent,
+                                      width: 2,
                                     ),
                                   ),
-                                  trailing: isSelected
-                                      ? const Icon(
-                                          Icons.check_circle,
-                                          color: AppColors.primary,
-                                        )
-                                      : null,
-                                  onTap: () {
-                                    setModalState(() {
-                                      _selectedSupermarket = isSelected
-                                          ? null
-                                          : supermarket;
-                                    });
-                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.store_rounded,
+                                        size: 18,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.black,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        sm.name,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: isSelected
+                                              ? Colors.white
+                                              : AppColors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             }).toList(),
@@ -356,14 +398,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
                         // Rango de precio
                         _buildFilterSection(
-                          title: 'Rango de Precio (Bs.)',
+                          title: 'Rango de Precio (USD)',
                           child: Column(
                             children: [
                               Row(
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      'Bs. ${_minPrice.toStringAsFixed(0)}',
+                                      '\$${_minPrice.toStringAsFixed(0)}',
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -380,7 +422,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      'Bs. ${_maxPrice.toStringAsFixed(0)}',
+                                      '\$${_maxPrice.toStringAsFixed(0)}',
                                       textAlign: TextAlign.right,
                                       style: const TextStyle(
                                         fontSize: 16,
@@ -394,13 +436,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               RangeSlider(
                                 values: RangeValues(_minPrice, _maxPrice),
                                 min: 0,
-                                max: 100,
-                                divisions: 20,
+                                max: 50,
+                                divisions: 25,
                                 activeColor: AppColors.primary,
                                 inactiveColor: AppColors.lightGrey,
                                 labels: RangeLabels(
-                                  'Bs. ${_minPrice.toStringAsFixed(0)}',
-                                  'Bs. ${_maxPrice.toStringAsFixed(0)}',
+                                  '\$${_minPrice.toStringAsFixed(0)}',
+                                  '\$${_maxPrice.toStringAsFixed(0)}',
                                 ),
                                 onChanged: (values) {
                                   setModalState(() {
@@ -464,14 +506,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         flex: 2,
                         child: ElevatedButton(
                           onPressed: () {
-                            setState(() {
-                              // Aplicar filtros
-                              // TODO: Filtrar productos según los criterios seleccionados
-                            });
                             Navigator.pop(context);
-                            AppSnackBar.success(
-                              context,
-                              message: 'Filtros aplicados',
+                            final searchText = _searchController.text.trim();
+                            _loadData(
+                              search: searchText.isEmpty ? null : searchText,
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -532,12 +570,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
           children: [
             // Header
             AppHeader(
-              selectedCurrency: _selectedCurrency,
-              onCurrencyChanged: (newValue) {
-                setState(() {
-                  _selectedCurrency = newValue;
-                });
-              },
+              selectedCurrency: widget.selectedCurrency,
+              onCurrencyChanged: widget.onCurrencyChanged,
               onCartTap: _navigateToCart,
               cartItemCount: CartManager.instance.itemCount,
             ),
@@ -592,14 +626,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         itemBuilder: (context, index) {
                           return ProductCard(
                             product: _products[index],
-                            currency: _selectedCurrency,
+                            currency: widget.selectedCurrency,
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ProductDetailScreen(
                                     product: _products[index],
-                                    currency: _selectedCurrency,
+                                    currency: widget.selectedCurrency,
                                   ),
                                 ),
                               );

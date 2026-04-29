@@ -4,6 +4,7 @@ import '../services/api.dart';
 import '../services/api_client.dart';
 import '../widgets/app_snack_bar.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
+    _loadRememberMe();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
@@ -47,6 +49,20 @@ class _LoginScreenState extends State<LoginScreen>
     _animationController.forward();
   }
 
+  Future<void> _loadRememberMe() async {
+    final client = Api.instance.client;
+    final remembered = await client.getRememberMe();
+    if (remembered) {
+      final email = await client.getRememberEmail();
+      if (mounted) {
+        setState(() {
+          _rememberMe = true;
+          if (email != null) _emailController.text = email;
+        });
+      }
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -64,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen>
       await Api.instance.auth.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        rememberMe: _rememberMe,
       );
 
       if (mounted) {
@@ -367,7 +384,23 @@ class _LoginScreenState extends State<LoginScreen>
                       Center(
                         child: GestureDetector(
                           onTap: () {
-                            // TODO: Implementar recuperar contraseña
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (context, animation,
+                                        secondaryAnimation) =>
+                                    const ForgotPasswordScreen(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                                transitionDuration:
+                                    const Duration(milliseconds: 400),
+                              ),
+                            );
                           },
                           child: Text(
                             '¿Olvidaste tu contraseña?',

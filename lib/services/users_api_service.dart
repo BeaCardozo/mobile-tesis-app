@@ -17,7 +17,7 @@ class UsersApiService {
 
   /// Actualizar nombre y email del usuario.
   /// PUT /api/users/me
-  Future<UserProfile> updateMe({
+  Future<void> updateMe({
     String? firstName,
     String? lastName,
     String? email,
@@ -27,12 +27,11 @@ class UsersApiService {
     if (lastName != null) body['lastName'] = lastName;
     if (email != null) body['email'] = email;
 
-    final data = await _client.put(
+    await _client.put(
       'users/me',
       body: body,
       authenticated: true,
     );
-    return UserProfile.fromJson(data as Map<String, dynamic>);
   }
 
   /// Cambiar contrasena.

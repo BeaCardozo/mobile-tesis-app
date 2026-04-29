@@ -25,6 +25,16 @@ class CartItem {
     return priceInfo.price;
   }
 
+  // Precio en USD del producto en el supermercado seleccionado
+  double get priceUsd {
+    if (product.prices.isEmpty) return 0.0;
+    final priceInfo = product.prices.firstWhere(
+      (p) => p.supermarketId == selectedSupermarketId,
+      orElse: () => product.prices.first,
+    );
+    return priceInfo.priceUsd ?? 0.0;
+  }
+
   // Subtotal de este item (precio × cantidad)
   double get subtotal => price * quantity;
 

@@ -38,6 +38,8 @@ class NetworkException implements Exception {
 class ApiClient {
   static const String _keyAccessToken = 'accessToken';
   static const String _keyRefreshToken = 'refreshToken';
+  static const String _keyRememberMe = 'rememberMe';
+  static const String _keyRememberEmail = 'rememberEmail';
 
   final http.Client _httpClient;
 
@@ -71,6 +73,26 @@ class ApiClient {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyAccessToken);
     await prefs.remove(_keyRefreshToken);
+  }
+
+  Future<void> saveRememberMe(bool value, {String? email}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyRememberMe, value);
+    if (value && email != null) {
+      await prefs.setString(_keyRememberEmail, email);
+    } else if (!value) {
+      await prefs.remove(_keyRememberEmail);
+    }
+  }
+
+  Future<bool> getRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_keyRememberMe) ?? false;
+  }
+
+  Future<String?> getRememberEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyRememberEmail);
   }
 
   bool get isDisposed => _disposed;

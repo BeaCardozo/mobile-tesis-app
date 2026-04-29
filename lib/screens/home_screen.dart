@@ -16,7 +16,14 @@ import 'category_detail_screen.dart';
 import 'featured_products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String selectedCurrency;
+  final ValueChanged<String> onCurrencyChanged;
+
+  const HomeScreen({
+    super.key,
+    required this.selectedCurrency,
+    required this.onCurrencyChanged,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -26,9 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _promoPageController = PageController();
   int _currentPromoPage = 0;
   Timer? _promoTimer;
-
-  // Moneda seleccionada
-  String _selectedCurrency = 'Bs';
 
   // Banners promocionales
   final List<Map<String, dynamic>> _promoBanners = [
@@ -145,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const CartScreen(),
+        builder: (context) => CartScreen(currency: widget.selectedCurrency),
       ),
     );
   }
@@ -159,12 +163,8 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Header fijo
             AppHeader(
-              selectedCurrency: _selectedCurrency,
-              onCurrencyChanged: (newValue) {
-                setState(() {
-                  _selectedCurrency = newValue;
-                });
-              },
+              selectedCurrency: widget.selectedCurrency,
+              onCurrencyChanged: widget.onCurrencyChanged,
               onCartTap: _navigateToCart,
               cartItemCount: CartManager.instance.itemCount,
             ),
@@ -457,7 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(
                           builder: (context) => CategoryDetailScreen(
                             category: _categories[index],
-                            currency: _selectedCurrency,
+                            currency: widget.selectedCurrency,
                           ),
                         ),
                       );
@@ -497,7 +497,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                       builder: (context) => FeaturedProductsScreen(
                         products: _products,
-                        currency: _selectedCurrency,
+                        currency: widget.selectedCurrency,
                       ),
                     ),
                   );
@@ -540,14 +540,14 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               return ProductCard(
                 product: _products[index],
-                currency: _selectedCurrency,
+                currency: widget.selectedCurrency,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductDetailScreen(
                         product: _products[index],
-                        currency: _selectedCurrency,
+                        currency: widget.selectedCurrency,
                       ),
                     ),
                   );

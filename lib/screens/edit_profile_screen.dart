@@ -82,6 +82,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await Api.instance.users.updateMe(
         firstName: firstName,
         lastName: lastName,
+        email: _emailController.text.trim(),
       );
 
       // Cambiar contrasena si se ingreso una nueva

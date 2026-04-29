@@ -340,6 +340,33 @@ class ApiSupermarket {
 }
 
 // =============================================================================
+// DWH Supermarket (para filtros de productos)
+// =============================================================================
+
+class DwhSupermarket {
+  final int id;
+  final String name;
+  final String? slug;
+  final String? logoUrl;
+
+  DwhSupermarket({
+    required this.id,
+    required this.name,
+    this.slug,
+    this.logoUrl,
+  });
+
+  factory DwhSupermarket.fromJson(Map<String, dynamic> json) {
+    return DwhSupermarket(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      slug: json['slug'] as String?,
+      logoUrl: json['logoUrl'] as String?,
+    );
+  }
+}
+
+// =============================================================================
 // Cart
 // =============================================================================
 

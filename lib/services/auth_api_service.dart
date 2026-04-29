@@ -24,10 +24,12 @@ class AuthApiService {
   }
 
   /// Iniciar sesion. Guarda los tokens automaticamente.
+  /// Si [rememberMe] es true, la sesion persiste entre reinicios de la app.
   /// POST /api/auth/login
   Future<AuthTokens> login({
     required String email,
     required String password,
+    bool rememberMe = false,
   }) async {
     final data = await _client.post('auth/login', body: {
       'email': email,
@@ -38,6 +40,7 @@ class AuthApiService {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     );
+    await _client.saveRememberMe(rememberMe, email: email);
     return tokens;
   }
 

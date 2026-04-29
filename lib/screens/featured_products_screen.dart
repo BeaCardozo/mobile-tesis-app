@@ -52,7 +52,7 @@ class _FeaturedProductsScreenState extends State<FeaturedProductsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const CartScreen(),
+        builder: (context) => CartScreen(currency: widget.currency),
       ),
     );
   }

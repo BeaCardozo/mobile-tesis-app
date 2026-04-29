@@ -7,7 +7,9 @@ import '../services/cart_manager.dart';
 import '../widgets/app_snack_bar.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key});
+  final String currency;
+
+  const CartScreen({super.key, this.currency = 'Bs'});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -1051,7 +1053,9 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               if (item.price > 0)
                 Text(
-                  'Bs. ${item.price.toStringAsFixed(2)}',
+                  widget.currency == 'USD'
+                      ? '\$ ${item.priceUsd.toStringAsFixed(2)}'
+                      : 'Bs. ${item.price.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,

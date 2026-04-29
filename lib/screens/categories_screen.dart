@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../services/api.dart';
+import '../services/cart_manager.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
 import '../widgets/category_card.dart';
+import 'cart_screen.dart';
 import 'category_detail_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -23,6 +25,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void initState() {
     super.initState();
     _loadCategories();
+    CartManager.instance.addListener(_onCartChanged);
+  }
+
+  void _onCartChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    CartManager.instance.removeListener(_onCartChanged);
+    super.dispose();
   }
 
   Future<void> _loadCategories() async {
@@ -49,11 +62,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   void _navigateToCart() {
-    // TODO: Implementar navegación al carrito
-    AppSnackBar.info(
+    Navigator.push(
       context,
-      message: 'Navegando al carrito...',
-      duration: const Duration(seconds: 1),
+      MaterialPageRoute(
+        builder: (context) => const CartScreen(),
+      ),
     );
   }
 
@@ -95,7 +108,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: CartButton(
               onTap: _navigateToCart,
-              itemCount: 0, // TODO: Conectar con el carrito real
+              itemCount: CartManager.instance.itemCount,
             ),
           ),
         ],
