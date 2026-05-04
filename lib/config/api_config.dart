@@ -3,7 +3,7 @@ class ApiConfig {
   /// En desarrollo local con emulador Android usa 10.0.2.2,
   /// en iOS simulador o web usa localhost.
   /// Cambiar a la URL de produccion cuando se despliegue.
-  static const String baseUrl = 'http://192.168.1.110:3000/api';
+  static const String baseUrl = 'http://localhost:3001/api';
   //Local en PC: 'http://localhost:3000/api'; 
   // Telefono: 'http://192.168.1.110:3000/api';
 

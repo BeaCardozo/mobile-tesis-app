@@ -590,6 +590,72 @@ class ApiOffer {
 }
 
 // =============================================================================
+// Deals (ofertas detectadas desde DWH)
+// =============================================================================
+
+class ApiDeal {
+  final String? productId;
+  final String productName;
+  final String? productSlug;
+  final String unitType;
+  final double baseAmount;
+  final String storeName;
+  final String supermarketName;
+  final String supermarketSlug;
+  final double priceUsd;
+  final double priceBs;
+  final double? pricePerUnitUsd;
+  final double? pricePerUnitBs;
+  final double? originalPriceUsd;
+  final double? originalPriceBs;
+  final double discountPct;
+  final String? imageUrl;
+  final String? scrapedAt;
+
+  ApiDeal({
+    this.productId,
+    required this.productName,
+    this.productSlug,
+    required this.unitType,
+    required this.baseAmount,
+    required this.storeName,
+    required this.supermarketName,
+    required this.supermarketSlug,
+    required this.priceUsd,
+    required this.priceBs,
+    this.pricePerUnitUsd,
+    this.pricePerUnitBs,
+    this.originalPriceUsd,
+    this.originalPriceBs,
+    required this.discountPct,
+    this.imageUrl,
+    this.scrapedAt,
+  });
+
+  factory ApiDeal.fromJson(Map<String, dynamic> json) {
+    return ApiDeal(
+      productId: json['productId'] as String?,
+      productName: json['productName'] as String? ?? '',
+      productSlug: json['productSlug'] as String?,
+      unitType: json['unitType'] as String? ?? 'unit',
+      baseAmount: _toDouble(json['baseAmount']) ?? 1.0,
+      storeName: json['storeName'] as String? ?? '',
+      supermarketName: json['supermarketName'] as String? ?? '',
+      supermarketSlug: json['supermarketSlug'] as String? ?? '',
+      priceUsd: _toDouble(json['priceUsd']) ?? 0.0,
+      priceBs: _toDouble(json['priceBs']) ?? 0.0,
+      pricePerUnitUsd: _toDouble(json['pricePerUnitUsd']),
+      pricePerUnitBs: _toDouble(json['pricePerUnitBs']),
+      originalPriceUsd: _toDouble(json['originalPriceUsd']),
+      originalPriceBs: _toDouble(json['originalPriceBs']),
+      discountPct: _toDouble(json['discountPct']) ?? 0.0,
+      imageUrl: json['imageUrl'] as String?,
+      scrapedAt: json['scrapedAt'] as String?,
+    );
+  }
+}
+
+// =============================================================================
 // Price Insights (historial de precios)
 // =============================================================================
 

@@ -42,4 +42,19 @@ class OffersApiService {
     }
     return [];
   }
+
+  /// Listar ofertas/descuentos detectados en el DWH.
+  /// GET /api/offers/deals
+  Future<List<ApiDeal>> listDeals({int? limit}) async {
+    final queryParams = <String, String>{};
+    if (limit != null) queryParams['limit'] = limit.toString();
+
+    final data = await _client.get('offers/deals', queryParams: queryParams);
+    if (data is List) {
+      return data
+          .map((e) => ApiDeal.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
+  }
 }
