@@ -100,7 +100,6 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(6),
@@ -115,12 +114,16 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              widget.category.name,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
+            Expanded(
+              child: Text(
+                widget.category.name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.black,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

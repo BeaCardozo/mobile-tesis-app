@@ -463,32 +463,6 @@ class ApiCartDetail {
 }
 
 // =============================================================================
-// Favorites
-// =============================================================================
-
-class ApiFavoriteItem {
-  final String productId;
-  final DateTime favoritedAt;
-  final ApiCartItemProduct? product;
-
-  ApiFavoriteItem({
-    required this.productId,
-    required this.favoritedAt,
-    this.product,
-  });
-
-  factory ApiFavoriteItem.fromJson(Map<String, dynamic> json) {
-    return ApiFavoriteItem(
-      productId: json['productId'] as String,
-      favoritedAt: DateTime.parse(json['favoritedAt'] as String),
-      product: json['product'] != null
-          ? ApiCartItemProduct.fromJson(json['product'] as Map<String, dynamic>)
-          : null,
-    );
-  }
-}
-
-// =============================================================================
 // Offers
 // =============================================================================
 

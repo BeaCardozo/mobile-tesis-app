@@ -501,27 +501,39 @@ class ApiCartDetail {
 }
 
 // =============================================================================
-// Favorites
+// Notifications
 // =============================================================================
 
-class ApiFavoriteItem {
-  final String productId;
-  final DateTime favoritedAt;
-  final ApiCartItemProduct? product;
+class ApiNotification {
+  final String id;
+  final String title;
+  final String? body;
+  final String? type;
+  final Map<String, dynamic>? data;
+  final String? readAt;
+  final String createdAt;
 
-  ApiFavoriteItem({
-    required this.productId,
-    required this.favoritedAt,
-    this.product,
+  ApiNotification({
+    required this.id,
+    required this.title,
+    this.body,
+    this.type,
+    this.data,
+    this.readAt,
+    required this.createdAt,
   });
 
-  factory ApiFavoriteItem.fromJson(Map<String, dynamic> json) {
-    return ApiFavoriteItem(
-      productId: json['productId'] as String,
-      favoritedAt: DateTime.parse(json['favoritedAt'] as String),
-      product: json['product'] != null
-          ? ApiCartItemProduct.fromJson(json['product'] as Map<String, dynamic>)
-          : null,
+  bool get isRead => readAt != null;
+
+  factory ApiNotification.fromJson(Map<String, dynamic> json) {
+    return ApiNotification(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      body: json['body'] as String?,
+      type: json['type'] as String?,
+      data: json['data'] as Map<String, dynamic>?,
+      readAt: json['readAt'] as String?,
+      createdAt: json['createdAt'] as String,
     );
   }
 }
@@ -610,6 +622,7 @@ class ApiDeal {
   final double? originalPriceBs;
   final double discountPct;
   final String? imageUrl;
+  final String? categoryName;
   final String? scrapedAt;
 
   ApiDeal({
@@ -629,6 +642,7 @@ class ApiDeal {
     this.originalPriceBs,
     required this.discountPct,
     this.imageUrl,
+    this.categoryName,
     this.scrapedAt,
   });
 
@@ -650,6 +664,7 @@ class ApiDeal {
       originalPriceBs: _toDouble(json['originalPriceBs']),
       discountPct: _toDouble(json['discountPct']) ?? 0.0,
       imageUrl: json['imageUrl'] as String?,
+      categoryName: json['categoryName'] as String?,
       scrapedAt: json['scrapedAt'] as String?,
     );
   }

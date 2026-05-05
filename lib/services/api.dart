@@ -4,8 +4,8 @@ import 'products_api_service.dart';
 import 'categories_api_service.dart';
 import 'supermarkets_api_service.dart';
 import 'carts_api_service.dart';
-import 'favorites_api_service.dart';
 import 'offers_api_service.dart';
+import 'notifications_api_service.dart';
 import 'users_api_service.dart';
 
 /// Punto de acceso centralizado a todos los servicios de la API.
@@ -25,8 +25,8 @@ class Api {
   late final CategoriesApiService categories;
   late final SupermarketsApiService supermarkets;
   late final CartsApiService carts;
-  late final FavoritesApiService favorites;
   late final OffersApiService offers;
+  late final NotificationsApiService notifications;
   late final UsersApiService users;
 
   Api._() : client = ApiClient() {
@@ -35,8 +35,8 @@ class Api {
     categories = CategoriesApiService(client);
     supermarkets = SupermarketsApiService(client);
     carts = CartsApiService(client);
-    favorites = FavoritesApiService(client);
     offers = OffersApiService(client);
+    notifications = NotificationsApiService(client);
     users = UsersApiService(client);
   }
 }

@@ -10,7 +10,9 @@ import 'cart_screen.dart';
 import 'category_detail_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
-  const CategoriesScreen({super.key});
+  final String currency;
+
+  const CategoriesScreen({super.key, this.currency = 'Bs'});
 
   @override
   State<CategoriesScreen> createState() => _CategoriesScreenState();
@@ -188,6 +190,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 MaterialPageRoute(
                   builder: (context) => CategoryDetailScreen(
                     category: _categories[index],
+                    currency: widget.currency,
                   ),
                 ),
               );

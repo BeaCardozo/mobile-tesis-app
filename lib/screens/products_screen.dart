@@ -10,6 +10,7 @@ import '../widgets/app_header.dart';
 import '../widgets/app_snack_bar.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
+import 'notifications_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
   final String selectedCurrency;
@@ -39,16 +40,32 @@ class _ProductsScreenState extends State<ProductsScreen> {
   List<ApiSupermarket> _supermarkets = [];
   List<Product> _products = [];
   bool _isLoading = true;
+  int _notificationCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _loadNotificationCount();
     CartManager.instance.addListener(_onCartChanged);
   }
 
   void _onCartChanged() {
     if (mounted) setState(() {});
+  }
+
+  Future<void> _loadNotificationCount() async {
+    try {
+      final count = await Api.instance.notifications.getUnreadCount();
+      if (mounted) setState(() => _notificationCount = count);
+    } catch (_) {}
+  }
+
+  void _navigateToNotifications() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+    ).then((_) => _loadNotificationCount());
   }
 
   /// Mapea la etiqueta de orden de la UI al valor que espera el backend.
@@ -574,6 +591,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
               onCurrencyChanged: widget.onCurrencyChanged,
               onCartTap: _navigateToCart,
               cartItemCount: CartManager.instance.itemCount,
+              onNotificationTap: _navigateToNotifications,
+              notificationCount: _notificationCount,
             ),
 
             const SizedBox(height: 8),

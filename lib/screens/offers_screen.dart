@@ -3,10 +3,21 @@ import '../config/app_colors.dart';
 import '../models/api_models.dart';
 import '../models/product.dart';
 import '../services/api.dart';
+import '../services/cart_manager.dart';
+import '../widgets/app_header.dart';
 import 'product_detail_screen.dart';
+import 'cart_screen.dart';
+import 'notifications_screen.dart';
 
 class OffersScreen extends StatefulWidget {
-  const OffersScreen({super.key});
+  final String selectedCurrency;
+  final ValueChanged<String>? onCurrencyChanged;
+
+  const OffersScreen({
+    super.key,
+    this.selectedCurrency = 'USD',
+    this.onCurrencyChanged,
+  });
 
   @override
   State<OffersScreen> createState() => _OffersScreenState();
@@ -16,13 +27,58 @@ class _OffersScreenState extends State<OffersScreen> {
   List<ApiDeal> _deals = [];
   bool _isLoading = true;
   String? _error;
-  String _currency = 'USD';
+  late String _currency;
   String _filterSuper = '';
+  int _notificationCount = 0;
 
   @override
   void initState() {
     super.initState();
+    _currency = widget.selectedCurrency;
     _fetchDeals();
+    _loadNotificationCount();
+    CartManager.instance.addListener(_onCartChanged);
+  }
+
+  @override
+  void dispose() {
+    CartManager.instance.removeListener(_onCartChanged);
+    super.dispose();
+  }
+
+  void _onCartChanged() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _loadNotificationCount() async {
+    try {
+      final count = await Api.instance.notifications.getUnreadCount();
+      if (mounted) setState(() => _notificationCount = count);
+    } catch (_) {}
+  }
+
+  void _navigateToNotifications() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+    ).then((_) => _loadNotificationCount());
+  }
+
+  void _navigateToCart() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CartScreen(currency: _currency),
+      ),
+    );
+  }
+
+  @override
+  void didUpdateWidget(OffersScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedCurrency != widget.selectedCurrency) {
+      setState(() => _currency = widget.selectedCurrency);
+    }
   }
 
   Future<void> _fetchDeals() async {
@@ -72,57 +128,16 @@ class _OffersScreenState extends State<OffersScreen> {
         child: Column(
           children: [
             // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Ofertas',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
-                        ),
-                      ),
-                      if (!_isLoading)
-                        Text(
-                          '${_deals.length} producto${_deals.length != 1 ? 's' : ''} en oferta',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.grey.withOpacity(0.8),
-                          ),
-                        ),
-                    ],
-                  ),
-                  // Currency toggle
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.grey.withOpacity(0.15)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _CurrencyButton(
-                          label: '\$ USD',
-                          isSelected: _currency == 'USD',
-                          onTap: () => setState(() => _currency = 'USD'),
-                        ),
-                        _CurrencyButton(
-                          label: 'Bs',
-                          isSelected: _currency == 'Bs',
-                          onTap: () => setState(() => _currency = 'Bs'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            AppHeader(
+              selectedCurrency: _currency,
+              onCurrencyChanged: (val) {
+                setState(() => _currency = val);
+                widget.onCurrencyChanged?.call(val);
+              },
+              onCartTap: _navigateToCart,
+              cartItemCount: CartManager.instance.itemCount,
+              onNotificationTap: _navigateToNotifications,
+              notificationCount: _notificationCount,
             ),
 
             // Supermarket filter chips
@@ -256,7 +271,7 @@ class _OffersScreenState extends State<OffersScreen> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.62,
+          childAspectRatio: 0.54,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
         ),
@@ -274,7 +289,7 @@ class _OffersScreenState extends State<OffersScreen> {
                   name: deal.productName,
                   description: '',
                   imageUrl: deal.imageUrl ?? '',
-                  category: '',
+                  category: deal.categoryName ?? '',
                   prices: [
                     PriceInfo(
                       supermarketId: '',
@@ -309,40 +324,6 @@ class _OffersScreenState extends State<OffersScreen> {
 // ---------------------------------------------------------------------------
 // Sub-widgets
 // ---------------------------------------------------------------------------
-
-class _CurrencyButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _CurrencyButton({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : AppColors.grey,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _FilterChip extends StatelessWidget {
   final String label;
@@ -491,99 +472,96 @@ class _DealCard extends StatelessWidget {
             ),
 
             // Info
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Supermarket name
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Supermarket name
+                  Text(
+                    deal.supermarketName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  // Product name
+                  Text(
+                    deal.productName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.black,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  // Amount
+                  Text(
+                    '${deal.baseAmount % 1 == 0 ? deal.baseAmount.toInt() : deal.baseAmount} ${deal.unitType}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.grey.withOpacity(0.7),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // Price: current
+                  Text(
+                    formatPrice(deal.priceUsd, deal.priceBs),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  // Price: original (strikethrough)
+                  if (deal.originalPriceUsd != null &&
+                      deal.originalPriceUsd! > deal.priceUsd)
                     Text(
-                      deal.supermarketName,
-                      style: const TextStyle(
+                      formatPrice(
+                        deal.originalPriceUsd!,
+                        deal.originalPriceBs ?? deal.originalPriceUsd! * 80,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.grey.withOpacity(0.6),
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  const SizedBox(height: 2),
+                  // Savings or "En oferta"
+                  if (deal.discountPct > 0 &&
+                      deal.originalPriceUsd != null)
+                    Text(
+                      'Ahorras ${formatPrice(deal.originalPriceUsd! - deal.priceUsd, (deal.originalPriceBs ?? 0) - deal.priceBs)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red.shade600,
+                      ),
+                    )
+                  else
+                    const Text(
+                      'En oferta',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    // Product name
-                    Flexible(
-                      child: Text(
-                        deal.productName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.black,
-                          height: 1.2,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    // Amount + store
-                    Text(
-                      '${deal.baseAmount % 1 == 0 ? deal.baseAmount.toInt() : deal.baseAmount} ${deal.unitType}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.grey.withOpacity(0.7),
-                      ),
-                    ),
-                    const Spacer(),
-                    // Price row
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          formatPrice(deal.priceUsd, deal.priceBs),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        if (deal.originalPriceUsd != null &&
-                            deal.originalPriceUsd! > deal.priceUsd) ...[
-                          const SizedBox(width: 6),
-                          Text(
-                            formatPrice(
-                              deal.originalPriceUsd!,
-                              deal.originalPriceBs ?? deal.originalPriceUsd! * 80,
-                            ),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.grey.withOpacity(0.6),
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    // Savings or "En oferta"
-                    if (deal.discountPct > 0 &&
-                        deal.originalPriceUsd != null)
-                      Text(
-                        'Ahorras ${formatPrice(deal.originalPriceUsd! - deal.priceUsd, (deal.originalPriceBs ?? 0) - deal.priceBs)}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.red.shade600,
-                        ),
-                      )
-                    else
-                      const Text(
-                        'En oferta',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
             ),
           ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../models/product.dart';
-import '../models/api_models.dart';
 import '../services/api.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -19,15 +18,15 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  bool _isFavorite = false;
   bool _isLoadingPrices = true;
   List<PriceInfo> _allPrices = [];
+  String _category = '';
 
   @override
   void initState() {
     super.initState();
-    _isFavorite = widget.product.isFavorite;
     _allPrices = List.from(widget.product.prices);
+    _category = widget.product.category;
     _loadFullDetail();
   }
 
@@ -56,6 +55,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       setState(() {
         _allPrices = prices;
         _isLoadingPrices = false;
+        if (detail.category.name.isNotEmpty) {
+          _category = detail.category.name;
+        }
       });
     } catch (_) {
       if (mounted) {
@@ -104,34 +106,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               onPressed: () => Navigator.pop(context),
             ),
-            actions: [
-              IconButton(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: _isFavorite ? Colors.red : AppColors.primary,
-                    size: 20,
-                  ),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isFavorite = !_isFavorite;
-                  });
-                },
-              ),
-              const SizedBox(width: 8),
+            actions: const [
+              SizedBox(width: 8),
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
@@ -168,26 +144,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Categoría
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLight.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      widget.product.category,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
+                  if (_category.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryLight.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        _category,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
+                  ],
 
                   // Nombre del producto
                   Text(

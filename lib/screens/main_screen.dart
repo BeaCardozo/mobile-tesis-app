@@ -43,7 +43,10 @@ class _MainScreenState extends State<MainScreen> {
             selectedCurrency: _selectedCurrency,
             onCurrencyChanged: _onCurrencyChanged,
           ),
-          const OffersScreen(),
+          OffersScreen(
+            selectedCurrency: _selectedCurrency,
+            onCurrencyChanged: _onCurrencyChanged,
+          ),
           const ProfileScreen(),
         ],
       ),

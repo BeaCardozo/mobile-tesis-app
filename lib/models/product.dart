@@ -11,7 +11,6 @@ class Product {
   final List<PriceInfo> prices;
   final double averagePrice;
   final String unit;
-  final bool isFavorite;
 
   Product({
     required this.id,
@@ -24,7 +23,6 @@ class Product {
     required this.prices,
     required this.averagePrice,
     required this.unit,
-    this.isFavorite = false,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -44,7 +42,6 @@ class Product {
           [],
       averagePrice: (json['averagePrice'] as num?)?.toDouble() ?? 0.0,
       unit: json['baseUnit'] as String? ?? json['unit'] as String? ?? 'unidad',
-      isFavorite: json['isFavorite'] as bool? ?? false,
     );
   }
 
@@ -76,7 +73,6 @@ class Product {
       prices: prices,
       averagePrice: snap?.cheapestPriceBs ?? 0.0,
       unit: api.unitType,
-      isFavorite: false,
     );
   }
 
@@ -92,7 +88,6 @@ class Product {
       'prices': prices.map((price) => price.toJson()).toList(),
       'averagePrice': averagePrice,
       'unit': unit,
-      'isFavorite': isFavorite,
     };
   }
 
@@ -124,7 +119,6 @@ class Product {
     List<PriceInfo>? prices,
     double? averagePrice,
     String? unit,
-    bool? isFavorite,
   }) {
     return Product(
       id: id ?? this.id,
@@ -137,7 +131,6 @@ class Product {
       prices: prices ?? this.prices,
       averagePrice: averagePrice ?? this.averagePrice,
       unit: unit ?? this.unit,
-      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 }

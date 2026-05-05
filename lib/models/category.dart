@@ -70,48 +70,86 @@ class _CategoryVisual {
 /// Mapeo visual por nombre de categoría (en minúsculas).
 /// Se usa para asignar icono y color ya que el backend no los envía.
 const Map<String, _CategoryVisual> _categoryVisuals = {
-  // Categorías generales (padres)
+  // ─── Categorías principales (padres) ───────────────────────────────────
   'despensa': _CategoryVisual(Icons.kitchen, Color(0xFF8D6E63)),
   'alimentos frescos': _CategoryVisual(Icons.eco, Color(0xFF81C784)),
   'refrigerados y congelados': _CategoryVisual(Icons.ac_unit, Color(0xFF4FC3F7)),
+  'refrigerados': _CategoryVisual(Icons.ac_unit, Color(0xFF4FC3F7)),
+  'víveres': _CategoryVisual(Icons.store, Color(0xFF8D6E63)),
 
-  // Subcategorías - Despensa
-  'aceites': _CategoryVisual(Icons.opacity, Color(0xFFFFCA28)),
+  // ─── Cereales, Harinas y Granos ────────────────────────────────────────
+  'cereales y productos derivados': _CategoryVisual(Icons.grain, AppColors.primary),
   'arroz y granos': _CategoryVisual(Icons.grain, AppColors.primary),
-  'azucar': _CategoryVisual(Icons.cookie, Color(0xFFB97FB9)),
-  'cafe': _CategoryVisual(Icons.coffee, Color(0xFFD4A574)),
-  'café y endulzantes': _CategoryVisual(Icons.coffee, Color(0xFFD4A574)),
-  'enlatados': _CategoryVisual(Icons.inventory_2, Color(0xFF78909C)),
-  'enlatados del mar': _CategoryVisual(Icons.phishing, Color(0xFF4FC3F7)),
+  'granos': _CategoryVisual(Icons.grass, Color(0xFF8D6E63)),
+  'granos: caraotas, arvejas y lentejas': _CategoryVisual(Icons.grass, Color(0xFF8D6E63)),
   'harina': _CategoryVisual(Icons.grain, Color(0xFFFF9F66)),
-  'pastas': _CategoryVisual(Icons.restaurant, Color(0xFFFF9F66)),
-  'salsas y aderezos': _CategoryVisual(Icons.local_dining, Color(0xFFE57373)),
-  'alimento infantil': _CategoryVisual(Icons.child_care, Color(0xFF64B5F6)),
-  'dietético y naturist': _CategoryVisual(Icons.spa, Color(0xFF81C784)),
-
-  // Subcategorías - Alimentos Frescos
+  'harinas': _CategoryVisual(Icons.grain, Color(0xFFFF9F66)),
+  'harina de maiz precocida': _CategoryVisual(Icons.grain, Color(0xFFFF9F66)),
+  'panes y cereales': _CategoryVisual(Icons.bakery_dining, Color(0xFFFFCA28)),
   'panadería': _CategoryVisual(Icons.bakery_dining, Color(0xFFFFCA28)),
+  'pastas': _CategoryVisual(Icons.restaurant, Color(0xFFFF9F66)),
+  'pastas alimenticias': _CategoryVisual(Icons.restaurant, Color(0xFFFF9F66)),
+  'galletas, golosinas y repostería': _CategoryVisual(Icons.cookie, Color(0xFFCE93D8)),
 
-  // Subcategorías - Refrigerados y Congelados
-  'alimentos congelados': _CategoryVisual(Icons.ac_unit, Color(0xFF4FC3F7)),
-  'alimentos refrigerados': _CategoryVisual(Icons.kitchen, Color(0xFF6CB4EE)),
-  'bologna/mortadela': _CategoryVisual(Icons.set_meal, Color(0xFFE57373)),
-  'jamón': _CategoryVisual(Icons.set_meal, Color(0xFFEF5350)),
+  // ─── Aceites, Grasas y Margarinas ──────────────────────────────────────
+  'aceites': _CategoryVisual(Icons.opacity, Color(0xFFFFCA28)),
+  'grasas y aceites': _CategoryVisual(Icons.opacity, Color(0xFFFFCA28)),
+  'grasas': _CategoryVisual(Icons.opacity, Color(0xFFFFCA28)),
+  'margarinas y aceites': _CategoryVisual(Icons.opacity, Color(0xFFFFCA28)),
+
+  // ─── Azúcar, Sal y Café ────────────────────────────────────────────────
+  'azucar': _CategoryVisual(Icons.cookie, Color(0xFFB97FB9)),
+  'azúcar y sal': _CategoryVisual(Icons.cookie, Color(0xFFB97FB9)),
+  'sal': _CategoryVisual(Icons.grain, Color(0xFF90A4AE)),
+  'cafe': _CategoryVisual(Icons.coffee, Color(0xFFD4A574)),
+  'café': _CategoryVisual(Icons.coffee, Color(0xFFD4A574)),
+  'café y endulzantes': _CategoryVisual(Icons.coffee, Color(0xFFD4A574)),
+  'café, té y otros': _CategoryVisual(Icons.coffee, Color(0xFFD4A574)),
+
+  // ─── Salsas, Aderezos y Condimentos ────────────────────────────────────
+  'salsas y aderezos': _CategoryVisual(Icons.local_dining, Color(0xFFE57373)),
+  'salsas, aderezos, condimentos y sopas': _CategoryVisual(Icons.local_dining, Color(0xFFE57373)),
+  'salsa y mayonesa': _CategoryVisual(Icons.local_dining, Color(0xFFE57373)),
+  'mayonesas': _CategoryVisual(Icons.local_dining, Color(0xFFE57373)),
+
+  // ─── Enlatados ─────────────────────────────────────────────────────────
+  'enlatados': _CategoryVisual(Icons.inventory_2, Color(0xFF78909C)),
+  'enlatados del mar': _CategoryVisual(Icons.set_meal, Color(0xFF4FC3F7)),
+  'enlatados vegetales': _CategoryVisual(Icons.inventory_2, Color(0xFF81C784)),
+
+  // ─── Lácteos, Quesos y Huevos ──────────────────────────────────────────
+  'leche, quesos y huevos': _CategoryVisual(Icons.egg_alt, Color(0xFF6CB4EE)),
   'lácteos': _CategoryVisual(Icons.water_drop, Color(0xFF42A5F5)),
+  'lácteos y derivados': _CategoryVisual(Icons.water_drop, Color(0xFF42A5F5)),
+  'mezcla lactea': _CategoryVisual(Icons.water_drop, Color(0xFF42A5F5)),
   'quesos': _CategoryVisual(Icons.circle, Color(0xFFFFA726)),
-  'salchichas': _CategoryVisual(Icons.set_meal, Color(0xFFAB47BC)),
+  'huevos': _CategoryVisual(Icons.egg, Color(0xFFFFF176)),
   'yogurt': _CategoryVisual(Icons.local_cafe, Color(0xFFEC407A)),
 
-  // Categorías originales (compatibilidad)
-  'cereales y productos derivados': _CategoryVisual(Icons.grain, AppColors.primary),
-  'granos': _CategoryVisual(Icons.grass, Color(0xFF8D6E63)),
-  'pastas alimenticias': _CategoryVisual(Icons.restaurant, Color(0xFFFF9F66)),
-  'leche, quesos y huevos': _CategoryVisual(Icons.kitchen, Color(0xFF6CB4EE)),
-  'grasas y aceites': _CategoryVisual(Icons.opacity, Color(0xFFFFCA28)),
+  // ─── Carnes y Embutidos ────────────────────────────────────────────────
   'carnes': _CategoryVisual(Icons.set_meal, Color(0xFFE57373)),
-  'pescados y mariscos': _CategoryVisual(Icons.phishing, Color(0xFF4FC3F7)),
+  'carnes y sus preparados': _CategoryVisual(Icons.set_meal, Color(0xFFE57373)),
+  'bologna/mortadela': _CategoryVisual(Icons.set_meal, Color(0xFFEF5350)),
+  'jamón': _CategoryVisual(Icons.set_meal, Color(0xFFEF5350)),
+  'salchichas': _CategoryVisual(Icons.set_meal, Color(0xFFAB47BC)),
+
+  // ─── Pescados y Mariscos ───────────────────────────────────────────────
+  'pescados y mariscos': _CategoryVisual(Icons.set_meal, Color(0xFF4FC3F7)),
+
+  // ─── Frutas, Verduras y Tubérculos ─────────────────────────────────────
   'frutas y hortalizas': _CategoryVisual(Icons.eco, Color(0xFF81C784)),
+  'vegetales congelados': _CategoryVisual(Icons.eco, Color(0xFF4DB6AC)),
   'raíces, tubérculos y otros': _CategoryVisual(Icons.spa, Color(0xFFA1887F)),
-  'azúcar y sal': _CategoryVisual(Icons.cookie, Color(0xFFB97FB9)),
-  'café, té y otros': _CategoryVisual(Icons.coffee, Color(0xFFD4A574)),
+
+  // ─── Untables y Para Untar ─────────────────────────────────────────────
+  'untables': _CategoryVisual(Icons.breakfast_dining, Color(0xFFFFB74D)),
+  'productos para untar': _CategoryVisual(Icons.breakfast_dining, Color(0xFFFFB74D)),
+
+  // ─── Refrigerados y Congelados ─────────────────────────────────────────
+  'alimentos congelados': _CategoryVisual(Icons.ac_unit, Color(0xFF4FC3F7)),
+  'alimentos refrigerados': _CategoryVisual(Icons.kitchen, Color(0xFF6CB4EE)),
+
+  // ─── Infantil y Dietético ──────────────────────────────────────────────
+  'alimento infantil': _CategoryVisual(Icons.child_care, Color(0xFF64B5F6)),
+  'dietético y naturist': _CategoryVisual(Icons.spa, Color(0xFF81C784)),
 };
