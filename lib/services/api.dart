@@ -7,6 +7,7 @@ import 'carts_api_service.dart';
 import 'offers_api_service.dart';
 import 'notifications_api_service.dart';
 import 'users_api_service.dart';
+import 'meta_api_service.dart';
 
 /// Punto de acceso centralizado a todos los servicios de la API.
 ///
@@ -28,6 +29,7 @@ class Api {
   late final OffersApiService offers;
   late final NotificationsApiService notifications;
   late final UsersApiService users;
+  late final MetaApiService meta;
 
   Api._() : client = ApiClient() {
     auth = AuthApiService(client);
@@ -38,5 +40,6 @@ class Api {
     offers = OffersApiService(client);
     notifications = NotificationsApiService(client);
     users = UsersApiService(client);
+    meta = MetaApiService(client);
   }
 }

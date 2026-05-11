@@ -50,9 +50,21 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
     _loadComparison();
   }
 
-  String _fmt(double usd) {
+  double get _effectiveRate {
+    final fx = _data?['fxRate'];
+    if (fx is Map && fx['rate'] != null) {
+      final n = (fx['rate'] as num).toDouble();
+      if (n > 0) return n;
+    }
+    return widget.exchangeRate;
+  }
+
+  String _fmt(double usd, {double? bsPrecalc}) {
     if (widget.currency == 'USD') return '\$ ${usd.toStringAsFixed(2)}';
-    return 'Bs. ${(usd * widget.exchangeRate).toStringAsFixed(2)}';
+    if (bsPrecalc != null && bsPrecalc.isFinite) {
+      return 'Bs. ${bsPrecalc.toStringAsFixed(2)}';
+    }
+    return 'Bs. ${(usd * _effectiveRate).toStringAsFixed(2)}';
   }
 
   @override
@@ -209,6 +221,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
           final sm = entry.value as Map<String, dynamic>;
           final name = sm['name'] as String? ?? '';
           final totalUsd = (sm['totalUsd'] as num?)?.toDouble() ?? 0;
+          final totalBs = (sm['totalBs'] as num?)?.toDouble();
           final allAvailable = sm['allProductsAvailable'] as bool? ?? false;
           final lines = sm['lines'] as List<dynamic>? ?? [];
           final isBest = cheapest != null && cheapest['name'] == name;
@@ -269,7 +282,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            _fmt(totalUsd),
+                            _fmt(totalUsd, bsPrecalc: totalBs),
                             style: TextStyle(
                               fontSize: 17, fontWeight: FontWeight.bold,
                               color: isBest && allAvailable ? AppColors.primary : AppColors.black,
@@ -297,6 +310,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                         final qty = line['quantity'] as int? ?? 1;
                         final avail = line['available'] as bool? ?? false;
                         final lineUsd = (line['lineTotalUsd'] as num?)?.toDouble();
+                        final lineBs = (line['lineTotalBs'] as num?)?.toDouble();
 
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
@@ -316,7 +330,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                lineUsd != null ? _fmt(lineUsd) : 'N/D',
+                                lineUsd != null ? _fmt(lineUsd, bsPrecalc: lineBs) : 'N/D',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -381,6 +395,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
     }
 
     final grandTotal = (_data!['grandTotalUsd'] as num?)?.toDouble() ?? 0;
+    final grandTotalBs = (_data!['grandTotalBs'] as num?)?.toDouble();
     final bySupermarket = _data!['bySupermarket'] as List<dynamic>? ?? [];
 
     if (bySupermarket.isEmpty) return _msgCard('No hay precios disponibles');
@@ -418,7 +433,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(_fmt(grandTotal), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  Text(_fmt(grandTotal, bsPrecalc: grandTotalBs), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
                   const Text('Total optimizado', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: AppColors.primary)),
                 ],
               ),
@@ -433,6 +448,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
           final s = entry as Map<String, dynamic>;
           final name = s['supermarketName'] as String? ?? '';
           final subtotal = (s['subtotalUsd'] as num?)?.toDouble() ?? 0;
+          final subtotalBs = (s['subtotalBs'] as num?)?.toDouble();
           final purchases = s['purchases'] as List<dynamic>? ?? [];
 
           return Container(
@@ -466,7 +482,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                           ],
                         ),
                       ),
-                      Text(_fmt(subtotal), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.black)),
+                      Text(_fmt(subtotal, bsPrecalc: subtotalBs), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.black)),
                     ],
                   ),
                 ),
@@ -480,8 +496,10 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                         final purchase = p as Map<String, dynamic>;
                         final pName = purchase['productName'] as String? ?? '';
                         final unitUsd = (purchase['unitPriceUsd'] as num?)?.toDouble() ?? 0;
+                        final unitBs = (purchase['unitPriceBs'] as num?)?.toDouble();
                         final qty = purchase['quantity'] as int? ?? 1;
                         final lineUsd = (purchase['lineTotalUsd'] as num?)?.toDouble() ?? 0;
+                        final lineBs = (purchase['lineTotalBs'] as num?)?.toDouble();
 
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
@@ -502,12 +520,12 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                                   children: [
                                     Text(pName, maxLines: 1, overflow: TextOverflow.ellipsis,
                                         style: TextStyle(fontSize: 12, color: AppColors.black.withOpacity(0.7))),
-                                    Text('${_fmt(unitUsd)} x $qty',
+                                    Text('${_fmt(unitUsd, bsPrecalc: unitBs)} x $qty',
                                         style: TextStyle(fontSize: 10, color: AppColors.grey.withOpacity(0.5))),
                                   ],
                                 ),
                               ),
-                              Text(_fmt(lineUsd), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.black.withOpacity(0.8))),
+                              Text(_fmt(lineUsd, bsPrecalc: lineBs), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.black.withOpacity(0.8))),
                             ],
                           ),
                         );

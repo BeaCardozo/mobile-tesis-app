@@ -4,6 +4,7 @@ import '../models/cart_item.dart';
 import '../models/api_models.dart';
 import '../services/cart_manager.dart';
 import '../widgets/app_snack_bar.dart';
+import '../services/api.dart';
 import 'cart_comparison_screen.dart';
 
 class CartScreen extends StatefulWidget {
@@ -16,10 +17,19 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  double? _apiFxRate;
+
   @override
   void initState() {
     super.initState();
     CartManager.instance.addListener(_onCartChanged);
+    _loadFxRate();
+  }
+
+  Future<void> _loadFxRate() async {
+    final r = await Api.instance.meta.fxUsdToBs();
+    if (!mounted) return;
+    setState(() => _apiFxRate = r);
   }
 
   @override
@@ -40,7 +50,8 @@ class _CartScreenState extends State<CartScreen> {
         return item.price / item.priceUsd;
       }
     }
-    return 36.50;
+    if (_apiFxRate != null && _apiFxRate! > 0) return _apiFxRate!;
+    return 36.0;
   }
 
   void _navigateToComparison() {
