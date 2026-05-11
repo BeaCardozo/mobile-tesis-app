@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import 'api_models.dart';
 
+int _parseCategoryId(dynamic value) {
+  if (value == null) return 0;
+  if (value is int) return value;
+  return int.tryParse(value.toString()) ?? 0;
+}
+
 class Category {
-  final String id;
+  final int id;
   final String name;
   final String slug;
   final IconData icon;
@@ -25,7 +31,7 @@ class Category {
         const _CategoryVisual(Icons.category, AppColors.primary);
 
     return Category(
-      id: json['id'].toString(),
+      id: _parseCategoryId(json['id']),
       name: name,
       slug: json['slug'] as String? ?? '',
       icon: visual.icon,
@@ -38,7 +44,7 @@ class Category {
   factory Category.fromApi(ApiCategory api, {int productCount = 0}) {
     final visual = _resolveVisual(api.name);
     return Category(
-      id: api.id,
+      id: _parseCategoryId(api.id),
       name: api.name,
       slug: '',
       icon: visual.icon,

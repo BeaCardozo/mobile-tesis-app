@@ -34,13 +34,13 @@ Screens & Widgets  (presentation)
 
 - **State management**: StatefulWidget only (no Provider/Bloc/Riverpod). State is local to each screen.
 - **Navigation**: Direct `Navigator.push()` / `pushReplacement()` calls. No named routes.
-- **Backend**: Not yet integrated. Models have `fromJson()`/`toJson()` ready for API hookup. Auth uses `shared_preferences` for local persistence only.
+- **Backend**: **ca-api** (NestJS, prefijo global `api`). Cliente HTTP: `lib/services/api_client.dart` + `lib/services/api.dart` (`Api.instance`). URL base: `lib/config/api_config.dart` (`ApiConfig.baseUrl`, por defecto `http://localhost:4003/api`, alineado con `NEXT_PUBLIC_API_URL` del web). En **emulador Android** usar `http://10.0.2.2:4003/api`; en iOS simulador / web suele bastar `localhost`. Los IDs públicos de catálogo en JSON son **strings** (ver `lib/models/api_models.dart`).
 
 ## Key Directory Layout
 
-- `lib/config/` — `AppColors` (color palette) and `AppTheme` (Material 3 theme)
-- `lib/models/` — `Product`, `PriceInfo`, `CartItem`, `Category`
-- `lib/services/` — `AuthService` (static methods, shared_preferences-based)
+- `lib/config/` — `AppColors`, `AppTheme`, `ApiConfig`
+- `lib/models/` — `Product`, `PriceInfo`, `CartItem`, `Category`, `api_models.dart` (DTOs del backend)
+- `lib/services/` — `Api`, `ApiClient`, `*_api_service.dart`, `cart_manager.dart`
 - `lib/screens/` — 13 screens; `MainScreen` hosts a `BottomNavigationBar` with `IndexedStack`
 - `lib/widgets/` — Reusable components: `BottomNavBar`, `ProductCard`, `CategoryCard`, `CartButton`
 
@@ -49,7 +49,7 @@ Screens & Widgets  (presentation)
 ```
 SplashScreen → (auth check) → LoginScreen or MainScreen
 LoginScreen ↔ RegisterScreen
-MainScreen (bottom nav): Home | Products | Offers | Notifications | Profile
+MainScreen (bottom nav): Home | Products | Offers | Profile (notificaciones desde header en Home/Products)
 HomeScreen → ProductDetailScreen, CategoriesScreen, FeaturedProductsScreen, CartScreen
 ```
 

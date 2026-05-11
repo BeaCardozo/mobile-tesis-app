@@ -489,13 +489,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
 
               // Precio
-              Text(
-                _formatPrice(_priceOf(priceInfo)),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: isLowest ? AppColors.primary : AppColors.black,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    _formatPrice(_priceOf(priceInfo)),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: isLowest ? AppColors.primary : AppColors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '/${widget.product.unit}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.grey.withOpacity(0.6),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

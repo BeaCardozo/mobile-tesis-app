@@ -292,13 +292,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             runSpacing: 8,
                             children: _categories.map((category) {
                               final isSelected =
-                                  _selectedCategoryId == category.id;
+                                  _selectedCategoryId == category.id.toString();
                               return GestureDetector(
                                 onTap: () {
                                   setModalState(() {
                                     _selectedCategoryId = isSelected
                                         ? null
-                                        : category.id;
+                                        : category.id.toString();
                                   });
                                 },
                                 child: Container(

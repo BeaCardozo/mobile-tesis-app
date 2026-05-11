@@ -90,6 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       await Api.instance.auth.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        rememberMe: false,
       );
 
       if (mounted) {

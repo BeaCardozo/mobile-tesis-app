@@ -67,7 +67,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const CartScreen(),
+        builder: (context) => CartScreen(currency: widget.currency),
       ),
     );
   }

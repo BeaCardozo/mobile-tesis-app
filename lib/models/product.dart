@@ -26,16 +26,27 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    final rawCat = json['category'];
+    String catName = '';
+    String catId = '';
+    if (rawCat is Map<String, dynamic>) {
+      catName = rawCat['name'] as String? ?? '';
+      catId = rawCat['id']?.toString() ?? '';
+    } else {
+      catName = rawCat as String? ?? '';
+    }
+    if (catId.isEmpty && json['categoryId'] != null) {
+      catId = json['categoryId'].toString();
+    }
+
     return Product(
       id: json['id'].toString(),
       name: json['name'] as String,
       slug: json['slug'] as String? ?? '',
       description: json['description'] as String? ?? '',
       imageUrl: json['imageUrl'] as String? ?? '',
-      category: json['category'] is Map
-          ? (json['category']['name'] as String? ?? '')
-          : (json['category'] as String? ?? ''),
-      categoryId: json['categoryId']?.toString() ?? '',
+      category: catName,
+      categoryId: catId,
       prices: (json['prices'] as List<dynamic>?)
               ?.map((price) => PriceInfo.fromJson(price as Map<String, dynamic>))
               .toList() ??

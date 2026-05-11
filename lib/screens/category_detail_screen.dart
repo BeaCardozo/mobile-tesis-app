@@ -48,7 +48,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
   Future<void> _loadProducts() async {
     try {
       final paginated = await Api.instance.products.list(
-        categoryId: widget.category.id,
+        categoryId: widget.category.id.toString(),
         limit: 50,
       );
       if (mounted) {
@@ -100,6 +100,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(6),
@@ -141,69 +142,63 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : _filteredProducts.isEmpty
-          ? _buildEmptyState()
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-
-                  // Contador de productos
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      '${_filteredProducts.length} productos encontrados',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grey,
-                        fontWeight: FontWeight.w500,
+              ? _buildEmptyState()
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          '${_filteredProducts.length} productos encontrados',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Grid de productos
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.7,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: _filteredProducts.length,
-                      itemBuilder: (context, index) {
-                        return ProductCard(
-                          product: _filteredProducts[index],
-                          currency: widget.currency,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailScreen(
-                                  product: _filteredProducts[index],
-                                  currency: widget.currency,
-                                ),
-                              ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.7,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          itemCount: _filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            return ProductCard(
+                              product: _filteredProducts[index],
+                              currency: widget.currency,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductDetailScreen(
+                                      product: _filteredProducts[index],
+                                      currency: widget.currency,
+                                    ),
+                                  ),
+                                );
+                              },
+                              onAddToCart: () {
+                                _addToCart(_filteredProducts[index]);
+                              },
                             );
                           },
-                          onAddToCart: () {
-                            _addToCart(_filteredProducts[index]);
-                          },
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
+                ),
     );
   }
 
