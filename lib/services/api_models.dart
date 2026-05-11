@@ -75,13 +75,15 @@ class UserProfile {
 class ApiBrand {
   final String id;
   final String name;
+  final String? slug;
 
-  ApiBrand({required this.id, required this.name});
+  ApiBrand({required this.id, required this.name, this.slug});
 
   factory ApiBrand.fromJson(Map<String, dynamic> json) {
     return ApiBrand(
       id: json['id'] as String,
       name: json['name'] as String,
+      slug: json['slug'] as String?,
     );
   }
 }
