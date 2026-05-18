@@ -4,6 +4,7 @@ import '../models/cart_item.dart';
 import '../models/api_models.dart';
 import '../services/cart_manager.dart';
 import '../widgets/app_snack_bar.dart';
+import '../widgets/product_image.dart';
 import '../services/api.dart';
 import 'cart_comparison_screen.dart';
 
@@ -323,47 +324,59 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     // Botón fijo "Comparar precios"
                     Container(
-                      padding: EdgeInsets.fromLTRB(16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
+                      padding: EdgeInsets.fromLTRB(20, 14, 20, MediaQuery.of(context).padding.bottom + 14),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
-                            blurRadius: 12,
-                            offset: const Offset(0, -4),
+                            color: AppColors.primary.withOpacity(0.05),
+                            blurRadius: 18,
+                            offset: const Offset(0, -6),
                           ),
                         ],
                       ),
-                      child: GestureDetector(
-                        onTap: _navigateToComparison,
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          decoration: BoxDecoration(
-                            gradient: AppColors.primaryGradient,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withOpacity(0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.18),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(18),
+                          clipBehavior: Clip.antiAlias,
+                          child: InkWell(
+                            onTap: _navigateToComparison,
+                            splashColor: Colors.white.withOpacity(0.12),
+                            highlightColor: Colors.white.withOpacity(0.06),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.compare_arrows_rounded,
+                                    color: Colors.white,
+                                    size: 19,
+                                  ),
+                                  SizedBox(width: 9),
+                                  Text(
+                                    'Comparar precios',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      letterSpacing: -0.1,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.compare_arrows_rounded, color: Colors.white, size: 22),
-                              SizedBox(width: 10),
-                              Text(
-                                'Comparar precios',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -498,12 +511,12 @@ class _CartScreenState extends State<CartScreen> {
                   child: item.product.imageUrl.isNotEmpty
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            item.product.imageUrl,
+                          child: ProductImage(
+                            url: item.product.imageUrl,
                             width: 60,
                             height: 60,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(
+                            errorBuilder: (_) => Icon(
                               Icons.shopping_basket_rounded,
                               size: 26,
                               color: AppColors.primary.withOpacity(0.3),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../config/app_colors.dart';
+import 'product_image.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -57,17 +58,15 @@ class ProductCard extends StatelessWidget {
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(22),
                               ),
-                              child: Image.network(
-                                product.imageUrl,
+                              child: ProductImage(
+                                url: product.imageUrl,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(
-                                    Icons.shopping_basket_rounded,
-                                    size: 48,
-                                    color: AppColors.primary.withOpacity(0.3),
-                                  );
-                                },
+                                errorBuilder: (_) => Icon(
+                                  Icons.shopping_basket_rounded,
+                                  size: 48,
+                                  color: AppColors.primary.withOpacity(0.3),
+                                ),
                               ),
                             )
                           : Icon(

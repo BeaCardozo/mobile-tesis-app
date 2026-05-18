@@ -5,6 +5,7 @@ import '../models/product.dart';
 import '../services/api.dart';
 import '../services/cart_manager.dart';
 import '../widgets/app_header.dart';
+import '../widgets/product_image.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
 import 'notifications_screen.dart';
@@ -414,11 +415,11 @@ class _DealCard extends StatelessWidget {
                               borderRadius: const BorderRadius.vertical(
                                 top: Radius.circular(18),
                               ),
-                              child: Image.network(
-                                deal.imageUrl!,
+                              child: ProductImage(
+                                url: deal.imageUrl!,
                                 width: double.infinity,
                                 fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Icon(
+                                errorBuilder: (_) => Icon(
                                   Icons.shopping_basket_rounded,
                                   size: 40,
                                   color: AppColors.primary.withOpacity(0.3),
