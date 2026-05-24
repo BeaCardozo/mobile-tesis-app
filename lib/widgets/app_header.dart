@@ -7,8 +7,6 @@ class AppHeader extends StatelessWidget {
   final ValueChanged<String> onCurrencyChanged;
   final VoidCallback onCartTap;
   final int cartItemCount;
-  final VoidCallback? onNotificationTap;
-  final int notificationCount;
 
   const AppHeader({
     super.key,
@@ -16,8 +14,6 @@ class AppHeader extends StatelessWidget {
     required this.onCurrencyChanged,
     required this.onCartTap,
     required this.cartItemCount,
-    this.onNotificationTap,
-    this.notificationCount = 0,
   });
 
   @override
@@ -119,62 +115,6 @@ class AppHeader extends StatelessWidget {
               ),
 
               const SizedBox(width: 10),
-
-              // Botón de notificaciones
-              if (onNotificationTap != null)
-                GestureDetector(
-                  onTap: onNotificationTap,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.primary.withOpacity(0.15),
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.notifications_none_rounded,
-                          size: 20,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      if (notificationCount > 0)
-                        Positioned(
-                          top: -4,
-                          right: -4,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 18,
-                              minHeight: 18,
-                            ),
-                            child: Text(
-                              notificationCount > 9
-                                  ? '9+'
-                                  : notificationCount.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-
-              if (onNotificationTap != null) const SizedBox(width: 10),
 
               // Botón del carrito
               CartButton(

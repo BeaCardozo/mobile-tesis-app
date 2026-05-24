@@ -14,7 +14,6 @@ import 'cart_screen.dart';
 import 'categories_screen.dart';
 import 'category_detail_screen.dart';
 import 'featured_products_screen.dart';
-import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String selectedCurrency;
@@ -63,37 +62,17 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Category> _categories = [];
   List<Product> _products = [];
   bool _isLoading = true;
-  int _notificationCount = 0;
 
   @override
   void initState() {
     super.initState();
     _startPromoTimer();
     _loadData();
-    _loadNotificationCount();
     CartManager.instance.addListener(_onCartChanged);
   }
 
   void _onCartChanged() {
     if (mounted) setState(() {});
-  }
-
-  Future<void> _loadNotificationCount() async {
-    try {
-      final count = await Api.instance.notifications.getUnreadCount();
-      if (mounted) {
-        setState(() => _notificationCount = count);
-      }
-    } catch (_) {}
-  }
-
-  void _navigateToNotifications() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const NotificationsScreen(),
-      ),
-    ).then((_) => _loadNotificationCount());
   }
 
   Future<void> _loadData() async {
@@ -188,8 +167,6 @@ class _HomeScreenState extends State<HomeScreen> {
               onCurrencyChanged: widget.onCurrencyChanged,
               onCartTap: _navigateToCart,
               cartItemCount: CartManager.instance.itemCount,
-              onNotificationTap: _navigateToNotifications,
-              notificationCount: _notificationCount,
             ),
 
             // Contenido con scroll

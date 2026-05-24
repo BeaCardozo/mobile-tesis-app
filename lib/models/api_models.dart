@@ -32,7 +32,6 @@ class UserProfile {
   final String role;
   final String currency;
   final String language;
-  final bool notificationsEnabled;
   final DateTime createdAt;
 
   UserProfile({
@@ -44,7 +43,6 @@ class UserProfile {
     required this.role,
     required this.currency,
     required this.language,
-    required this.notificationsEnabled,
     required this.createdAt,
   });
 
@@ -64,7 +62,6 @@ class UserProfile {
       language: json['preferenceLanguage'] as String? ??
           json['language'] as String? ??
           'es',
-      notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : DateTime.now(),
@@ -498,44 +495,6 @@ class ApiCartDetail {
               ?.map((e) => ApiCartItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-    );
-  }
-}
-
-// =============================================================================
-// Notifications
-// =============================================================================
-
-class ApiNotification {
-  final String id;
-  final String title;
-  final String? body;
-  final String? type;
-  final Map<String, dynamic>? data;
-  final String? readAt;
-  final String createdAt;
-
-  ApiNotification({
-    required this.id,
-    required this.title,
-    this.body,
-    this.type,
-    this.data,
-    this.readAt,
-    required this.createdAt,
-  });
-
-  bool get isRead => readAt != null;
-
-  factory ApiNotification.fromJson(Map<String, dynamic> json) {
-    return ApiNotification(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      body: json['body'] as String?,
-      type: json['type'] as String?,
-      data: json['data'] as Map<String, dynamic>?,
-      readAt: json['readAt'] as String?,
-      createdAt: json['createdAt'] as String,
     );
   }
 }

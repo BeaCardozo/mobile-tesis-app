@@ -86,14 +86,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             pinned: true,
             backgroundColor: const Color(0xFFF4F9EC),
             elevation: 0,
+            leadingWidth: 120,
             leading: Padding(
               padding: const EdgeInsets.only(left: 12),
-              child: IconButton(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
+              child: Center(
+                child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.primaryDark.withOpacity(0.10),
@@ -102,13 +102,40 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: AppColors.primary,
-                    size: 20,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(24),
+                      onTap: () => Navigator.pop(context),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.arrow_back,
+                              color: AppColors.primary,
+                              size: 18,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'Volver',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                onPressed: () => Navigator.pop(context),
               ),
             ),
             actions: const [
@@ -116,19 +143,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                margin: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.vertical(
+                  borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(32),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.08),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
                 ),
                 padding: const EdgeInsets.fromLTRB(48, 72, 48, 32),
                 child: widget.product.imageUrl.isNotEmpty

@@ -50,19 +50,15 @@ class UsersApiService {
     );
   }
 
-  /// Actualizar preferencias (moneda, idioma, notificaciones).
+  /// Actualizar preferencias (moneda, idioma).
   /// PUT /api/users/me/preferences
   Future<void> updatePreferences({
     String? currency,
     String? language,
-    bool? notificationsEnabled,
   }) async {
     final body = <String, dynamic>{};
     if (currency != null) body['currency'] = currency;
     if (language != null) body['language'] = language;
-    if (notificationsEnabled != null) {
-      body['notificationsEnabled'] = notificationsEnabled;
-    }
 
     await _client.put(
       'users/me/preferences',

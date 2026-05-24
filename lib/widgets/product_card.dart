@@ -77,41 +77,6 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Cantidad de supermercados
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.store_rounded,
-                            size: 11,
-                            color: AppColors.grey.withOpacity(0.7),
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            '${product.prices.length}',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.grey.withOpacity(0.8),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
                   // Botón de añadir al carrito
                   Positioned(
                     top: 10,

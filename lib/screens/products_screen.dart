@@ -10,7 +10,6 @@ import '../widgets/app_header.dart';
 import '../widgets/app_snack_bar.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
-import 'notifications_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
   final String selectedCurrency;
@@ -31,41 +30,23 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   // Filtros
   String? _selectedCategoryId;
-  String? _selectedSupermarketName;
   double _minPrice = 0;
   double _maxPrice = 50;
   String _sortBy = 'Relevancia';
 
   List<Category> _categories = [];
-  List<ApiSupermarket> _supermarkets = [];
   List<Product> _products = [];
   bool _isLoading = true;
-  int _notificationCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadData();
-    _loadNotificationCount();
     CartManager.instance.addListener(_onCartChanged);
   }
 
   void _onCartChanged() {
     if (mounted) setState(() {});
-  }
-
-  Future<void> _loadNotificationCount() async {
-    try {
-      final count = await Api.instance.notifications.getUnreadCount();
-      if (mounted) setState(() => _notificationCount = count);
-    } catch (_) {}
-  }
-
-  void _navigateToNotifications() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    ).then((_) => _loadNotificationCount());
   }
 
   /// Mapea la etiqueta de orden de la UI al valor que espera el backend.
@@ -85,31 +66,38 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Future<void> _loadData({String? search}) async {
     setState(() => _isLoading = true);
 
-    // Cargar supermercados por separado para que no bloquee productos
-    if (_supermarkets.isEmpty) {
-      Api.instance.supermarkets.listAll().then((list) {
-        if (mounted && list.isNotEmpty) setState(() => _supermarkets = list);
-      }).catchError((_) {});
-    }
-
     try {
       final bool priceFilterActive = _minPrice > 0 || _maxPrice < 50;
 
+      const int pageSize = 100;
+
+      Future<List<ApiProductSummary>> fetchAllProducts() async {
+        final List<ApiProductSummary> all = [];
+        int currentPage = 1;
+        while (true) {
+          final paginated = await Api.instance.products.list(
+            search: search,
+            categoryId: _selectedCategoryId,
+            minPrice: priceFilterActive ? _minPrice : null,
+            maxPrice: priceFilterActive ? _maxPrice : null,
+            sortBy: _mapSortBy(_sortBy),
+            page: currentPage,
+            limit: pageSize,
+          );
+          all.addAll(paginated.items);
+          if (!paginated.hasNextPage || paginated.items.isEmpty) break;
+          currentPage++;
+        }
+        return all;
+      }
+
       final results = await Future.wait([
         Api.instance.categories.listAll(),
-        Api.instance.products.list(
-          search: search,
-          categoryId: _selectedCategoryId,
-          supermarketName: _selectedSupermarketName,
-          minPrice: priceFilterActive ? _minPrice : null,
-          maxPrice: priceFilterActive ? _maxPrice : null,
-          sortBy: _mapSortBy(_sortBy),
-          limit: 50,
-        ),
+        fetchAllProducts(),
       ]);
 
       final apiCategories = results[0] as List;
-      final paginatedProducts = results[1];
+      final allProducts = results[1] as List<ApiProductSummary>;
 
       if (mounted) {
         setState(() {
@@ -117,8 +105,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
               .map((c) => Category.fromApi(c, productCount: c.productCount))
               .where((c) => c.productCount > 0)
               .toList();
-          _products = (paginatedProducts as dynamic).items
-              .map<Product>((p) => Product.fromApiSummary(p))
+          _products = allProducts
+              .map((p) => Product.fromApiSummary(p))
               .toList();
           _isLoading = false;
         });
@@ -206,7 +194,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         onPressed: () {
                           setModalState(() {
                             _selectedCategoryId = null;
-                            _selectedSupermarketName = null;
                             _minPrice = 0;
                             _maxPrice = 50;
                             _sortBy = 'Relevancia';
@@ -331,70 +318,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                       const SizedBox(width: 6),
                                       Text(
                                         category.name,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: isSelected
-                                              ? Colors.white
-                                              : AppColors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Supermercado
-                        _buildFilterSection(
-                          title: 'Supermercado',
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _supermarkets.map((sm) {
-                              final isSelected =
-                                  _selectedSupermarketName == sm.name;
-                              return GestureDetector(
-                                onTap: () {
-                                  setModalState(() {
-                                    _selectedSupermarketName =
-                                        isSelected ? null : sm.name;
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? AppColors.primary
-                                        : AppColors.lightGrey,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? AppColors.primary
-                                          : Colors.transparent,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.store_rounded,
-                                        size: 18,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : AppColors.black,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        sm.name,
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -591,8 +514,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
               onCurrencyChanged: widget.onCurrencyChanged,
               onCartTap: _navigateToCart,
               cartItemCount: CartManager.instance.itemCount,
-              onNotificationTap: _navigateToNotifications,
-              notificationCount: _notificationCount,
             ),
 
             const SizedBox(height: 8),

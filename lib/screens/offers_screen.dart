@@ -8,7 +8,6 @@ import '../widgets/app_header.dart';
 import '../widgets/product_image.dart';
 import 'product_detail_screen.dart';
 import 'cart_screen.dart';
-import 'notifications_screen.dart';
 
 class OffersScreen extends StatefulWidget {
   final String selectedCurrency;
@@ -30,14 +29,12 @@ class _OffersScreenState extends State<OffersScreen> {
   String? _error;
   late String _currency;
   String _filterSuper = '';
-  int _notificationCount = 0;
 
   @override
   void initState() {
     super.initState();
     _currency = widget.selectedCurrency;
     _fetchDeals();
-    _loadNotificationCount();
     CartManager.instance.addListener(_onCartChanged);
   }
 
@@ -49,20 +46,6 @@ class _OffersScreenState extends State<OffersScreen> {
 
   void _onCartChanged() {
     if (mounted) setState(() {});
-  }
-
-  Future<void> _loadNotificationCount() async {
-    try {
-      final count = await Api.instance.notifications.getUnreadCount();
-      if (mounted) setState(() => _notificationCount = count);
-    } catch (_) {}
-  }
-
-  void _navigateToNotifications() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-    ).then((_) => _loadNotificationCount());
   }
 
   void _navigateToCart() {
@@ -137,8 +120,6 @@ class _OffersScreenState extends State<OffersScreen> {
               },
               onCartTap: _navigateToCart,
               cartItemCount: CartManager.instance.itemCount,
-              onNotificationTap: _navigateToNotifications,
-              notificationCount: _notificationCount,
             ),
 
             // Supermarket filter chips

@@ -5,7 +5,6 @@ import 'categories_api_service.dart';
 import 'supermarkets_api_service.dart';
 import 'carts_api_service.dart';
 import 'offers_api_service.dart';
-import 'notifications_api_service.dart';
 import 'users_api_service.dart';
 import 'meta_api_service.dart';
 
@@ -27,7 +26,6 @@ class Api {
   late final SupermarketsApiService supermarkets;
   late final CartsApiService carts;
   late final OffersApiService offers;
-  late final NotificationsApiService notifications;
   late final UsersApiService users;
   late final MetaApiService meta;
 
@@ -38,7 +36,6 @@ class Api {
     supermarkets = SupermarketsApiService(client);
     carts = CartsApiService(client);
     offers = OffersApiService(client);
-    notifications = NotificationsApiService(client);
     users = UsersApiService(client);
     meta = MetaApiService(client);
   }
