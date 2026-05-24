@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
+import 'app_brand_logo.dart';
 import 'cart_button.dart';
 
 class AppHeader extends StatelessWidget {
@@ -29,37 +30,14 @@ class AppHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              RichText(
-                text: const TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Caracas',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                    TextSpan(
-                      text: 'Ahorra',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.accent,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const AppBrandLogo(),
               const SizedBox(height: 2),
               Text(
                 'Compara y ahorra',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.grey.withOpacity(0.7),
+                  color: AppColors.grey.withValues(alpha: 0.7),
                   letterSpacing: 0.1,
                 ),
               ),
@@ -76,10 +54,10 @@ class AppHeader extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: AppColors.primary.withValues(alpha: 0.15),
                   ),
                 ),
                 child: DropdownButton<String>(
@@ -87,7 +65,7 @@ class AppHeader extends StatelessWidget {
                   icon: Icon(
                     Icons.unfold_more_rounded,
                     size: 14,
-                    color: AppColors.primary.withOpacity(0.7),
+                    color: AppColors.primary.withValues(alpha: 0.7),
                   ),
                   underline: const SizedBox(),
                   isDense: true,

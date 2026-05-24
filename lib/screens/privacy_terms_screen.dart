@@ -47,7 +47,7 @@ Nos reservamos el derecho de modificar estos términos en cualquier momento. Los
                     _buildSection(
                       title: 'Política de Privacidad',
                       icon: Icons.privacy_tip_outlined,
-                      iconColor: const Color(0xFFED7D95),
+                      iconColor: AppColors.iconPink,
                       content: '''
 Tu privacidad es importante para nosotros. Esta política describe cómo recopilamos, usamos y protegemos tu información.
 
@@ -74,7 +74,7 @@ No vendemos, comercializamos ni transferimos tu información personal a terceros
                     _buildSection(
                       title: 'Almacenamiento Local',
                       icon: Icons.storage_outlined,
-                      iconColor: const Color(0xFF5B9BD5),
+                      iconColor: AppColors.iconBlue,
                       content: '''
 CaracasAhorra utiliza almacenamiento local en tu dispositivo para:
 
@@ -95,14 +95,14 @@ Estos datos se almacenan exclusivamente en tu dispositivo y puedes eliminarlos e
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.grey.withOpacity(0.08),
+                          color: AppColors.grey.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           'Última actualización: Febrero 2026',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.grey.withOpacity(0.7),
+                            color: AppColors.grey.withValues(alpha: 0.7),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -182,7 +182,7 @@ Estos datos se almacenan exclusivamente en tu dispositivo y puedes eliminarlos e
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -197,7 +197,7 @@ Estos datos se almacenan exclusivamente en tu dispositivo y puedes eliminarlos e
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: iconColor, size: 22),
@@ -218,7 +218,7 @@ Estos datos se almacenan exclusivamente en tu dispositivo y puedes eliminarlos e
             content.trim(),
             style: TextStyle(
               fontSize: 13,
-              color: AppColors.black.withOpacity(0.7),
+              color: AppColors.black.withValues(alpha: 0.7),
               height: 1.6,
             ),
           ),

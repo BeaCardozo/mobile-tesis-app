@@ -64,7 +64,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 24,
             offset: const Offset(0, -2),
             spreadRadius: 0,
@@ -97,7 +97,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                             width: indicatorSize,
                             height: indicatorSize,
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.10),
+                              color: AppColors.primary.withValues(alpha: 0.10),
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
@@ -153,7 +153,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     final double activity = (1.0 - distance).clamp(0.0, 1.0);
 
     final color = Color.lerp(
-      AppColors.grey.withOpacity(0.7),
+      AppColors.grey.withValues(alpha: 0.7),
       AppColors.primary,
       activity,
     )!;

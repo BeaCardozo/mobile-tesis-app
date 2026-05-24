@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
@@ -36,10 +38,18 @@ class NetworkException implements Exception {
 /// Maneja autenticacion JWT, refresh automatico de tokens,
 /// y formato estandar de respuestas.
 class ApiClient {
+  // Tokens viven en secure storage (Keychain en iOS, EncryptedSharedPreferences
+  // en Android). El flag rememberMe y el email recordado siguen en
+  // SharedPreferences ya que no son material sensible.
   static const String _keyAccessToken = 'accessToken';
   static const String _keyRefreshToken = 'refreshToken';
   static const String _keyRememberMe = 'rememberMe';
   static const String _keyRememberEmail = 'rememberEmail';
+
+  static const _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
 
   final http.Client _httpClient;
 
@@ -47,32 +57,46 @@ class ApiClient {
       : _httpClient = httpClient ?? http.Client();
 
   // ---------------------------------------------------------------------------
-  // Gestion de tokens
+  // Gestion de tokens (secure storage)
   // ---------------------------------------------------------------------------
 
   Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyAccessToken);
+    try {
+      return await _secureStorage.read(key: _keyAccessToken);
+    } catch (e) {
+      debugPrint('[ApiClient.getAccessToken] $e');
+      return null;
+    }
   }
 
   Future<String?> getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyRefreshToken);
+    try {
+      return await _secureStorage.read(key: _keyRefreshToken);
+    } catch (e) {
+      debugPrint('[ApiClient.getRefreshToken] $e');
+      return null;
+    }
   }
 
   Future<void> saveTokens({
     required String accessToken,
     required String refreshToken,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyAccessToken, accessToken);
-    await prefs.setString(_keyRefreshToken, refreshToken);
+    try {
+      await _secureStorage.write(key: _keyAccessToken, value: accessToken);
+      await _secureStorage.write(key: _keyRefreshToken, value: refreshToken);
+    } catch (e) {
+      debugPrint('[ApiClient.saveTokens] $e');
+    }
   }
 
   Future<void> clearTokens() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keyAccessToken);
-    await prefs.remove(_keyRefreshToken);
+    try {
+      await _secureStorage.delete(key: _keyAccessToken);
+      await _secureStorage.delete(key: _keyRefreshToken);
+    } catch (e) {
+      debugPrint('[ApiClient.clearTokens] $e');
+    }
   }
 
   Future<void> saveRememberMe(bool value, {String? email}) async {

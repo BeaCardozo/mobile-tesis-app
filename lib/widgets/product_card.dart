@@ -26,11 +26,11 @@ class ProductCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: AppColors.grey.withOpacity(0.08),
+            color: AppColors.grey.withValues(alpha: 0.08),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -47,7 +47,7 @@ class ProductCard extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColors.lightGrey.withOpacity(0.6),
+                      color: AppColors.lightGrey.withValues(alpha: 0.6),
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(22),
                       ),
@@ -65,14 +65,14 @@ class ProductCard extends StatelessWidget {
                                 errorBuilder: (_) => Icon(
                                   Icons.shopping_basket_rounded,
                                   size: 48,
-                                  color: AppColors.primary.withOpacity(0.3),
+                                  color: AppColors.primary.withValues(alpha: 0.3),
                                 ),
                               ),
                             )
                           : Icon(
                               Icons.shopping_basket_rounded,
                               size: 48,
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                             ),
                     ),
                   ),
@@ -90,7 +90,7 @@ class ProductCard extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.25),
+                              color: AppColors.primary.withValues(alpha: 0.25),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -147,7 +147,7 @@ class ProductCard extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w400,
-                                    color: AppColors.grey.withOpacity(0.6),
+                                    color: AppColors.grey.withValues(alpha: 0.6),
                                   ),
                                 ),
                               Text(
@@ -167,7 +167,7 @@ class ProductCard extends StatelessWidget {
                           '/${product.unit}',
                           style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.grey.withOpacity(0.5),
+                            color: AppColors.grey.withValues(alpha: 0.5),
                           ),
                         ),
                       ],

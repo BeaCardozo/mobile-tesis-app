@@ -1,12 +1,21 @@
 class ApiConfig {
   /// URL base del backend (ca-api).
-  /// En desarrollo local con emulador Android usa 10.0.2.2,
-  /// en iOS simulador o web usa localhost.
-  /// Cambiar a la URL de produccion cuando se despliegue.
-  static const String baseUrl = 'http://localhost:4003/api';
-  //Local en PC: 'http://localhost:4003/api';
-  // Emulador Android: 'http://10.0.2.2:4003/api';
-  // Telefono: 'http://192.168.1.110:4003/api';
+  ///
+  /// Se configura en tiempo de build con `--dart-define=API_BASE_URL=...`.
+  /// Si no se provee, usa localhost para desarrollo.
+  ///
+  /// Ejemplos:
+  ///   Local PC / iOS simulador: http://localhost:4003/api
+  ///   Emulador Android:        http://10.0.2.2:4003/api
+  ///   Teléfono en LAN:         http://192.168.x.x:4003/api
+  ///   Producción:              https://api.caracasahorra.com/api
+  ///
+  /// Uso:
+  ///   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:4003/api
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:4003/api',
+  );
 
   /// Timeout para peticiones normales (ms).
   static const Duration timeout = Duration(seconds: 15);

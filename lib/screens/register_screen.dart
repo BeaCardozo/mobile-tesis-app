@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
 import '../services/api_client.dart';
+import '../utils/validators.dart';
+import '../widgets/app_brand_logo.dart';
 import '../widgets/app_snack_bar.dart';
 import 'main_screen.dart';
 
@@ -21,7 +23,6 @@ class _RegisterScreenState extends State<RegisterScreen>
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  bool _acceptTerms = false;
   bool _isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -62,13 +63,6 @@ class _RegisterScreenState extends State<RegisterScreen>
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (!_acceptTerms) {
-      AppSnackBar.error(
-        context,
-        message: 'Debes aceptar los términos y condiciones',
-      );
-      return;
-    }
 
     setState(() => _isLoading = true);
 
@@ -177,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               borderRadius: BorderRadius.circular(14),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.black.withOpacity(0.04),
+                                  color: AppColors.black.withValues(alpha: 0.04),
                                   blurRadius: 16,
                                   offset: const Offset(0, 2),
                                   spreadRadius: 0,
@@ -186,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             ),
                             child: Icon(
                               Icons.arrow_back,
-                              color: AppColors.primary.withOpacity(0.9),
+                              color: AppColors.primary.withValues(alpha: 0.9),
                               size: 22,
                             ),
                           ),
@@ -196,29 +190,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                       const SizedBox(height: 16),
 
                       // Título
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Caracas',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Ahorra',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.accent,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                          ],
-                        ),
+                      const AppBrandLogo(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
                       ),
 
                       const SizedBox(height: 10),
@@ -227,7 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         'Crear cuenta nueva',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.grey.withOpacity(0.8),
+                          color: AppColors.grey.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -242,7 +216,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black.withOpacity(0.04),
+                              color: AppColors.black.withValues(alpha: 0.04),
                               blurRadius: 24,
                               offset: const Offset(0, 4),
                               spreadRadius: 0,
@@ -262,11 +236,11 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   hintText: 'Juan Pérez',
                                   prefixIcon: Icon(
                                     Icons.person_outline,
-                                    color: AppColors.primary.withOpacity(0.8),
+                                    color: AppColors.primary.withValues(alpha: 0.8),
                                     size: 22,
                                   ),
                                   filled: true,
-                                  fillColor: AppColors.lightGrey.withOpacity(0.7),
+                                  fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide.none,
@@ -301,11 +275,11 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   hintText: 'ejemplo@correo.com',
                                   prefixIcon: Icon(
                                     Icons.email_outlined,
-                                    color: AppColors.primary.withOpacity(0.8),
+                                    color: AppColors.primary.withValues(alpha: 0.8),
                                     size: 22,
                                   ),
                                   filled: true,
-                                  fillColor: AppColors.lightGrey.withOpacity(0.7),
+                                  fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide.none,
@@ -318,15 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     ),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingrese su correo';
-                                  }
-                                  if (!value.contains('@')) {
-                                    return 'Por favor ingrese un correo válido';
-                                  }
-                                  return null;
-                                },
+                                validator: Validators.email,
                               ),
 
                               const SizedBox(height: 16),
@@ -340,7 +306,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   hintText: '••••••••',
                                   prefixIcon: Icon(
                                     Icons.lock_outline,
-                                    color: AppColors.primary.withOpacity(0.8),
+                                    color: AppColors.primary.withValues(alpha: 0.8),
                                     size: 22,
                                   ),
                                   suffixIcon: IconButton(
@@ -348,7 +314,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                       _obscurePassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
-                                      color: AppColors.grey.withOpacity(0.7),
+                                      color: AppColors.grey.withValues(alpha: 0.7),
                                       size: 22,
                                     ),
                                     onPressed: () {
@@ -358,7 +324,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     },
                                   ),
                                   filled: true,
-                                  fillColor: AppColors.lightGrey.withOpacity(0.7),
+                                  fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide.none,
@@ -371,28 +337,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     ),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingrese su contraseña';
-                                  }
-                                  if (value.length < 8) {
-                                    return 'Mínimo 8 caracteres';
-                                  }
-                                  if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                                    return 'Debe contener al menos una mayúscula';
-                                  }
-                                  if (!RegExp(r'[a-z]').hasMatch(value)) {
-                                    return 'Debe contener al menos una minúscula';
-                                  }
-                                  if (!RegExp(r'[0-9]').hasMatch(value)) {
-                                    return 'Debe contener al menos un número';
-                                  }
-                                  if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                                      .hasMatch(value)) {
-                                    return 'Debe contener al menos un símbolo';
-                                  }
-                                  return null;
-                                },
+                                validator: Validators.password,
                               ),
 
                               const SizedBox(height: 16),
@@ -406,7 +351,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   hintText: '••••••••',
                                   prefixIcon: Icon(
                                     Icons.lock_outline,
-                                    color: AppColors.primary.withOpacity(0.8),
+                                    color: AppColors.primary.withValues(alpha: 0.8),
                                     size: 22,
                                   ),
                                   suffixIcon: IconButton(
@@ -414,7 +359,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                       _obscureConfirmPassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
-                                      color: AppColors.grey.withOpacity(0.7),
+                                      color: AppColors.grey.withValues(alpha: 0.7),
                                       size: 22,
                                     ),
                                     onPressed: () {
@@ -425,7 +370,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     },
                                   ),
                                   filled: true,
-                                  fillColor: AppColors.lightGrey.withOpacity(0.7),
+                                  fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide.none,
@@ -438,69 +383,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     ),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor confirme su contraseña';
-                                  }
-                                  if (value != _passwordController.text) {
-                                    return 'Las contraseñas no coinciden';
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              // Términos y condiciones
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: Checkbox(
-                                      value: _acceptTerms,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _acceptTerms = value ?? false;
-                                        });
-                                      },
-                                      activeColor: AppColors.primary,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Wrap(
-                                      alignment: WrapAlignment.center,
-                                      children: [
-                                        Text(
-                                          'Acepto los ',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: AppColors.black.withOpacity(0.7),
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            // TODO: Mostrar términos y condiciones
-                                          },
-                                          child: Text(
-                                            'términos y condiciones',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              color: AppColors.primary.withOpacity(0.9),
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                validator: (value) => Validators.matchesPassword(
+                                  value,
+                                  _passwordController.text,
+                                ),
                               ),
 
                               const SizedBox(height: 26),
@@ -515,7 +401,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     disabledBackgroundColor:
-                                        AppColors.primary.withOpacity(0.6),
+                                        AppColors.primary.withValues(alpha: 0.6),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -557,7 +443,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             '¿Ya tienes cuenta? ',
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppColors.grey.withOpacity(0.8),
+                              color: AppColors.grey.withValues(alpha: 0.8),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -567,7 +453,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               'Inicia sesión',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.primary.withOpacity(0.9),
+                                color: AppColors.primary.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

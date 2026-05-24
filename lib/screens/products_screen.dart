@@ -171,7 +171,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.grey.withOpacity(0.3),
+                    color: AppColors.grey.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -279,13 +279,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             runSpacing: 8,
                             children: _categories.map((category) {
                               final isSelected =
-                                  _selectedCategoryId == category.id.toString();
+                                  _selectedCategoryId == category.id;
                               return GestureDetector(
                                 onTap: () {
                                   setModalState(() {
                                     _selectedCategoryId = isSelected
                                         ? null
-                                        : category.id.toString();
+                                        : category.id;
                                   });
                                 },
                                 child: Container(
@@ -408,7 +408,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, -2),
                       ),
@@ -547,7 +547,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         '${_products.length} productos encontrados',
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.grey.withOpacity(0.8),
+                          color: AppColors.grey.withValues(alpha: 0.8),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -606,7 +606,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -617,7 +617,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           decoration: InputDecoration(
             hintText: 'Buscar productos...',
             hintStyle: TextStyle(
-              color: AppColors.grey.withOpacity(0.6),
+              color: AppColors.grey.withValues(alpha: 0.6),
             ),
             prefixIcon: const Icon(
               Icons.search,
@@ -627,7 +627,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(

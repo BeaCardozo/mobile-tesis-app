@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
 import '../services/api_client.dart';
+import '../utils/validators.dart';
 import '../widgets/app_snack_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -146,12 +147,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       hintText: hint,
       prefixIcon: Icon(
         icon,
-        color: AppColors.primary.withOpacity(0.8),
+        color: AppColors.primary.withValues(alpha: 0.8),
         size: 22,
       ),
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: AppColors.lightGrey.withOpacity(0.7),
+      fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
@@ -195,7 +196,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(22),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
+                              color: Colors.black.withValues(alpha: 0.03),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -230,15 +231,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 hint: 'ejemplo@correo.com',
                                 icon: Icons.email_outlined,
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingrese su correo';
-                                }
-                                if (!value.contains('@')) {
-                                  return 'Por favor ingrese un correo válido';
-                                }
-                                return null;
-                              },
+                              validator: Validators.email,
                             ),
                           ],
                         ),
@@ -256,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(22),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
+                              color: Colors.black.withValues(alpha: 0.03),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -276,7 +269,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     _obscureCurrentPassword
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
-                                    color: AppColors.grey.withOpacity(0.7),
+                                    color: AppColors.grey.withValues(alpha: 0.7),
                                     size: 22,
                                   ),
                                   onPressed: () {
@@ -301,7 +294,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     _obscureNewPassword
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
-                                    color: AppColors.grey.withOpacity(0.7),
+                                    color: AppColors.grey.withValues(alpha: 0.7),
                                     size: 22,
                                   ),
                                   onPressed: () {
@@ -313,24 +306,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                               ),
                               validator: (value) {
+                                // En edit profile, dejar la nueva contraseña vacía es válido.
                                 if (value == null || value.isEmpty) return null;
-                                if (value.length < 8) {
-                                  return 'Mínimo 8 caracteres';
-                                }
-                                if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                                  return 'Debe contener al menos una mayúscula';
-                                }
-                                if (!RegExp(r'[a-z]').hasMatch(value)) {
-                                  return 'Debe contener al menos una minúscula';
-                                }
-                                if (!RegExp(r'[0-9]').hasMatch(value)) {
-                                  return 'Debe contener al menos un número';
-                                }
-                                if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                                    .hasMatch(value)) {
-                                  return 'Debe contener al menos un símbolo';
-                                }
-                                return null;
+                                return Validators.password(value);
                               },
                             ),
                             const SizedBox(height: 16),
@@ -346,7 +324,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     _obscureConfirmPassword
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
-                                    color: AppColors.grey.withOpacity(0.7),
+                                    color: AppColors.grey.withValues(alpha: 0.7),
                                     size: 22,
                                   ),
                                   onPressed: () {
@@ -380,7 +358,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             disabledBackgroundColor:
-                                AppColors.primary.withOpacity(0.6),
+                                AppColors.primary.withValues(alpha: 0.6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),

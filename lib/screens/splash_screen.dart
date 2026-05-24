@@ -2,8 +2,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
+import '../services/pending_deep_link.dart';
+import '../widgets/app_brand_logo.dart';
 import 'main_screen.dart';
 import 'login_screen.dart';
+import 'reset_password_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -176,6 +179,18 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
+    // Cold start con deep link de reset-password: ir directo a esa pantalla.
+    final pending = PendingDeepLink.consume();
+    final resetToken = _resetTokenFrom(pending);
+    if (resetToken != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => ResetPasswordScreen(token: resetToken),
+        ),
+      );
+      return;
+    }
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -186,6 +201,15 @@ class _SplashScreenState extends State<SplashScreen>
         transitionDuration: const Duration(milliseconds: 600),
       ),
     );
+  }
+
+  String? _resetTokenFrom(Uri? uri) {
+    if (uri == null) return null;
+    final isResetLink =
+        uri.host == 'reset-password' || uri.path.contains('reset-password');
+    if (!isResetLink) return null;
+    final token = uri.queryParameters['token'];
+    return (token != null && token.isNotEmpty) ? token : null;
   }
 
   @override
@@ -233,7 +257,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFFFA726).withOpacity(0.4),
+                      color: const Color(0xFFFFA726).withValues(alpha: 0.4),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -307,7 +331,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   boxShadow: [
                                     BoxShadow(
                                       color:
-                                          AppColors.primary.withOpacity(0.12),
+                                          AppColors.primary.withValues(alpha: 0.12),
                                       blurRadius: 50,
                                       spreadRadius: 20,
                                     ),
@@ -352,29 +376,9 @@ class _SplashScreenState extends State<SplashScreen>
                     position: _brandSlide,
                     child: FadeTransition(
                       opacity: _brandOpacity,
-                      child: RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Caracas',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Ahorra',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.accent,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: const AppBrandLogo(
+                        fontSize: 32,
+                        letterSpacing: -0.5,
                       ),
                     ),
                   ),
@@ -389,7 +393,7 @@ class _SplashScreenState extends State<SplashScreen>
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
-                        color: AppColors.grey.withOpacity(0.7),
+                        color: AppColors.grey.withValues(alpha: 0.7),
                         letterSpacing: 0.2,
                       ),
                     ),
@@ -405,7 +409,7 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 28,
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.primary.withOpacity(0.4),
+                          AppColors.primary.withValues(alpha: 0.4),
                         ),
                         strokeWidth: 2.5,
                       ),

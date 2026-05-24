@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
+import '../models/api_models.dart';
 import '../models/category.dart';
 import '../models/product.dart';
 import '../services/api.dart';
@@ -47,15 +48,24 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
 
   Future<void> _loadProducts() async {
     try {
-      final paginated = await Api.instance.products.list(
-        categoryId: widget.category.id.toString(),
-        limit: 50,
-      );
+      const int pageSize = 100;
+      final List<ApiProductSummary> all = [];
+      int currentPage = 1;
+      while (true) {
+        final paginated = await Api.instance.products.list(
+          categoryId: widget.category.id,
+          page: currentPage,
+          limit: pageSize,
+        );
+        all.addAll(paginated.items);
+        if (!paginated.hasNextPage || paginated.items.isEmpty) break;
+        currentPage++;
+      }
+
       if (mounted) {
         setState(() {
-          _filteredProducts = paginated.items
-              .map((p) => Product.fromApiSummary(p))
-              .toList();
+          _filteredProducts =
+              all.map((p) => Product.fromApiSummary(p)).toList();
           _isLoading = false;
         });
       }
@@ -105,7 +115,7 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: widget.category.color.withOpacity(0.15),
+                color: widget.category.color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -212,13 +222,13 @@ class _CategoryDetailScreenState extends State<CategoryDetailScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: widget.category.color.withOpacity(0.1),
+                color: widget.category.color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 widget.category.icon,
                 size: 64,
-                color: widget.category.color.withOpacity(0.4),
+                color: widget.category.color.withValues(alpha: 0.4),
               ),
             ),
             const SizedBox(height: 24),

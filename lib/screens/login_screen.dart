@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
 import '../services/api_client.dart';
+import '../utils/validators.dart';
+import '../widgets/app_brand_logo.dart';
 import '../widgets/app_snack_bar.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -153,29 +155,9 @@ class _LoginScreenState extends State<LoginScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // Título
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Caracas',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Ahorra',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.accent,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                          ],
-                        ),
+                      const AppBrandLogo(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
                       ),
 
                       const SizedBox(height: 10),
@@ -184,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen>
                         'Bienvenido de nuevo',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.grey.withOpacity(0.8),
+                          color: AppColors.grey.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -199,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen>
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black.withOpacity(0.04),
+                              color: AppColors.black.withValues(alpha: 0.04),
                               blurRadius: 24,
                               offset: const Offset(0, 4),
                               spreadRadius: 0,
@@ -219,11 +201,11 @@ class _LoginScreenState extends State<LoginScreen>
                                   hintText: 'ejemplo@correo.com',
                                   prefixIcon: Icon(
                                     Icons.email_outlined,
-                                    color: AppColors.primary.withOpacity(0.8),
+                                    color: AppColors.primary.withValues(alpha: 0.8),
                                     size: 22,
                                   ),
                                   filled: true,
-                                  fillColor: AppColors.lightGrey.withOpacity(0.7),
+                                  fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide.none,
@@ -236,15 +218,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingrese su correo';
-                                  }
-                                  if (!value.contains('@')) {
-                                    return 'Por favor ingrese un correo válido';
-                                  }
-                                  return null;
-                                },
+                                validator: Validators.email,
                               ),
 
                               const SizedBox(height: 20),
@@ -258,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   hintText: '••••••••',
                                   prefixIcon: Icon(
                                     Icons.lock_outline,
-                                    color: AppColors.primary.withOpacity(0.8),
+                                    color: AppColors.primary.withValues(alpha: 0.8),
                                     size: 22,
                                   ),
                                   suffixIcon: IconButton(
@@ -266,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen>
                                       _obscurePassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
-                                      color: AppColors.grey.withOpacity(0.7),
+                                      color: AppColors.grey.withValues(alpha: 0.7),
                                       size: 22,
                                     ),
                                     onPressed: () {
@@ -276,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     },
                                   ),
                                   filled: true,
-                                  fillColor: AppColors.lightGrey.withOpacity(0.7),
+                                  fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide.none,
@@ -289,15 +263,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingrese su contraseña';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'La contraseña debe tener al menos 6 caracteres';
-                                  }
-                                  return null;
-                                },
+                                validator: Validators.loginPassword,
                               ),
 
                               const SizedBox(height: 16),
@@ -328,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     'Recordarme',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: AppColors.black.withOpacity(0.7),
+                                      color: AppColors.black.withValues(alpha: 0.7),
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
@@ -346,7 +312,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     disabledBackgroundColor:
-                                        AppColors.primary.withOpacity(0.6),
+                                        AppColors.primary.withValues(alpha: 0.6),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -406,7 +372,7 @@ class _LoginScreenState extends State<LoginScreen>
                             '¿Olvidaste tu contraseña?',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.primary.withOpacity(0.9),
+                              color: AppColors.primary.withValues(alpha: 0.9),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -423,7 +389,7 @@ class _LoginScreenState extends State<LoginScreen>
                             '¿No tienes cuenta? ',
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppColors.grey.withOpacity(0.8),
+                              color: AppColors.grey.withValues(alpha: 0.8),
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -451,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen>
                               'Regístrate aquí',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.primary.withOpacity(0.9),
+                                color: AppColors.primary.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

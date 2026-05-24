@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
 import '../services/api_client.dart';
+import '../utils/validators.dart';
+import '../widgets/app_brand_logo.dart';
 import '../widgets/app_snack_bar.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -124,7 +126,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                               borderRadius: BorderRadius.circular(14),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.black.withOpacity(0.04),
+                                  color: AppColors.black.withValues(alpha: 0.04),
                                   blurRadius: 16,
                                   offset: const Offset(0, 2),
                                   spreadRadius: 0,
@@ -133,7 +135,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                             ),
                             child: Icon(
                               Icons.arrow_back,
-                              color: AppColors.primary.withOpacity(0.9),
+                              color: AppColors.primary.withValues(alpha: 0.9),
                               size: 22,
                             ),
                           ),
@@ -143,29 +145,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                       const SizedBox(height: 16),
 
                       // Titulo
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Caracas',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Ahorra',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.accent,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                          ],
-                        ),
+                      const AppBrandLogo(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
                       ),
 
                       const SizedBox(height: 10),
@@ -174,7 +156,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                         'Recuperar contrasena',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.grey.withOpacity(0.8),
+                          color: AppColors.grey.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -189,7 +171,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black.withOpacity(0.04),
+                              color: AppColors.black.withValues(alpha: 0.04),
                               blurRadius: 24,
                               offset: const Offset(0, 4),
                               spreadRadius: 0,
@@ -221,7 +203,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.grey.withOpacity(0.8),
+              color: AppColors.grey.withValues(alpha: 0.8),
               fontWeight: FontWeight.w400,
               height: 1.5,
             ),
@@ -238,11 +220,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
               hintText: 'ejemplo@correo.com',
               prefixIcon: Icon(
                 Icons.email_outlined,
-                color: AppColors.primary.withOpacity(0.8),
+                color: AppColors.primary.withValues(alpha: 0.8),
                 size: 22,
               ),
               filled: true,
-              fillColor: AppColors.lightGrey.withOpacity(0.7),
+              fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
@@ -255,15 +237,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                 ),
               ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor ingrese su correo';
-              }
-              if (!value.contains('@')) {
-                return 'Por favor ingrese un correo valido';
-              }
-              return null;
-            },
+            validator: Validators.email,
           ),
 
           const SizedBox(height: 26),
@@ -276,7 +250,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
               onPressed: _isLoading ? null : _handleForgotPassword,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+                disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -315,7 +289,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
           width: 72,
           height: 72,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -343,7 +317,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.grey.withOpacity(0.8),
+            color: AppColors.grey.withValues(alpha: 0.8),
             fontWeight: FontWeight.w400,
             height: 1.5,
           ),

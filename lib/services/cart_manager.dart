@@ -73,7 +73,7 @@ class CartManager extends ChangeNotifier {
       _activeCartId = _allCarts.first.id;
       await _loadActiveCartItems();
     } catch (e) {
-      // Si el backend falla, permitir uso local
+      debugPrint('[CartManager.init] $e');
     }
 
     _initialized = true;
@@ -109,6 +109,7 @@ class CartManager extends ChangeNotifier {
       notifyListeners();
       return cart;
     } catch (e) {
+      debugPrint('[CartManager.createCart] $e');
       return null;
     }
   }
@@ -134,6 +135,7 @@ class CartManager extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
+      debugPrint('[CartManager.deleteCart] $e');
       return false;
     }
   }
@@ -182,7 +184,7 @@ class CartManager extends ChangeNotifier {
         _refreshCartSummaries();
         notifyListeners();
       } catch (e) {
-        // Mantener estado optimista
+        debugPrint('[CartManager.addItem] $e');
       }
     }
   }
@@ -200,7 +202,7 @@ class CartManager extends ChangeNotifier {
         );
         _refreshCartSummaries();
       } catch (e) {
-        // Ya se removió localmente
+        debugPrint('[CartManager.removeItem] $e');
       }
     }
   }
@@ -221,7 +223,7 @@ class CartManager extends ChangeNotifier {
           quantity: newQuantity.toDouble(),
         );
       } catch (e) {
-        // Mantener estado local
+        debugPrint('[CartManager.updateItemQuantity] $e');
       }
     }
   }
@@ -236,7 +238,7 @@ class CartManager extends ChangeNotifier {
         await Api.instance.carts.clearItems(_activeCartId!);
         _refreshCartSummaries();
       } catch (e) {
-        // Ya se limpió localmente
+        debugPrint('[CartManager.clearCart] $e');
       }
     }
   }
@@ -301,7 +303,7 @@ class CartManager extends ChangeNotifier {
         );
       }).toList();
     } catch (e) {
-      // Mantener estado local si falla
+      debugPrint('[CartManager._loadActiveCartItems] $e');
     }
   }
 
@@ -348,7 +350,7 @@ class CartManager extends ChangeNotifier {
       _allCarts = await Api.instance.carts.list();
       notifyListeners();
     } catch (e) {
-      // No es crítico
+      debugPrint('[CartManager._refreshCartSummaries] $e');
     }
   }
 

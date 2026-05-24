@@ -169,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.help_outline_rounded,
                     title: 'Centro de Ayuda',
                     subtitle: 'Encuentra respuestas a tus preguntas',
-                    iconColor: const Color(0xFF5B9BD5),
+                    iconColor: AppColors.iconBlue,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: Icons.privacy_tip_outlined,
                     title: 'Privacidad y Términos',
                     subtitle: 'Lee nuestras políticas',
-                    iconColor: const Color(0xFFED7D95),
+                    iconColor: AppColors.iconPink,
                     isLast: true,
                     onTap: () {
                       Navigator.of(context).push(
@@ -215,10 +215,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     decoration: BoxDecoration(
-                      color: AppColors.error.withOpacity(0.08),
+                      color: AppColors.error.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: AppColors.error.withOpacity(0.12),
+                        color: AppColors.error.withValues(alpha: 0.12),
                       ),
                     ),
                     child: Row(
@@ -226,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Icon(
                           Icons.logout_rounded,
-                          color: AppColors.error.withOpacity(0.8),
+                          color: AppColors.error.withValues(alpha: 0.8),
                           size: 20,
                         ),
                         const SizedBox(width: 10),
@@ -235,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.error.withOpacity(0.8),
+                            color: AppColors.error.withValues(alpha: 0.8),
                           ),
                         ),
                       ],
@@ -251,7 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 'CaracasAhorra v1.0.0',
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.grey.withOpacity(0.5),
+                  color: AppColors.grey.withValues(alpha: 0.5),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -308,7 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
@@ -349,14 +349,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   _userEmail,
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -394,11 +394,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: AppColors.grey.withOpacity(0.08),
+                color: AppColors.grey.withValues(alpha: 0.08),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
@@ -433,7 +433,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -458,7 +458,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
@@ -476,21 +476,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: AppColors.black.withOpacity(0.7),
+                color: AppColors.black.withValues(alpha: 0.7),
                 height: 1.5,
               ),
             ),
             const SizedBox(height: 20),
             Divider(
               height: 1,
-              color: AppColors.grey.withOpacity(0.15),
+              color: AppColors.grey.withValues(alpha: 0.15),
             ),
             const SizedBox(height: 16),
             Text(
               'Desarrollado por',
               style: TextStyle(
                 fontSize: 11,
-                color: AppColors.grey.withOpacity(0.7),
+                color: AppColors.grey.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -508,7 +508,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'Universidad Metropolitana',
               style: TextStyle(
                 fontSize: 12,
-                color: AppColors.grey.withOpacity(0.7),
+                color: AppColors.grey.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -517,7 +517,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11,
-                color: AppColors.grey.withOpacity(0.6),
+                color: AppColors.grey.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -578,7 +578,7 @@ class _ProfileMenuItem extends StatelessWidget {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.1),
+                      color: iconColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -605,7 +605,7 @@ class _ProfileMenuItem extends StatelessWidget {
                           subtitle,
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.grey.withOpacity(0.7),
+                            color: AppColors.grey.withValues(alpha: 0.7),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -615,7 +615,7 @@ class _ProfileMenuItem extends StatelessWidget {
                   ),
                   Icon(
                     Icons.chevron_right_rounded,
-                    color: AppColors.grey.withOpacity(0.3),
+                    color: AppColors.grey.withValues(alpha: 0.3),
                     size: 22,
                   ),
                 ],
@@ -626,7 +626,7 @@ class _ProfileMenuItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Divider(
                   height: 1,
-                  color: AppColors.grey.withOpacity(0.08),
+                  color: AppColors.grey.withValues(alpha: 0.08),
                 ),
               ),
           ],

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'config/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/reset_password_screen.dart';
+import 'services/pending_deep_link.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,15 +42,10 @@ class _CaracasAhorraAppState extends State<CaracasAhorraApp> {
     // Escuchar links cuando la app ya esta abierta (warm start)
     _linkSubscription = _appLinks.uriLinkStream.listen(_handleDeepLink);
 
-    // Manejar link que abrio la app (cold start)
+    // Cold start: dejar el link en el buffer; el splash lo consume al navegar.
     final initialUri = await _appLinks.getInitialLink();
     if (initialUri != null) {
-      // Esperar a que el splash termine y el navigator este listo
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Future.delayed(const Duration(seconds: 4), () {
-          _handleDeepLink(initialUri);
-        });
-      });
+      PendingDeepLink.set(initialUri);
     }
   }
 

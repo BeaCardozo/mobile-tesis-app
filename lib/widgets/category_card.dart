@@ -24,10 +24,10 @@ class CategoryCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: category.color.withOpacity(0.15),
+          color: category.color.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: category.color.withOpacity(0.25),
+            color: category.color.withValues(alpha: 0.25),
           ),
         ),
         child: Column(
@@ -36,7 +36,7 @@ class CategoryCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: category.color.withOpacity(0.2),
+                color: category.color.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -56,7 +56,7 @@ class CategoryCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: resolvedFontSize,
                   fontWeight: FontWeight.w600,
-                  color: category.color.withOpacity(0.9),
+                  color: category.color.withValues(alpha: 0.9),
                   letterSpacing: 0.1,
                   height: 1.2,
                 ),

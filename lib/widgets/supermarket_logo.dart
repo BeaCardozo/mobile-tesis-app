@@ -46,7 +46,7 @@ class SupermarketLogo extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: AppColors.grey.withOpacity(0.12),
+          color: AppColors.grey.withValues(alpha: 0.12),
           width: 1,
         ),
       ),
@@ -68,7 +68,7 @@ class SupermarketLogo extends StatelessWidget {
     return Center(
       child: Icon(
         Icons.storefront_rounded,
-        color: AppColors.primary.withOpacity(0.7),
+        color: AppColors.primary.withValues(alpha: 0.7),
         size: size * 0.5,
       ),
     );

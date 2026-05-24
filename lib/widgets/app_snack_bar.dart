@@ -222,7 +222,7 @@ class _AnimatedSnackBarState extends State<_AnimatedSnackBar>
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.config.color.withOpacity(0.3),
+                    color: widget.config.color.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -233,7 +233,7 @@ class _AnimatedSnackBarState extends State<_AnimatedSnackBar>
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -266,7 +266,7 @@ class _AnimatedSnackBarState extends State<_AnimatedSnackBar>
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(

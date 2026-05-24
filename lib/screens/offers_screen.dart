@@ -181,7 +181,7 @@ class _OffersScreenState extends State<OffersScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error.withOpacity(0.6)),
+            Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error.withValues(alpha: 0.6)),
             const SizedBox(height: 16),
             Text(
               _error!,
@@ -208,7 +208,7 @@ class _OffersScreenState extends State<OffersScreen> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -234,7 +234,7 @@ class _OffersScreenState extends State<OffersScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
-                color: AppColors.grey.withOpacity(0.8),
+                color: AppColors.grey.withValues(alpha: 0.8),
                 height: 1.4,
               ),
             ),
@@ -328,7 +328,7 @@ class _FilterChip extends StatelessWidget {
           color: isSelected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.grey.withOpacity(0.2),
+            color: isSelected ? AppColors.primary : AppColors.grey.withValues(alpha: 0.2),
           ),
         ),
         child: Text(
@@ -365,10 +365,10 @@ class _DealCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.primary.withOpacity(0.15)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -385,7 +385,7 @@ class _DealCard extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColors.lightGrey.withOpacity(0.6),
+                      color: AppColors.lightGrey.withValues(alpha: 0.6),
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(18),
                       ),
@@ -403,14 +403,14 @@ class _DealCard extends StatelessWidget {
                                 errorBuilder: (_) => Icon(
                                   Icons.shopping_basket_rounded,
                                   size: 40,
-                                  color: AppColors.primary.withOpacity(0.3),
+                                  color: AppColors.primary.withValues(alpha: 0.3),
                                 ),
                               ),
                             )
                           : Icon(
                               Icons.shopping_basket_rounded,
                               size: 40,
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                             ),
                     ),
                   ),
@@ -489,7 +489,7 @@ class _DealCard extends StatelessWidget {
                     '${deal.baseAmount % 1 == 0 ? deal.baseAmount.toInt() : deal.baseAmount} ${deal.unitType}',
                     style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.grey.withOpacity(0.7),
+                      color: AppColors.grey.withValues(alpha: 0.7),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -516,7 +516,7 @@ class _DealCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.grey.withOpacity(0.6),
+                        color: AppColors.grey.withValues(alpha: 0.6),
                         decoration: TextDecoration.lineThrough,
                       ),
                     ),

@@ -64,6 +64,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
     if (bsPrecalc != null && bsPrecalc.isFinite) {
       return 'Bs. ${bsPrecalc.toStringAsFixed(2)}';
     }
+    if (_effectiveRate <= 0) return 'Bs. —';
     return 'Bs. ${(usd * _effectiveRate).toStringAsFixed(2)}';
   }
 
@@ -119,7 +120,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                   : 'Compra cada producto en el supermercado más barato.',
               style: TextStyle(
                 fontSize: 12,
-                color: AppColors.grey.withOpacity(0.6),
+                color: AppColors.grey.withValues(alpha: 0.6),
               ),
             ),
           ),
@@ -156,7 +157,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
             color: isActive ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(11),
             boxShadow: isActive
-                ? [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 6, offset: const Offset(0, 2))]
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 6, offset: const Offset(0, 2))]
                 : null,
           ),
           child: Row(
@@ -184,11 +185,11 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline_rounded, size: 48, color: AppColors.grey.withOpacity(0.3)),
+          Icon(Icons.error_outline_rounded, size: 48, color: AppColors.grey.withValues(alpha: 0.3)),
           const SizedBox(height: 12),
           Text(
             'No se pudo cargar la comparación',
-            style: TextStyle(fontSize: 14, color: AppColors.grey.withOpacity(0.6)),
+            style: TextStyle(fontSize: 14, color: AppColors.grey.withValues(alpha: 0.6)),
           ),
           const SizedBox(height: 12),
           TextButton(
@@ -234,8 +235,8 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isBest && allAvailable
-                    ? AppColors.primary.withOpacity(0.4)
-                    : AppColors.grey.withOpacity(0.1),
+                    ? AppColors.primary.withValues(alpha: 0.4)
+                    : AppColors.grey.withValues(alpha: 0.1),
                 width: isBest && allAvailable ? 1.5 : 1,
               ),
             ),
@@ -255,7 +256,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                         child: Center(
                           child: Text(
                             '${idx + 1}',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.grey.withOpacity(0.6)),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.grey.withValues(alpha: 0.6)),
                           ),
                         ),
                       ),
@@ -273,7 +274,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                             Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.black)),
                             Text(
                               '$available/${widget.itemCount} productos disponibles',
-                              style: TextStyle(fontSize: 11, color: AppColors.grey.withOpacity(0.6)),
+                              style: TextStyle(fontSize: 11, color: AppColors.grey.withValues(alpha: 0.6)),
                             ),
                           ],
                         ),
@@ -289,9 +290,9 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                             ),
                           ),
                           if (isBest && allAvailable)
-                            _badge('Mejor opción', AppColors.primary.withOpacity(0.1), AppColors.primary),
+                            _badge('Mejor opción', AppColors.primary.withValues(alpha: 0.1), AppColors.primary),
                           if (!allAvailable)
-                            _badge('Incompleto', Colors.amber.withOpacity(0.1), Colors.amber.shade700),
+                            _badge('Incompleto', Colors.amber.withValues(alpha: 0.1), Colors.amber.shade700),
                         ],
                       ),
                     ],
@@ -301,7 +302,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                 if (lines.isNotEmpty)
                   Container(
                     decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: AppColors.grey.withOpacity(0.08))),
+                      border: Border(top: BorderSide(color: AppColors.grey.withValues(alpha: 0.08))),
                     ),
                     child: Column(
                       children: lines.map((l) {
@@ -323,7 +324,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: avail ? AppColors.black.withOpacity(0.7) : AppColors.grey.withOpacity(0.4),
+                                    color: avail ? AppColors.black.withValues(alpha: 0.7) : AppColors.grey.withValues(alpha: 0.4),
                                     decoration: avail ? null : TextDecoration.lineThrough,
                                   ),
                                 ),
@@ -334,7 +335,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: avail ? AppColors.black.withOpacity(0.8) : AppColors.grey.withOpacity(0.4),
+                                  color: avail ? AppColors.black.withValues(alpha: 0.8) : AppColors.grey.withValues(alpha: 0.4),
                                 ),
                               ),
                             ],
@@ -366,18 +367,18 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
       margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.06),
+        color: AppColors.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withOpacity(0.12)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
       ),
       child: Row(
         children: [
-          Icon(Icons.savings_outlined, size: 18, color: AppColors.primary.withOpacity(0.8)),
+          Icon(Icons.savings_outlined, size: 18, color: AppColors.primary.withValues(alpha: 0.8)),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               'Ahorras hasta ${_fmt(savings)} eligiendo el supermercado más barato',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary.withOpacity(0.9)),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary.withValues(alpha: 0.9)),
             ),
           ),
         ],
@@ -408,7 +409,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1.5),
           ),
           child: Row(
             children: [
@@ -425,7 +426,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                     const Text('Compra optimizada', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.black)),
                     Text(
                       'Comprar en ${bySupermarket.length} supermercado${bySupermarket.length == 1 ? '' : 's'}',
-                      style: TextStyle(fontSize: 11, color: AppColors.grey.withOpacity(0.6)),
+                      style: TextStyle(fontSize: 11, color: AppColors.grey.withValues(alpha: 0.6)),
                     ),
                   ],
                 ),
@@ -456,7 +457,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.grey.withOpacity(0.1)),
+              border: Border.all(color: AppColors.grey.withValues(alpha: 0.1)),
             ),
             child: Column(
               children: [
@@ -477,7 +478,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                             Text(name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.black)),
                             Text(
                               '${purchases.length} producto${purchases.length == 1 ? '' : 's'}',
-                              style: TextStyle(fontSize: 11, color: AppColors.grey.withOpacity(0.6)),
+                              style: TextStyle(fontSize: 11, color: AppColors.grey.withValues(alpha: 0.6)),
                             ),
                           ],
                         ),
@@ -489,7 +490,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                 if (purchases.isNotEmpty)
                   Container(
                     decoration: BoxDecoration(
-                      border: Border(top: BorderSide(color: AppColors.grey.withOpacity(0.08))),
+                      border: Border(top: BorderSide(color: AppColors.grey.withValues(alpha: 0.08))),
                     ),
                     child: Column(
                       children: purchases.map((p) {
@@ -508,10 +509,10 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                               Container(
                                 width: 26, height: 26,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryLight.withOpacity(0.2),
+                                  color: AppColors.primaryLight.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(7),
                                 ),
-                                child: Icon(Icons.shopping_basket_rounded, size: 12, color: AppColors.primary.withOpacity(0.4)),
+                                child: Icon(Icons.shopping_basket_rounded, size: 12, color: AppColors.primary.withValues(alpha: 0.4)),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -519,13 +520,13 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(pName, maxLines: 1, overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 12, color: AppColors.black.withOpacity(0.7))),
+                                        style: TextStyle(fontSize: 12, color: AppColors.black.withValues(alpha: 0.7))),
                                     Text('${_fmt(unitUsd, bsPrecalc: unitBs)} x $qty',
-                                        style: TextStyle(fontSize: 10, color: AppColors.grey.withOpacity(0.5))),
+                                        style: TextStyle(fontSize: 10, color: AppColors.grey.withValues(alpha: 0.5))),
                                   ],
                                 ),
                               ),
-                              Text(_fmt(lineUsd, bsPrecalc: lineBs), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.black.withOpacity(0.8))),
+                              Text(_fmt(lineUsd, bsPrecalc: lineBs), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.black.withValues(alpha: 0.8))),
                             ],
                           ),
                         );
@@ -542,18 +543,18 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: AppColors.accent.withOpacity(0.06),
+            color: AppColors.accent.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.accent.withOpacity(0.12)),
+            border: Border.all(color: AppColors.accent.withValues(alpha: 0.12)),
           ),
           child: Row(
             children: [
-              Icon(Icons.info_outline_rounded, size: 16, color: AppColors.accent.withOpacity(0.8)),
+              Icon(Icons.info_outline_rounded, size: 16, color: AppColors.accent.withValues(alpha: 0.8)),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Precio optimizado comprando cada producto donde sea más barato',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.accent.withOpacity(0.9)),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.accent.withValues(alpha: 0.9)),
                 ),
               ),
             ],
@@ -584,7 +585,7 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Text(msg, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: AppColors.grey.withOpacity(0.6))),
+      child: Text(msg, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: AppColors.grey.withValues(alpha: 0.6))),
     );
   }
 }

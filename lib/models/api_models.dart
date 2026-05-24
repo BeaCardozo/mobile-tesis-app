@@ -306,66 +306,6 @@ class PaginatedResponse<T> {
 }
 
 // =============================================================================
-// Supermarket
-// =============================================================================
-
-class ApiSupermarket {
-  final String id;
-  final String name;
-  final String? slug;
-  final String? logoUrl;
-  final String? website;
-  final bool isActive;
-
-  ApiSupermarket({
-    required this.id,
-    required this.name,
-    this.slug,
-    this.logoUrl,
-    this.website,
-    required this.isActive,
-  });
-
-  factory ApiSupermarket.fromJson(Map<String, dynamic> json) {
-    return ApiSupermarket(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      slug: json['slug'] as String?,
-      logoUrl: json['logoUrl'] as String?,
-      website: json['website'] as String?,
-      isActive: json['isActive'] as bool? ?? true,
-    );
-  }
-}
-
-// =============================================================================
-// DWH Supermarket (para filtros de productos)
-// =============================================================================
-
-class DwhSupermarket {
-  final int id;
-  final String name;
-  final String? slug;
-  final String? logoUrl;
-
-  DwhSupermarket({
-    required this.id,
-    required this.name,
-    this.slug,
-    this.logoUrl,
-  });
-
-  factory DwhSupermarket.fromJson(Map<String, dynamic> json) {
-    return DwhSupermarket(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      slug: json['slug'] as String?,
-      logoUrl: json['logoUrl'] as String?,
-    );
-  }
-}
-
-// =============================================================================
 // Cart
 // =============================================================================
 

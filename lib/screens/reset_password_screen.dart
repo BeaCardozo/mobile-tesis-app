@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
 import '../services/api_client.dart';
+import '../utils/validators.dart';
+import '../widgets/app_brand_logo.dart';
 import '../widgets/app_snack_bar.dart';
 import 'login_screen.dart';
 
@@ -144,29 +146,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                       const SizedBox(height: 32),
 
                       // Titulo
-                      RichText(
-                        text: const TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Caracas',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Ahorra',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.accent,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                          ],
-                        ),
+                      const AppBrandLogo(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
                       ),
 
                       const SizedBox(height: 10),
@@ -175,7 +157,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                         'Nueva contrasena',
                         style: TextStyle(
                           fontSize: 16,
-                          color: AppColors.grey.withOpacity(0.8),
+                          color: AppColors.grey.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -190,7 +172,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black.withOpacity(0.04),
+                              color: AppColors.black.withValues(alpha: 0.04),
                               blurRadius: 24,
                               offset: const Offset(0, 4),
                               spreadRadius: 0,
@@ -222,7 +204,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.grey.withOpacity(0.8),
+              color: AppColors.grey.withValues(alpha: 0.8),
               fontWeight: FontWeight.w400,
               height: 1.5,
             ),
@@ -239,7 +221,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
               hintText: '••••••••',
               prefixIcon: Icon(
                 Icons.lock_outline,
-                color: AppColors.primary.withOpacity(0.8),
+                color: AppColors.primary.withValues(alpha: 0.8),
                 size: 22,
               ),
               suffixIcon: IconButton(
@@ -247,7 +229,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                   _obscurePassword
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  color: AppColors.grey.withOpacity(0.7),
+                  color: AppColors.grey.withValues(alpha: 0.7),
                   size: 22,
                 ),
                 onPressed: () {
@@ -257,7 +239,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                 },
               ),
               filled: true,
-              fillColor: AppColors.lightGrey.withOpacity(0.7),
+              fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
@@ -270,27 +252,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                 ),
               ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor ingrese su contrasena';
-              }
-              if (value.length < 8) {
-                return 'Minimo 8 caracteres';
-              }
-              if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                return 'Debe contener al menos una mayuscula';
-              }
-              if (!RegExp(r'[a-z]').hasMatch(value)) {
-                return 'Debe contener al menos una minuscula';
-              }
-              if (!RegExp(r'[0-9]').hasMatch(value)) {
-                return 'Debe contener al menos un numero';
-              }
-              if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                return 'Debe contener al menos un simbolo';
-              }
-              return null;
-            },
+            validator: Validators.password,
           ),
 
           const SizedBox(height: 16),
@@ -304,7 +266,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
               hintText: '••••••••',
               prefixIcon: Icon(
                 Icons.lock_outline,
-                color: AppColors.primary.withOpacity(0.8),
+                color: AppColors.primary.withValues(alpha: 0.8),
                 size: 22,
               ),
               suffixIcon: IconButton(
@@ -312,7 +274,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                   _obscureConfirmPassword
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  color: AppColors.grey.withOpacity(0.7),
+                  color: AppColors.grey.withValues(alpha: 0.7),
                   size: 22,
                 ),
                 onPressed: () {
@@ -322,7 +284,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                 },
               ),
               filled: true,
-              fillColor: AppColors.lightGrey.withOpacity(0.7),
+              fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
@@ -335,15 +297,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                 ),
               ),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor confirme su contrasena';
-              }
-              if (value != _passwordController.text) {
-                return 'Las contrasenas no coinciden';
-              }
-              return null;
-            },
+            validator: (value) => Validators.matchesPassword(
+              value,
+              _passwordController.text,
+            ),
           ),
 
           const SizedBox(height: 26),
@@ -356,7 +313,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
               onPressed: _isLoading ? null : _handleResetPassword,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                disabledBackgroundColor: AppColors.primary.withOpacity(0.6),
+                disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -395,7 +352,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
           width: 72,
           height: 72,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -423,7 +380,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.grey.withOpacity(0.8),
+            color: AppColors.grey.withValues(alpha: 0.8),
             fontWeight: FontWeight.w400,
             height: 1.5,
           ),

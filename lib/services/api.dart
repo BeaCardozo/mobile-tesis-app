@@ -2,7 +2,6 @@ import 'api_client.dart';
 import 'auth_api_service.dart';
 import 'products_api_service.dart';
 import 'categories_api_service.dart';
-import 'supermarkets_api_service.dart';
 import 'carts_api_service.dart';
 import 'offers_api_service.dart';
 import 'users_api_service.dart';
@@ -23,7 +22,6 @@ class Api {
   late final AuthApiService auth;
   late final ProductsApiService products;
   late final CategoriesApiService categories;
-  late final SupermarketsApiService supermarkets;
   late final CartsApiService carts;
   late final OffersApiService offers;
   late final UsersApiService users;
@@ -33,7 +31,6 @@ class Api {
     auth = AuthApiService(client);
     products = ProductsApiService(client);
     categories = CategoriesApiService(client);
-    supermarkets = SupermarketsApiService(client);
     carts = CartsApiService(client);
     offers = OffersApiService(client);
     users = UsersApiService(client);

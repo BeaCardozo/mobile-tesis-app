@@ -41,7 +41,7 @@ class HelpCenterScreen extends StatelessWidget {
                     _buildFaqCategory(
                       title: 'Comparación de Precios',
                       icon: Icons.compare_arrows_rounded,
-                      iconColor: const Color(0xFF5B9BD5),
+                      iconColor: AppColors.iconBlue,
                       questions: const [
                         _FaqItem(
                           question: '¿De dónde provienen los precios?',
@@ -72,7 +72,7 @@ class HelpCenterScreen extends StatelessWidget {
                     _buildFaqCategory(
                       title: 'General',
                       icon: Icons.info_outline_rounded,
-                      iconColor: const Color(0xFFED7D95),
+                      iconColor: AppColors.iconPink,
                       questions: const [
                         _FaqItem(
                           question: '¿La app es gratuita?',
@@ -100,7 +100,7 @@ class HelpCenterScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(22),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.03),
+                            color: Colors.black.withValues(alpha: 0.03),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),
@@ -204,7 +204,7 @@ class HelpCenterScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -217,7 +217,7 @@ class HelpCenterScreen extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
+              color: iconColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 22),
@@ -247,7 +247,7 @@ class HelpCenterScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.black.withOpacity(0.8),
+                      color: AppColors.black.withValues(alpha: 0.8),
                     ),
                   ),
                   tilePadding: const EdgeInsets.symmetric(horizontal: 8),
@@ -258,7 +258,7 @@ class HelpCenterScreen extends StatelessWidget {
                       faq.answer,
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.grey.withOpacity(0.9),
+                        color: AppColors.grey.withValues(alpha: 0.9),
                         height: 1.5,
                       ),
                     ),
@@ -284,7 +284,7 @@ class HelpCenterScreen extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 22),
@@ -307,7 +307,7 @@ class HelpCenterScreen extends StatelessWidget {
                 subtitle,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.grey.withOpacity(0.8),
+                  color: AppColors.grey.withValues(alpha: 0.8),
                 ),
               ),
             ],

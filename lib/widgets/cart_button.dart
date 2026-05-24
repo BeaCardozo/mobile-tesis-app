@@ -22,7 +22,7 @@ class CartButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 16,
               offset: const Offset(0, 2),
               spreadRadius: 0,
@@ -34,7 +34,7 @@ class CartButton extends StatelessWidget {
           children: [
             Icon(
               Icons.shopping_cart_rounded,
-              color: AppColors.primary.withOpacity(0.9),
+              color: AppColors.primary.withValues(alpha: 0.9),
               size: 22,
             ),
             if (itemCount > 0)
@@ -44,11 +44,11 @@ class CartButton extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: AppColors.error.withOpacity(0.9),
+                    color: AppColors.error.withValues(alpha: 0.9),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.error.withOpacity(0.2),
+                        color: AppColors.error.withValues(alpha: 0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

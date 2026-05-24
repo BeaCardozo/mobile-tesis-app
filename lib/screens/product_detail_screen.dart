@@ -77,14 +77,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           : a.price.compareTo(b.price));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F9EC),
+      backgroundColor: AppColors.backgroundSoftGreen,
       body: CustomScrollView(
         slivers: [
           // App Bar con imagen
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
-            backgroundColor: const Color(0xFFF4F9EC),
+            backgroundColor: AppColors.backgroundSoftGreen,
             elevation: 0,
             leadingWidth: 120,
             leading: Padding(
@@ -96,7 +96,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryDark.withOpacity(0.10),
+                        color: AppColors.primaryDark.withValues(alpha: 0.10),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -157,13 +157,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         errorBuilder: (_) => Icon(
                           Icons.shopping_basket,
                           size: 120,
-                          color: AppColors.primary.withOpacity(0.25),
+                          color: AppColors.primary.withValues(alpha: 0.25),
                         ),
                       )
                     : Icon(
                         Icons.shopping_basket,
                         size: 120,
-                        color: AppColors.primary.withOpacity(0.25),
+                        color: AppColors.primary.withValues(alpha: 0.25),
                       ),
               ),
             ),
@@ -184,7 +184,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryLight.withOpacity(0.55),
+                        color: AppColors.primaryLight.withValues(alpha: 0.55),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -233,7 +233,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       widget.product.description,
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.grey.withOpacity(0.85),
+                        color: AppColors.grey.withValues(alpha: 0.85),
                         height: 1.5,
                       ),
                     ),
@@ -287,7 +287,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           : '${sortedPrices.length} supermercado${sortedPrices.length == 1 ? '' : 's'} disponible${sortedPrices.length == 1 ? '' : 's'}',
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.grey.withOpacity(0.75),
+                        color: AppColors.grey.withValues(alpha: 0.75),
                       ),
                     ),
                   ),
@@ -347,7 +347,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 label: 'Mínimo',
                 value: _formatPrice(lowest),
                 color: AppColors.primary,
-                background: AppColors.primaryLight.withOpacity(0.18),
+                background: AppColors.primaryLight.withValues(alpha: 0.18),
                 emphasized: true,
               ),
             ),
@@ -369,7 +369,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight.withOpacity(0.12),
+              color: AppColors.primaryLight.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -395,7 +395,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         'Puedes ahorrar hasta',
                         style: TextStyle(
                           fontSize: 11.5,
-                          color: AppColors.grey.withOpacity(0.85),
+                          color: AppColors.grey.withValues(alpha: 0.85),
                           letterSpacing: 0.1,
                         ),
                       ),
@@ -442,7 +442,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               fontSize: 11.5,
               fontWeight: FontWeight.w500,
               color: emphasized
-                  ? AppColors.primaryDark.withOpacity(0.75)
+                  ? AppColors.primaryDark.withValues(alpha: 0.75)
                   : AppColors.grey,
               letterSpacing: 0.1,
             ),
@@ -473,14 +473,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
       decoration: BoxDecoration(
         color: isLowest
-            ? AppColors.primaryLight.withOpacity(0.22)
+            ? AppColors.primaryLight.withValues(alpha: 0.22)
             : Colors.transparent,
         borderRadius: isLowest ? BorderRadius.circular(16) : null,
         border: (isLast || isLowest)
             ? null
             : Border(
                 bottom: BorderSide(
-                  color: AppColors.primary.withOpacity(0.10),
+                  color: AppColors.primary.withValues(alpha: 0.10),
                   width: 1,
                 ),
               ),
@@ -541,7 +541,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   _formatDate(priceInfo.lastUpdated),
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.grey.withOpacity(0.75),
+                    color: AppColors.grey.withValues(alpha: 0.75),
                   ),
                 ),
               ],
@@ -568,7 +568,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 '/${widget.product.unit}',
                 style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.grey.withOpacity(0.65),
+                  color: AppColors.grey.withValues(alpha: 0.65),
                 ),
               ),
             ],

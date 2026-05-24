@@ -3,6 +3,7 @@ import '../config/app_colors.dart';
 import '../models/category.dart';
 import '../services/api.dart';
 import '../services/cart_manager.dart';
+import '../widgets/app_brand_logo.dart';
 import '../widgets/app_snack_bar.dart';
 import '../widgets/cart_button.dart';
 import '../widgets/category_card.dart';
@@ -83,28 +84,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: RichText(
-          text: const TextSpan(
-            children: [
-              TextSpan(
-                text: 'Caracas',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-              TextSpan(
-                text: 'Ahorra',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.accent,
-                ),
-              ),
-            ],
-          ),
-        ),
+        title: const AppBrandLogo(fontSize: 20, letterSpacing: 0),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20),

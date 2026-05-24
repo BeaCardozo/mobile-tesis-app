@@ -23,6 +23,11 @@ class AppColors {
   static const Color error = Color(0xFFD32F2F);
   static const Color success = Color(0xFF77A14B);
 
+  // Tints para iconos y fondos secundarios
+  static const Color iconBlue = Color(0xFF5B9BD5);
+  static const Color iconPink = Color(0xFFED7D95);
+  static const Color backgroundSoftGreen = Color(0xFFF4F9EC);
+
   // Gradientes
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
