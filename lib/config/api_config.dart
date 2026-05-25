@@ -14,7 +14,7 @@ class ApiConfig {
   ///   flutter run --dart-define=API_BASE_URL=http://10.0.2.2:4003/api
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:4003/api',
+    defaultValue: 'http://192.168.1.180:4003/api',
   );
 
   /// Timeout para peticiones normales (ms).
