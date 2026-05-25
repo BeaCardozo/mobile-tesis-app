@@ -335,15 +335,11 @@ class ApiCartSummary {
 class ApiCartItem {
   final String id;
   final double quantity;
-  final String? preferredSupermarketId;
-  final ApiCartItemSupermarket? preferredSupermarket;
   final ApiCartItemProduct product;
 
   ApiCartItem({
     required this.id,
     required this.quantity,
-    this.preferredSupermarketId,
-    this.preferredSupermarket,
     required this.product,
   });
 
@@ -351,11 +347,6 @@ class ApiCartItem {
     return ApiCartItem(
       id: json['id'] as String,
       quantity: _toDouble(json['quantity']) ?? 1.0,
-      preferredSupermarketId: json['preferredSupermarketId'] as String?,
-      preferredSupermarket: json['preferredSupermarket'] != null
-          ? ApiCartItemSupermarket.fromJson(
-              json['preferredSupermarket'] as Map<String, dynamic>)
-          : null,
       product: ApiCartItemProduct.fromJson(
           json['product'] as Map<String, dynamic>),
     );

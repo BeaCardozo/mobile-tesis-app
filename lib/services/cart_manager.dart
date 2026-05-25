@@ -295,10 +295,9 @@ class CartManager extends ChangeNotifier {
           id: apiItem.id,
           product: product,
           quantity: apiItem.quantity.toInt(),
-          selectedSupermarketId: apiItem.preferredSupermarketId ??
-              (product.prices.isNotEmpty
-                  ? product.prices.first.supermarketId
-                  : ''),
+          selectedSupermarketId: product.prices.isNotEmpty
+              ? product.prices.first.supermarketId
+              : '',
           addedAt: DateTime.now(),
         );
       }).toList();
