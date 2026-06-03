@@ -563,14 +563,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   letterSpacing: -0.3,
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                '/${widget.product.unit}',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.grey.withValues(alpha: 0.65),
-                ),
-              ),
             ],
           ),
         ],

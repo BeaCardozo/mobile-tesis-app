@@ -210,10 +210,23 @@ class _CartComparisonScreenState extends State<CartComparisonScreen> {
       return _msgCard(_data!['message'] as String);
     }
 
-    final supermarkets = _data!['supermarkets'] as List<dynamic>? ?? [];
     final cheapest = _data!['cheapest'] as Map<String, dynamic>?;
 
+    final supermarkets = List<dynamic>.from(_data!['supermarkets'] as List<dynamic>? ?? []);
+
     if (supermarkets.isEmpty) return _msgCard('No hay precios disponibles');
+
+    // La "Mejor opción" siempre se lista de primero.
+    if (cheapest != null) {
+      final bestName = cheapest['name'];
+      final bestIdx = supermarkets.indexWhere(
+        (s) => (s as Map<String, dynamic>)['name'] == bestName,
+      );
+      if (bestIdx > 0) {
+        final best = supermarkets.removeAt(bestIdx);
+        supermarkets.insert(0, best);
+      }
+    }
 
     return Column(
       children: [

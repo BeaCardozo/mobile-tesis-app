@@ -163,13 +163,6 @@ class ProductCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Text(
-                          '/${product.unit}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppColors.grey.withValues(alpha: 0.5),
-                          ),
-                        ),
                       ],
                     ),
                   ],
