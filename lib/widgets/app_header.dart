@@ -47,6 +47,7 @@ class AppHeader extends StatelessWidget {
           // Controles
           Row(
             children: [
+
               // Selector de moneda
               Container(
                 padding: const EdgeInsets.symmetric(

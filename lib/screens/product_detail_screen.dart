@@ -23,6 +23,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isLoadingPrices = true;
   List<PriceInfo> _allPrices = [];
   String _category = '';
+  double? _fxRate;
 
   @override
   void initState() {
@@ -30,6 +31,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     _allPrices = List.from(widget.product.prices);
     _category = widget.product.category;
     _loadFullDetail();
+    _loadFxRate();
+  }
+
+  Future<void> _loadFxRate() async {
+    final r = await Api.instance.meta.fxUsdToBs();
+    if (!mounted) return;
+    setState(() => _fxRate = r);
   }
 
   Future<void> _loadFullDetail() async {
@@ -311,12 +319,41 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                       return _buildPriceRow(priceInfo, isLowest, isLast);
                     }),
+
+                  // Tasa BCV de referencia
+                  if (_fxRate != null && _fxRate! > 0) ...[
+                    const SizedBox(height: 24),
+                    _buildBcvRateFooter(),
+                  ],
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBcvRateFooter() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          Icons.currency_exchange_rounded,
+          size: 14,
+          color: AppColors.grey,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          'Tasa BCV de referencia: Bs. ${_fxRate!.toStringAsFixed(2)} / USD',
+          style: const TextStyle(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w500,
+            color: AppColors.grey,
+            letterSpacing: 0.1,
+          ),
+        ),
+      ],
     );
   }
 
