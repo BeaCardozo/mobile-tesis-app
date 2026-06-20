@@ -5,6 +5,7 @@ import '../services/api_client.dart';
 import '../utils/validators.dart';
 import '../widgets/app_brand_logo.dart';
 import '../widgets/app_snack_bar.dart';
+import 'reset_password_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -313,7 +314,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
         const SizedBox(height: 12),
 
         Text(
-          'Si el correo esta registrado, recibiras instrucciones para restablecer tu contrasena.',
+          'Si el correo esta registrado, recibiras un codigo de 6 digitos para restablecer tu contrasena.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
@@ -329,7 +330,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
           width: double.infinity,
           height: 52,
           child: ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ResetPasswordScreen(
+                    email: _emailController.text.trim(),
+                  ),
+                ),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
@@ -339,7 +349,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
               shadowColor: Colors.transparent,
             ),
             child: const Text(
-              'Volver al inicio de sesion',
+              'Ingresar codigo',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,

@@ -2,11 +2,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 import '../services/api.dart';
-import '../services/pending_deep_link.dart';
 import '../widgets/app_brand_logo.dart';
 import 'main_screen.dart';
 import 'login_screen.dart';
-import 'reset_password_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -179,18 +177,6 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    // Cold start con deep link de reset-password: ir directo a esa pantalla.
-    final pending = PendingDeepLink.consume();
-    final resetToken = _resetTokenFrom(pending);
-    if (resetToken != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => ResetPasswordScreen(token: resetToken),
-        ),
-      );
-      return;
-    }
-
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -201,15 +187,6 @@ class _SplashScreenState extends State<SplashScreen>
         transitionDuration: const Duration(milliseconds: 600),
       ),
     );
-  }
-
-  String? _resetTokenFrom(Uri? uri) {
-    if (uri == null) return null;
-    final isResetLink =
-        uri.host == 'reset-password' || uri.path.contains('reset-password');
-    if (!isResetLink) return null;
-    final token = uri.queryParameters['token'];
-    return (token != null && token.isNotEmpty) ? token : null;
   }
 
   @override

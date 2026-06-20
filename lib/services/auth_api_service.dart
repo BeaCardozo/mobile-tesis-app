@@ -74,14 +74,16 @@ class AuthApiService {
     return 'Solicitud enviada';
   }
 
-  /// Restablecer contrasena con token.
+  /// Restablecer contrasena con el codigo de 6 digitos recibido por correo.
   /// POST /api/auth/reset-password
   Future<void> resetPassword({
-    required String token,
+    required String email,
+    required String code,
     required String password,
   }) async {
     await _client.post('auth/reset-password', body: {
-      'token': token,
+      'email': email,
+      'code': code,
       'password': password,
     });
   }

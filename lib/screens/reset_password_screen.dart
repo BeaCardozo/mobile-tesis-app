@@ -8,9 +8,9 @@ import '../widgets/app_snack_bar.dart';
 import 'login_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  final String token;
+  final String email;
 
-  const ResetPasswordScreen({super.key, required this.token});
+  const ResetPasswordScreen({super.key, required this.email});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -19,6 +19,7 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
+  final _codeController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
@@ -53,6 +54,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
 
   @override
   void dispose() {
+    _codeController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _animationController.dispose();
@@ -66,7 +68,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
 
     try {
       await Api.instance.auth.resetPassword(
-        token: widget.token,
+        email: widget.email,
+        code: _codeController.text.trim(),
         password: _passwordController.text,
       );
 
@@ -76,11 +79,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
     } on ApiException catch (e) {
       if (mounted) {
         String message;
-        if (e.message.toLowerCase().contains('token') ||
+        if (e.message.toLowerCase().contains('codigo') ||
+            e.message.toLowerCase().contains('código') ||
             e.message.toLowerCase().contains('expirado') ||
-            e.message.toLowerCase().contains('invalido')) {
+            e.message.toLowerCase().contains('invalido') ||
+            e.message.toLowerCase().contains('inválido')) {
           message =
-              'El enlace ha expirado o es invalido. Solicita uno nuevo.';
+              'El codigo es incorrecto o ha expirado. Verificalo o solicita uno nuevo.';
         } else if (e.message.contains('password')) {
           message =
               'La contrasena debe tener min. 8 caracteres, 1 mayuscula, 1 minuscula, 1 numero y 1 simbolo';
@@ -200,7 +205,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
       child: Column(
         children: [
           Text(
-            'Ingresa tu nueva contrasena.',
+            'Ingresa el codigo de 6 digitos que enviamos a ${widget.email} y tu nueva contrasena.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -211,6 +216,52 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
           ),
 
           const SizedBox(height: 24),
+
+          // Campo del codigo
+          TextFormField(
+            controller: _codeController,
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 12,
+            ),
+            decoration: InputDecoration(
+              labelText: 'Codigo',
+              hintText: '------',
+              counterText: '',
+              prefixIcon: Icon(
+                Icons.pin_outlined,
+                color: AppColors.primary.withValues(alpha: 0.8),
+                size: 22,
+              ),
+              filled: true,
+              fillColor: AppColors.lightGrey.withValues(alpha: 0.7),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
+              ),
+            ),
+            validator: (value) {
+              final v = (value ?? '').trim();
+              if (v.isEmpty) return 'Ingresa el codigo';
+              if (!RegExp(r'^\d{6}$').hasMatch(v)) {
+                return 'El codigo debe tener 6 digitos';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
 
           // Campo de contrasena
           TextFormField(
